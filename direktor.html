@@ -1208,8 +1208,6 @@ async function loadClasses(){
     CLASSES = res.classes || [];
 
     renderClsGrid(CLASSES);
-    document.getElementById('naClass').innerHTML = '<option value="">Keyinroq belgilanadi</option>' +
-      CLASSES.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
 
     const maxBars = CLASSES.slice(0, 11);
     document.getElementById('barsBox').innerHTML = maxBars.length ? maxBars.map(c => {

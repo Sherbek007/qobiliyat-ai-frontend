@@ -206,9 +206,8 @@ tr:last-child td{border-bottom:none}
       <select id="sRegion"><option value="">Viloyatni tanlang</option></select>
     </div>
     <div class="field"><label>Tuman</label>
-      <input id="sDistrict" list="districtList" placeholder="Tumanni tanlang yoki yozing">
-      <datalist id="districtList"></datalist>
-      <p class="hint">Ro'yxatda yo'q bo'lsa, qo'lda yozishingiz mumkin</p>
+      <select id="sDistrict"><option value="">Avval viloyatni tanlang</option></select>
+      <p class="hint">Ro'yxatda yo'q bo'lsa, avval "Viloyat va tumanlar" bo'limidan tuman qo'shing</p>
     </div>
     <div class="modal-foot">
       <button class="btn" data-close>Bekor qilish</button>
@@ -241,7 +240,11 @@ tr:last-child td{border-bottom:none}
     <div class="field" id="uSchoolField"><label>Maktab</label><select id="uSchool"><option value="">— Belgilanmagan —</option></select></div>
     <div class="field" id="uRegionField" style="display:none">
       <label>Viloyat (Kelajak Markazi direktori uchun)</label>
-      <select id="uRegion"><option value="">— Belgilanmagan —</option></select>
+      <select id="uRegion"><option value="">Viloyatni tanlang</option></select>
+    </div>
+    <div class="field" id="uDistrictField" style="display:none">
+      <label>Tuman (Kelajak Markazi direktori uchun — har tumanda bitta bo'ladi)</label>
+      <select id="uDistrict"><option value="">Avval viloyatni tanlang</option></select>
     </div>
 
     <div class="field" id="uChildrenField" style="display:none">
@@ -376,7 +379,8 @@ regionSel.addEventListener('change', async () => {
   const opt = regionSel.selectedOptions[0];
   const regionId = opt ? opt.dataset.id : null;
   const list = regionId ? await getDistrictsFor(+regionId) : [];
-  document.getElementById('districtList').innerHTML = list.map(d => `<option value="${d.name}">`).join('');
+  document.getElementById('sDistrict').innerHTML = '<option value="">Tumanni tanlang</option>' +
+    list.map(d => `<option value="${d.name}">${d.name}</option>`).join('');
 });
 async function getDistrictsFor(regionId){
   if (DISTRICTS_CACHE[regionId]) return DISTRICTS_CACHE[regionId];
@@ -605,13 +609,15 @@ function openSchoolModal(id){
   document.getElementById('sRegion').value = s ? (s.region || '') : '';
   const selOpt = regionSel.selectedOptions[0];
   const selRegionId = selOpt ? selOpt.dataset.id : null;
-  document.getElementById('districtList').innerHTML = '';
+  const distSel = document.getElementById('sDistrict');
+  distSel.innerHTML = '<option value="">Tumanni tanlang</option>';
   if (selRegionId) {
     getDistrictsFor(+selRegionId).then(list => {
-      document.getElementById('districtList').innerHTML = list.map(d => `<option value="${d.name}">`).join('');
+      distSel.innerHTML = '<option value="">Tumanni tanlang</option>' +
+        list.map(d => `<option value="${d.name}">${d.name}</option>`).join('');
+      distSel.value = s ? (s.district || '') : '';
     });
   }
-  document.getElementById('sDistrict').value = s ? (s.district || '') : '';
   schoolModal.classList.add('open');
 }
 document.getElementById('addSchoolBtn').onclick = () => openSchoolModal(null);
@@ -738,8 +744,16 @@ function updateUserModalFields(){
   const isKelajakDir = role === 'kelajak_direktor';
   document.getElementById('uSchoolField').style.display = (isParent || isKelajakDir) ? 'none' : 'block';
   document.getElementById('uRegionField').style.display = isKelajakDir ? 'block' : 'none';
+  document.getElementById('uDistrictField').style.display = isKelajakDir ? 'block' : 'none';
   document.getElementById('uChildrenField').style.display = isParent ? 'block' : 'none';
 }
+document.getElementById('uRegion').addEventListener('change', async () => {
+  const opt = document.getElementById('uRegion').selectedOptions[0];
+  const regionId = opt ? opt.dataset.id : null;
+  const list = regionId ? await getDistrictsFor(+regionId) : [];
+  document.getElementById('uDistrict').innerHTML = '<option value="">Tumanni tanlang</option>' +
+    list.map(d => `<option value="${d.name}">${d.name}</option>`).join('');
+});
 
 function openUserModal(id){
   editingUserId = id || null;
@@ -753,9 +767,20 @@ function openUserModal(id){
   document.getElementById('uPass').value = '';
   document.getElementById('uRole').value = u ? u.role : 'maslahatchi';
   document.getElementById('uSchool').value = u && u.school_id ? u.school_id : '';
-  document.getElementById('uRegion').innerHTML = '<option value="">— Belgilanmagan —</option>' +
-    REGIONS_DB.map(r => `<option value="${r.name}">${r.name}</option>`).join('');
+  document.getElementById('uRegion').innerHTML = '<option value="">Viloyatni tanlang</option>' +
+    REGIONS_DB.map(r => `<option value="${r.name}" data-id="${r.id}">${r.name}</option>`).join('');
   document.getElementById('uRegion').value = u && u.region ? u.region : '';
+  const uRegOpt = document.getElementById('uRegion').selectedOptions[0];
+  const uRegId = uRegOpt ? uRegOpt.dataset.id : null;
+  const uDistSel = document.getElementById('uDistrict');
+  uDistSel.innerHTML = '<option value="">Tumanni tanlang</option>';
+  if (uRegId) {
+    getDistrictsFor(+uRegId).then(list => {
+      uDistSel.innerHTML = '<option value="">Tumanni tanlang</option>' +
+        list.map(d => `<option value="${d.name}">${d.name}</option>`).join('');
+      uDistSel.value = u && u.district ? u.district : '';
+    });
+  }
   document.getElementById('uPhoneField').style.display = id ? 'none' : 'block';
   document.getElementById('uPassField').style.display = id ? 'none' : 'block';
   document.getElementById('uPhoneWrap').classList.remove('err');
@@ -774,6 +799,7 @@ document.getElementById('saveUserBtn').onclick = async () => {
   const role = document.getElementById('uRole').value;
   const schoolVal = document.getElementById('uSchool').value;
   const regionVal = document.getElementById('uRegion').value;
+  const districtVal = document.getElementById('uDistrict').value;
   try {
     if (editingUserId) {
       await apiFetch(`/api/admin/users/${editingUserId}`, {
@@ -782,6 +808,7 @@ document.getElementById('saveUserBtn').onclick = async () => {
           full_name: document.getElementById('uName').value.trim(),
           role, school_id: schoolVal ? +schoolVal : null,
           region: role === 'kelajak_direktor' ? (regionVal || null) : null,
+          district: role === 'kelajak_direktor' ? (districtVal || null) : null,
         }),
       });
       userModal.classList.remove('open');
@@ -800,6 +827,7 @@ document.getElementById('saveUserBtn').onclick = async () => {
           full_name, phone: fullPhone(phoneInput), password, role,
           school_id: schoolVal ? +schoolVal : null,
           region: role === 'kelajak_direktor' ? (regionVal || null) : null,
+          district: role === 'kelajak_direktor' ? (districtVal || null) : null,
         }),
       });
       if (role === 'ota_ona') {

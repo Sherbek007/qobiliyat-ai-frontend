@@ -855,6 +855,23 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
   </div>
 </div>
 
+<div class="overlay" id="createDirModal">
+  <div class="modal">
+    <h3 id="createDirTitle">Yangi maktab direktori yaratish</h3>
+    <label for="cdFullName">F.I.Sh.</label>
+    <input id="cdFullName" class="field-inp" style="width:100%" placeholder="Ism Familiya">
+    <label for="cdPhone">Telefon raqam</label>
+    <div class="phone-wrap"><span class="pfx">+998</span><input id="cdPhone" inputmode="numeric" maxlength="12" placeholder="90 123 45 67"></div>
+    <label for="cdPassword">Vaqtinchalik parol</label>
+    <div class="pass-wrap"><input id="cdPassword" type="text" placeholder="Kamida 6 ta belgi"><button type="button" class="eye" id="cdGenBtn" title="Parol yaratish">🎲</button></div>
+    <p id="createDirErr" style="color:var(--red);font-size:12.5px;margin-top:14px;padding:11px 13px;background:var(--red-soft);border-radius:var(--r-sm);display:none"></p>
+    <div class="foot">
+      <button class="btn" id="createDirCancelBtn">Bekor qilish</button>
+      <button class="btn btn-primary" id="createDirSaveBtn">Yaratish</button>
+    </div>
+  </div>
+</div>
+
 <script>
 window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-backend-production.up.railway.app';
 
@@ -1428,12 +1445,14 @@ function openSchoolDotsMenu(e, schoolId, schoolName){
   menu.style.right = (window.innerWidth - rect.right) + 'px';
   menu.innerHTML = schoolId
     ? `<div class="dd-item" data-act="view">\uD83D\uDC41 Ma'lumotlarini ko'rish</div>
-       <div class="dd-item" data-act="assign">\uD83D\uDC64 Direktor tayinlash</div>`
+       <div class="dd-item" data-act="assign">\uD83D\uDC64 Mavjud direktorni tayinlash</div>
+       <div class="dd-item" data-act="create">\u2795 Yangi direktor yaratish</div>`
     : `<div class="dd-item" style="color:var(--muted)">Bu namunaviy maktab \u2014 amal yo'q</div>`;
   document.body.appendChild(menu);
   openSchoolMenu = menu;
   menu.querySelectorAll('[data-act]').forEach(item => item.onclick = () => {
     if (item.dataset.act === 'assign') openAssignDirModal(schoolId, schoolName);
+    else if (item.dataset.act === 'create') openCreateDirModal(schoolId, schoolName);
     else showToast(schoolName + " ma'lumotlari");
     menu.remove(); openSchoolMenu = null;
   });
@@ -1469,6 +1488,57 @@ document.getElementById('assignDirSaveBtn').onclick = async () => {
     loadSchools();
   } catch (e) { showToast(e.message || 'Xatolik yuz berdi'); }
 };
+
+/* ===== Yangi direktor yaratish (POST /api/kelajak-direktor/directors) ===== */
+const createDirModal = document.getElementById('createDirModal');
+const cdPhoneInput = document.getElementById('cdPhone');
+bindPhoneMask(cdPhoneInput);
+let createDirSchoolId = null;
+function genTempPass(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+  let out = '';
+  for (let i = 0; i < 8; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  return out;
+}
+function showCreateDirErr(msg){
+  const el = document.getElementById('createDirErr');
+  el.textContent = msg; el.style.display = 'block';
+}
+function openCreateDirModal(schoolId, schoolName){
+  createDirSchoolId = schoolId;
+  document.getElementById('createDirTitle').textContent = schoolName + ' \u2014 yangi direktor yaratish';
+  document.getElementById('cdFullName').value = '';
+  cdPhoneInput.value = '';
+  document.getElementById('cdPassword').value = genTempPass();
+  document.getElementById('createDirErr').style.display = 'none';
+  createDirModal.classList.add('open');
+}
+document.getElementById('cdGenBtn').onclick = () => { document.getElementById('cdPassword').value = genTempPass(); };
+document.getElementById('createDirCancelBtn').onclick = () => createDirModal.classList.remove('open');
+document.getElementById('createDirSaveBtn').onclick = async () => {
+  document.getElementById('createDirErr').style.display = 'none';
+  const fullName = document.getElementById('cdFullName').value.trim();
+  const password = document.getElementById('cdPassword').value.trim();
+  if (!fullName) return showCreateDirErr("F.I.Sh.ni kiriting");
+  if (!phoneValid(cdPhoneInput)) return showCreateDirErr("Telefon raqamni to'g'ri kiriting");
+  if (password.length < 6) return showCreateDirErr("Parol kamida 6 ta belgidan iborat bo'lsin");
+  const btn = document.getElementById('createDirSaveBtn');
+  btn.disabled = true; btn.textContent = 'Yaratilmoqda...';
+  try {
+    await apiFetch('/api/kelajak-direktor/directors', {
+      method: 'POST',
+      body: JSON.stringify({ full_name: fullName, phone: fullPhone(cdPhoneInput), password, school_id: createDirSchoolId }),
+    });
+    createDirModal.classList.remove('open');
+    showToast(`Yangi direktor yaratildi \u2713 (parol: ${password})`);
+    loadSchools();
+  } catch (e) {
+    showCreateDirErr(e.message || 'Xatolik yuz berdi');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Yaratish';
+  }
+};
+
 function showToast(msg){
   const box = document.getElementById('toastBox');
   const t = document.createElement('div');

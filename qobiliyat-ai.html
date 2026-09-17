@@ -3825,17 +3825,23 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
     <div class="field">
       <label class="field-lbl">Kim sifatida?</label>
       <select class="inp" style="margin-top:9px" id="rRole">
-        <option value="Maktab maslahatchisi">Maktab maslahatchisi</option>
-        <option value="Maktab direktori" disabled>Maktab direktori (tez orada)</option>
-        <option value="Kelajak Markazi direktori" disabled>Kelajak Markazi direktori (tez orada)</option>
-        <option value="Ota-ona" disabled>Ota-ona (tez orada)</option>
+        <option value="kelajak_direktor">Kelajak Markazi direktori</option>
+        <option value="direktor">Maktab direktori</option>
       </select>
+      <p style="font-size:12px;color:var(--muted,#6B6584);margin:6px 2px 0" id="rRoleHint">Tumanda bitta Kelajak Markazi direktori bo'ladi.</p>
     </div>
 
-    <div class="field">
+    <div class="two">
+      <div class="field"><label class="field-lbl" for="rRegion">Viloyat</label>
+        <select class="inp" style="margin-top:9px" id="rRegion"><option value="">Viloyatni tanlang</option></select></div>
+      <div class="field"><label class="field-lbl" for="rDistrict">Tuman</label>
+        <select class="inp" style="margin-top:9px" id="rDistrict"><option value="">Avval viloyatni tanlang</option></select></div>
+    </div>
+
+    <div class="field" id="rOrgField">
       <label class="field-lbl" id="orgLabel">Maktab</label>
       <select class="inp" style="margin-top:9px" id="rOrg">
-        <option value="">Maktabni tanlang</option>
+        <option value="">Avval tumanni tanlang</option>
       </select>
       <p style="font-size:12px;color:var(--muted,#6B6584);margin:6px 2px 0">Ro'yxatda yo'q maktab uchun administratorga murojaat qiling.</p>
     </div>
@@ -7710,6 +7716,72 @@ regFields.forEach(el => el.addEventListener('input', () => {
   document.getElementById('regErr').classList.remove('show');
 }));
 
+/* Rolga qarab maktab maydoni ko'rinadi/yashiriladi */
+const roleSel     = document.getElementById('rRole');
+const regRegionSel = document.getElementById('rRegion');
+const regDistrictSel = document.getElementById('rDistrict');
+const orgSel      = document.getElementById('rOrg');
+const orgField    = document.getElementById('rOrgField');
+const roleHint    = document.getElementById('rRoleHint');
+
+function updateRegRoleUI(){
+  const isDirector = roleSel.value === 'direktor';
+  orgField.style.display = isDirector ? 'block' : 'none';
+  roleHint.textContent = isDirector
+    ? "Maktabda bitta direktor bo'ladi."
+    : "Tumanda bitta Kelajak Markazi direktori bo'ladi.";
+}
+roleSel.addEventListener('change', updateRegRoleUI);
+updateRegRoleUI();
+
+/* ============ Ro'yxatdan o'tish: viloyat → tuman → maktab (haqiqiy ma'lumot) ============ */
+async function loadRegionsForReg(){
+  if (!window.apiFetch) return;
+  try {
+    const regions = await apiFetch('/api/auth/regions') || [];
+    regRegionSel.innerHTML = '<option value="">Viloyatni tanlang</option>' +
+      regions.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+  } catch (e) { /* jim o'tkaziladi — forma bo'sh qoladi, xato saqlashda ko'rinadi */ }
+}
+loadRegionsForReg();
+
+regRegionSel.addEventListener('change', async () => {
+  regRegionSel.classList.remove('err');
+  regDistrictSel.innerHTML = '<option value="">Yuklanmoqda...</option>';
+  orgSel.innerHTML = '<option value="">Avval tumanni tanlang</option>';
+  if (!regRegionSel.value) {
+    regDistrictSel.innerHTML = '<option value="">Avval viloyatni tanlang</option>';
+    return;
+  }
+  try {
+    const districts = await apiFetch(`/api/auth/districts?region_id=${regRegionSel.value}`) || [];
+    regDistrictSel.innerHTML = '<option value="">Tumanni tanlang</option>' +
+      districts.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+  } catch (e) {
+    regDistrictSel.innerHTML = '<option value="">Yuklanmadi — qayta urining</option>';
+  }
+});
+
+regDistrictSel.addEventListener('change', async () => {
+  regDistrictSel.classList.remove('err');
+  orgSel.innerHTML = '<option value="">Yuklanmoqda...</option>';
+  if (!regDistrictSel.value) {
+    orgSel.innerHTML = '<option value="">Avval tumanni tanlang</option>';
+    return;
+  }
+  try {
+    const schools = await apiFetch(`/api/auth/schools?district_id=${regDistrictSel.value}`) || [];
+    orgSel.innerHTML = '<option value="">Maktabni tanlang</option>' +
+      schools.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  } catch (e) {
+    orgSel.innerHTML = '<option value="">Yuklanmadi — qayta urining</option>';
+  }
+});
+
+orgSel.addEventListener('change', () => {
+  orgSel.classList.remove('err');
+});
+
 document.getElementById('regBtn').onclick = async () => {
   const err = document.getElementById('regErr');
   let bad = null;
@@ -7723,8 +7795,12 @@ document.getElementById('regBtn').onclick = async () => {
       if (!bad) bad = el;
     }
   });
-  /* maktab tanlanmagan bo'lsa */
-  if (!orgSel.value) {
+  /* viloyat/tuman tanlanmagan bo'lsa */
+  if (!regRegionSel.value) { regRegionSel.classList.add('err'); if (!bad) bad = regRegionSel; }
+  if (!regDistrictSel.value) { regDistrictSel.classList.add('err'); if (!bad) bad = regDistrictSel; }
+  /* direktor bo'lsa, maktab tanlanmagan bo'lsa */
+  const isDirector = roleSel.value === 'direktor';
+  if (isDirector && !orgSel.value) {
     orgSel.classList.add('err');
     if (!bad) bad = orgSel;
   }
@@ -7747,8 +7823,10 @@ document.getElementById('regBtn').onclick = async () => {
       full_name: `${document.getElementById('rName').value.trim()} ${document.getElementById('rSur').value.trim()}`,
       phone: '+998' + document.getElementById('rTel').value.replace(/\D/g, ''),
       password: document.getElementById('rPw').value,
-      school_id: +orgSel.value,
+      role: roleSel.value,
+      district_id: +regDistrictSel.value,
     };
+    if (isDirector) payload.school_id = +orgSel.value;
 
     const data = await apiFetch('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) });
     localStorage.setItem('qp_token', data.access_token);
@@ -7756,6 +7834,9 @@ document.getElementById('regBtn').onclick = async () => {
 
     regFields.forEach(el => el.value = '');
     regSelects.forEach(sel => sel.selectedIndex = 0);
+    regDistrictSel.innerHTML = '<option value="">Avval viloyatni tanlang</option>';
+    orgSel.innerHTML = '<option value="">Avval tumanni tanlang</option>';
+    updateRegRoleUI();
     err.classList.remove('show');
     document.getElementById('regForm').style.display = 'none';
     document.getElementById('regDone').style.display = 'block';
@@ -7771,35 +7852,6 @@ document.getElementById('regBtn').onclick = async () => {
 };
 
 regSelects.forEach(sel => sel.addEventListener('change', () => sel.classList.remove('err')));
-
-/* Rolga qarab tashkilot maydoni o'zgaradi */
-const roleSel  = document.getElementById('rRole');
-const orgSel   = document.getElementById('rOrg');
-const orgLabel = document.getElementById('orgLabel');
-
-/* ============ Ro'yxatdan o'tish: haqiqiy maktablar ro'yxati ============ */
-let REAL_SCHOOLS = [];
-async function loadSchoolsForReg(){
-  if (!window.apiFetch) return;
-  try {
-    REAL_SCHOOLS = await apiFetch('/api/auth/schools') || [];
-  } catch (e) { REAL_SCHOOLS = []; }
-  const opts = ['<option value="">Maktabni tanlang</option>']
-    .concat(REAL_SCHOOLS.map(s => `<option value="${s.id}">${s.name}${s.district ? ' · ' + s.district : ''}</option>`));
-  orgSel.innerHTML = opts.join('');
-}
-loadSchoolsForReg();
-
-orgSel.addEventListener('change', () => {
-  orgSel.classList.remove('err');
-});
-
-roleSel.addEventListener('change', () => {
-  if (roleSel.value !== 'Maktab maslahatchisi') {
-    alert("Hozircha faqat \"Maktab maslahatchisi\" sifatida ro'yxatdan o'tish mumkin. Boshqa rollar tez orada qo'shiladi.");
-    roleSel.value = 'Maktab maslahatchisi';
-  }
-});
 
 
 document.getElementById('loginSubmit').onclick = async () => {
