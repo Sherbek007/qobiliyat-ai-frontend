@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelajak Maktab — Direktor paneli</title>
+<style>
+:root{
+  --primary:#4C2CE2; --primary-dark:#1B1440;
+  --primary-soft:#EEE9FE; --primary-soft-2:#F5F2FF;
+  --bg:#F7F7FC; --ink:#171543; --muted:#7A7A96;
+  --line:#E9E8F4; --line-2:#F1F0F9;
+  --green:#16A34A; --green-soft:#E9F8EF;
+  --amber:#E08A15; --amber-soft:#FEF4E4;
+  --red:#D6473C;   --red-soft:#FDECEB;
+  --blue:#2E86C8;  --blue-soft:#E8F1FE;
+  --r-sm:10px; --r-md:14px; --r-lg:18px;
+  --shadow:0 1px 2px rgba(23,21,67,.04), 0 6px 20px rgba(23,21,67,.045);
+  --header-h:70px; --sidebar-w:230px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:inherit;font-size:14px;color:var(--ink)}
+a{color:inherit;text-decoration:none}
+
+/* ===== LOGIN ===== */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center}
+#loginBox{background:#fff;border-radius:var(--r-lg);padding:40px;width:380px;box-shadow:var(--shadow)}
+#loginBox .brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+#loginBox .emblem{width:42px;height:42px;border-radius:12px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;flex-shrink:0}
+#loginBox .brand b{display:block;font-size:15px;font-weight:800}
+#loginBox .brand small{font-size:11.5px;color:var(--muted)}
+#loginBox h1{font-size:19px;font-weight:800;margin-bottom:4px}
+#loginBox p{color:var(--muted);font-size:13px;margin-bottom:22px}
+#loginBox label{font-size:12.5px;font-weight:700;display:block;margin:14px 0 6px;color:#5B5A7A}
+.field-inp{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);background:#fcfcfe}
+.field-inp:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+#loginErr{color:var(--red);font-size:12.5px;margin-top:14px;padding:11px 13px;background:var(--red-soft);border-radius:var(--r-sm);display:none}
+#loginErr.show{display:block}
+.phone-wrap{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--r-sm);background:#fcfcfe;overflow:hidden}
+.phone-wrap:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.phone-wrap .pfx{padding:11px 0 11px 13px;color:var(--muted);font-size:13.5px;font-weight:600}
+.phone-wrap input{border:none;flex:1;padding:11px 11px 11px 6px;background:none}
+.phone-wrap input:focus{outline:none}
+.pass-wrap{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--r-sm);background:#fcfcfe;overflow:hidden}
+.pass-wrap input{border:none;flex:1;padding:11px 13px;background:none}
+.pass-wrap input:focus{outline:none}
+.pass-wrap .eye{padding:0 13px;color:var(--muted);font-size:16px}
+.btn{padding:10px 18px;border-radius:var(--r-sm);font-size:13.5px;font-weight:700;border:1px solid var(--line);background:#fff}
+.btn:hover{background:var(--primary-soft-2)}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 6px 16px rgba(76,44,226,.22)}
+.btn-primary:hover{background:#3B1CC4}
+.btn-sm{padding:7px 13px;font-size:12.5px}
+
+/* ===== SHELL ===== */
+#appScreen{display:none}
+#appScreen.show{display:flex}
+.header{position:sticky;top:0;z-index:40;height:var(--header-h);background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:22px;padding:0 26px}
+.logo{display:flex;align-items:center;gap:12px;min-width:230px;flex-shrink:0}
+.emblem-sm{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#4C2CE2,#16A34A);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.logo .txt b{display:block;font-size:15px;font-weight:800;letter-spacing:-.2px}
+.logo .txt small{font-size:11px;color:var(--muted)}
+.search-box{flex:1;max-width:440px;display:flex;align-items:center;gap:9px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:9px 13px;color:var(--muted);position:relative}
+.search-box input{flex:1;background:none;border:none;font-size:13px;color:var(--ink)}
+.search-box input:focus{outline:none}
+.search-box .kbd{font-size:11px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--muted)}
+.hspacer{flex:1}
+.bell{position:relative;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.bell:hover{background:var(--bg)}
+.bell .dot{position:absolute;top:5px;right:6px;width:16px;height:16px;border-radius:50%;background:var(--red);color:#fff;font-size:9.5px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.hprofile{display:flex;align-items:center;gap:10px;cursor:pointer}
+.hprofile .ava{width:38px;height:38px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.hprofile b{font-size:13.5px;display:block}
+.hprofile small{font-size:11.5px;color:var(--muted)}
+.hprofile .chev{color:var(--muted);margin-left:2px}
+
+.shell{display:flex;width:100%}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:#fff;border-right:1px solid var(--line);position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));display:flex;flex-direction:column;padding:16px 14px 14px}
+.nav-item{display:flex;align-items:center;gap:13px;width:100%;padding:11px 14px;border-radius:12px;font-size:14px;font-weight:500;color:#5B5A7A;margin-bottom:2px;text-align:left}
+.nav-item:hover{background:var(--primary-soft-2);color:var(--ink)}
+.nav-item.active{background:var(--primary);color:#fff;font-weight:600;box-shadow:0 6px 16px rgba(76,44,226,.26)}
+.nav-item svg{width:19px;height:19px;flex-shrink:0;stroke-width:1.7}
+.school-card{margin-top:auto;background:var(--bg);border-radius:var(--r-md);padding:14px;border:1px solid var(--line)}
+.school-card .img{width:100%;height:76px;border-radius:10px;background:linear-gradient(135deg,#D9D2FA,#B9ACF3);display:flex;align-items:center;justify-content:center;color:var(--primary);margin-bottom:10px}
+.school-card b{font-size:12.5px;display:block;line-height:1.3}
+.school-card small{font-size:11px;color:var(--muted);display:block;margin-top:3px}
+
+.main{flex:1;min-width:0;padding:24px 26px 40px}
+.top-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;gap:16px;flex-wrap:wrap}
+.top-row h1{font-size:23px;font-weight:800}
+.top-row p{color:var(--muted);font-size:13px;margin-top:5px}
+.year-sel{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 14px;font-size:13px;font-weight:600;box-shadow:var(--shadow)}
+
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.kpi-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:flex-start}
+.kpi-ico{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;flex-shrink:0}
+.kpi-ico svg{width:22px;height:22px;stroke-width:1.8}
+.i-violet{background:var(--primary-soft);color:var(--primary)}
+.i-green{background:var(--green-soft);color:var(--green)}
+.i-blue{background:var(--blue-soft);color:var(--blue)}
+.i-amber{background:var(--amber-soft);color:var(--amber)}
+.i-red{background:var(--red-soft);color:var(--red)}
+.kpi-card .lbl{font-size:12.5px;color:var(--muted);font-weight:500}
+.kpi-card .val{font-size:24px;font-weight:800;margin:2px 0}
+.kpi-card .delta{font-size:11.5px;font-weight:700;color:var(--green);background:var(--green-soft);padding:1px 7px;border-radius:999px}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:20px}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.card-head b{font-size:15px;font-weight:700}
+.card-head .link{font-size:12.5px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:4px;cursor:pointer}
+.filter-sel{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 12px;font-size:12px;font-weight:600;color:#5B5A7A;position:relative}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;font-weight:700;padding:9px 8px;border-bottom:1px solid var(--line)}
+td{padding:11px 8px;font-size:13px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.idx-pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11.5px;font-weight:700}
+.pill-green{background:var(--green-soft);color:var(--green)}
+.pill-amber{background:var(--amber-soft);color:var(--amber)}
+.pill-red{background:var(--red-soft);color:var(--red)}
+.stu-name{display:flex;align-items:center;gap:9px}
+.stu-ava{width:26px;height:26px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;flex-shrink:0}
+.up-txt{color:var(--green);font-weight:600;font-size:12px}
+
+.bars{display:flex;align-items:flex-end;justify-content:space-between;height:190px;gap:8px;padding-top:22px;position:relative}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative}
+.bar-col .pct{font-size:11px;font-weight:700;color:#5B5A7A;position:absolute;top:-20px}
+.bar-col .fill{width:62%;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#8B6EF0,#6C4CE0)}
+.bar-col .lbl{font-size:10.5px;color:var(--muted);margin-top:8px}
+
+/* Xarita */
+.map-wrap{position:relative;height:300px;background:linear-gradient(180deg,#F0EEFC,#E8E4FA);border-radius:var(--r-md);overflow:hidden}
+.map-blob{position:absolute;fill:#DAD3F7;stroke:#C7BDF2;stroke-width:1.5}
+.map-dot{position:absolute;width:13px;height:13px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(23,21,67,.25);transform:translate(-50%,-50%)}
+.map-label{position:absolute;font-size:11px;font-weight:600;color:#3A3960;transform:translate(-50%,-120%);white-space:nowrap}
+.map-legend{position:absolute;top:14px;right:14px;background:#fff;border-radius:12px;padding:10px 14px;box-shadow:var(--shadow);font-size:11.5px}
+.map-legend .row{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.map-legend .row:last-child{margin-bottom:0}
+.map-legend .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+.impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.impact-card{border-radius:var(--r-lg);padding:16px;border:1px solid var(--line);background:#fff;box-shadow:var(--shadow)}
+.impact-card .ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:16px}
+.impact-card .val{font-size:22px;font-weight:800;color:var(--ink)}
+.impact-card .lbl{font-size:12px;color:var(--muted);margin-top:2px}
+
+.news-row{display:flex;align-items:flex-start;gap:11px;padding:10px 0;border-bottom:1px solid var(--line-2)}
+.news-row:last-child{border-bottom:none}
+.news-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.news-row .txt{flex:1;font-size:12.8px;color:#3A3960;line-height:1.4}
+.news-row .date{font-size:11px;color:var(--muted);white-space:nowrap;margin-left:8px}
+
+.empty{color:var(--muted);text-align:center;padding:30px;font-size:13px}
+.overlay{display:none;position:fixed;inset:0;background:rgba(23,21,67,.45);z-index:100;align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--r-lg);padding:26px;width:400px;box-shadow:0 20px 60px rgba(23,21,67,.2)}
+.modal h3{font-size:16px;font-weight:800;margin-bottom:18px}
+.modal label{font-size:12.5px;font-weight:700;display:block;margin:14px 0 7px;color:#5B5A7A}
+.modal .foot{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+#toastBox{position:fixed;bottom:24px;right:24px;z-index:300;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 10px 30px rgba(23,21,67,.25);animation:toastIn .2s ease-out}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.dd-panel{position:absolute;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(23,21,67,.14);z-index:200;overflow:hidden;display:none;min-width:170px}
+.dd-panel.open{display:block}
+.dd-item{padding:10px 15px;font-size:13px;font-weight:500;color:#3A3960;cursor:pointer}
+.dd-item:hover{background:var(--primary-soft-2)}
+.dd-sep{height:1px;background:var(--line);margin:4px 0}
+.bell-panel{position:absolute;top:56px;right:220px;width:320px}
+.bell-panel .dd-hd{padding:13px 16px;font-weight:700;font-size:13.5px;border-bottom:1px solid var(--line)}
+.bell-item{padding:11px 16px;border-bottom:1px solid var(--line-2);font-size:12.5px}
+.bell-item:last-child{border-bottom:none}
+.bell-item b{display:block;font-weight:600;font-size:12.5px}
+.bell-item span{color:var(--muted);font-size:11px}
+.profile-panel{position:absolute;top:56px;right:26px;width:190px}
+
+/* Maktablar sahifasi */
+.crumb{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.crumb b{color:var(--primary);font-weight:600}
+.page-head-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;gap:16px}
+.kpi-sm{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.kpi-sm .kpi-card{padding:15px}
+.kpi-sm .kpi-ico{width:40px;height:40px;border-radius:11px}
+.kpi-sm .val{font-size:21px}
+.filter-row2{display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.search-inp2{flex:1;min-width:200px;display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;color:var(--muted)}
+.search-inp2 input{flex:1;border:none;background:none;font-size:13px;color:var(--ink)}
+.search-inp2 input:focus{outline:none}
+.content-2col2{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:flex-start}
+.school-thumb{width:34px;height:34px;border-radius:8px;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;color:var(--primary);flex-shrink:0}
+.school-name-cell{display:flex;align-items:center;gap:10px}
+.status-dot2{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
+.icon-btn{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted)}
+.icon-btn:hover{background:var(--bg)}
+.page-footer{display:flex;justify-content:space-between;align-items:center;padding:16px 4px 0;font-size:12.5px;color:var(--muted)}
+.page-nums{display:flex;gap:6px;align-items:center}
+.page-nums button{width:30px;height:30px;border-radius:9px;font-size:12.5px;font-weight:600;color:#5B5A7A}
+.page-nums button:hover{background:var(--bg)}
+.page-nums button.cur{background:var(--primary);color:#fff}
+.side-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:18px;margin-bottom:16px}
+.side-card b{font-size:14px;font-weight:700;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.mini-map{position:relative;height:210px;background:linear-gradient(180deg,#F0EEFC,#E8E4FA);border-radius:var(--r-md);overflow:hidden}
+.mini-map-dot{position:absolute;width:11px;height:11px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(23,21,67,.25);transform:translate(-50%,-50%);cursor:pointer}
+.mini-map-tip{position:absolute;background:var(--primary-dark);color:#fff;padding:7px 12px;border-radius:9px;font-size:11px;white-space:nowrap;transform:translate(-50%,-135%);box-shadow:0 6px 16px rgba(23,21,67,.3)}
+.mini-map-tip:after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:8px;height:8px;background:var(--primary-dark);rotate:45deg}
+.mini-legend{display:flex;gap:14px;margin-top:10px;font-size:11px;color:var(--muted);flex-wrap:wrap}
+.mini-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+.dist-row2{display:flex;align-items:center;gap:10px;margin-bottom:11px;font-size:12px}
+.dist-row2 .lbl{width:80px;color:var(--muted);flex-shrink:0}
+.dist-row2 .track{flex:1;height:7px;background:var(--line-2);border-radius:4px;overflow:hidden}
+.dist-row2 .fill{height:100%;background:linear-gradient(90deg,#8B6EF0,#6C4CE0);border-radius:4px}
+.dist-row2 .num{width:24px;text-align:right;font-weight:700;color:var(--ink);flex-shrink:0}
+.cta-mini{background:var(--primary-soft-2);border-radius:var(--r-lg);padding:16px;display:flex;gap:12px;align-items:center;cursor:pointer}
+.cta-mini .ico{width:38px;height:38px;border-radius:10px;background:#fff;color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--shadow)}
+.cta-mini b{font-size:13px;display:block}
+.cta-mini span{font-size:11px;color:var(--muted);display:block;margin-top:2px}
+.mini-donut-wrap{display:flex;align-items:center;gap:16px}
+.mini-donut{position:relative;width:110px;height:110px;flex-shrink:0}
+.mini-donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.mini-donut-center b{font-size:19px;font-weight:800}
+.mini-donut-center small{font-size:10px;color:var(--muted)}
+.mini-legend2{display:flex;flex-direction:column;gap:9px}
+.mini-legend2 .row{display:flex;align-items:center;font-size:11.5px;color:#5B5A7A}
+.mini-legend2 .dot{width:8px;height:8px;border-radius:50%;margin-right:7px;flex-shrink:0}
+
+/* Tahlil va hisobotlar */
+.tabs-list2{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:var(--shadow)}
+.tab-item2{display:flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;font-size:13px;font-weight:600;color:#5B5A7A;cursor:pointer}
+.tab-item2.active{background:var(--primary-soft);color:var(--primary)}
+.grid-3b{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.line-chart-wrap2{position:relative;height:190px;margin-top:10px}
+.line-legend{display:flex;gap:16px;font-size:11.5px;color:#5B5A7A;margin-bottom:4px}
+.line-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+.impact-grid2{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.quick-rep-card2{border-radius:var(--r-md);padding:14px;display:flex;flex-direction:column;gap:8px;cursor:pointer}
+.quick-rep-card2:hover{transform:translateY(-1px)}
+.quick-rep-card2 .ico{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;background:#fff}
+.quick-rep-card2 b{font-size:11.5px;font-weight:700;line-height:1.3}
+
+/* Monitoring sahifasi */
+.gauge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:8px}
+.gauge-card{display:flex;flex-direction:column;align-items:center;text-align:center}
+.gauge-wrap{position:relative;width:110px;height:110px}
+.gauge-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gauge-center .ico2{font-size:16px;margin-bottom:2px}
+.gauge-center b{font-size:19px;font-weight:800}
+.gauge-card .lbl{font-size:12px;font-weight:700;color:var(--ink);margin-top:10px}
+.gauge-card .goal{font-size:11px;color:var(--muted);margin-top:2px}
+.map-zoom{position:absolute;bottom:14px;left:14px;display:flex;flex-direction:column;gap:2px;background:#fff;border-radius:10px;box-shadow:var(--shadow);overflow:hidden}
+.map-zoom button{width:32px;height:32px;font-size:16px;font-weight:700;color:#5B5A7A}
+.map-zoom button:hover{background:var(--bg)}
+.event-row{display:flex;align-items:flex-start;gap:11px;padding:10px 0;border-bottom:1px solid var(--line-2)}
+.event-row:last-child{border-bottom:none}
+.event-ico{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;color:#fff}
+.event-row .txt{flex:1;font-size:12.8px;color:#3A3960;line-height:1.4}
+.event-row .txt a{color:var(--primary);font-weight:600;text-decoration:underline}
+.event-row .date{font-size:11px;color:var(--muted);white-space:nowrap;margin-left:8px}
+
+/* ============ SOZLAMALAR ============ */
+.crumb2{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+.crumb2 b{color:var(--primary);font-weight:600;cursor:pointer}
+.settings-shell{display:grid;grid-template-columns:250px 1fr 300px;gap:16px;align-items:start}
+@media (max-width:1200px){.settings-shell{grid-template-columns:1fr}}
+.settings-nav-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:8px}
+.settings-nav-item{display:flex;gap:12px;align-items:flex-start;padding:11px 11px;border-radius:12px;cursor:pointer;margin-bottom:2px}
+.settings-nav-item:hover{background:var(--bg)}
+.settings-nav-item.active{background:var(--primary-soft)}
+.settings-nav-item .ico3{width:36px;height:36px;border-radius:10px;background:var(--bg);color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.settings-nav-item .ico3 svg{width:17px;height:17px;stroke-width:1.8}
+.settings-nav-item.active .ico3{background:#fff;color:var(--primary)}
+.settings-nav-item b{font-size:13px;font-weight:700;display:block;color:var(--ink)}
+.settings-nav-item.active b{color:var(--primary)}
+.settings-nav-item span{font-size:11.5px;color:var(--muted);display:block;margin-top:1px;line-height:1.3}
+.settings-main-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:14px;flex-wrap:wrap}
+.settings-main-head h2{font-size:19px;font-weight:800}
+.settings-main-head p{color:var(--muted);font-size:12.8px;margin-top:4px}
+.settings-sec{margin-bottom:24px}
+.settings-sec:last-child{margin-bottom:0}
+.settings-sec-title{font-size:14px;font-weight:700;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line-2)}
+.form-label{font-size:12.5px;font-weight:700;display:block;margin:0 0 6px;color:#5B5A7A}
+.form-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media (max-width:900px){.form-grid4{grid-template-columns:1fr 1fr}}
+textarea.field-inp{resize:vertical;min-height:64px;font-family:inherit}
+select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237A7A96' stroke-width='2.5'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding:11px 26px 11px 11px;cursor:pointer;font-size:12.8px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
+.form-grid4 select.field-inp{font-size:12.3px}
+.logo-box{display:flex;align-items:center;gap:14px}
+.logo-circle{width:84px;height:84px;border-radius:16px;background:linear-gradient(135deg,#4C2CE2,#16A34A);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-circle svg{width:34px;height:34px}
+.logo-box small{display:block;font-size:11px;color:var(--muted);margin-top:8px;max-width:170px}
+.toggle-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
+@media (max-width:900px){.toggle-grid{grid-template-columns:1fr}}
+.toggle-row2{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-2)}
+.toggle-row2:last-child{border-bottom:none}
+.toggle-row2 .ico6{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.toggle-row2 .ico6 svg{width:18px;height:18px;stroke-width:1.8}
+.toggle-row2 .txt2{flex:1;min-width:0}
+.toggle-row2 .txt2 b{font-size:13px;font-weight:700;display:block}
+.toggle-row2 .txt2 span{font-size:11.5px;color:var(--muted);display:block;margin-top:1px}
+.switch{width:42px;height:24px;border-radius:14px;background:var(--line);position:relative;flex-shrink:0;cursor:pointer;transition:.2s}
+.switch::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch.on{background:var(--green)}
+.switch.on::after{left:21px}
+.profile-card-ava{width:64px;height:64px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;margin:0 auto 12px}
+.info-row{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line-2)}
+.info-row:last-child{border-bottom:none}
+.info-row .ico4{width:32px;height:32px;border-radius:9px;background:var(--bg);color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.info-row .ico4 svg{width:15px;height:15px;stroke-width:1.8}
+.info-row .txt3{min-width:0;flex:1}
+.info-row .lbl2{font-size:10.5px;color:var(--muted);display:block}
+.info-row .val2{font-size:12.8px;font-weight:600;color:var(--ink);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qa-row{display:flex;align-items:center;gap:12px;padding:10px 8px;border-radius:12px;cursor:pointer;margin:0 -8px}
+.qa-row:hover{background:var(--bg)}
+.qa-row .ico5{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qa-row .ico5 svg{width:16px;height:16px;stroke-width:1.8}
+.qa-row b{font-size:12.8px;font-weight:600;display:block;color:var(--ink);flex:1}
+.qa-row .chev2{color:var(--muted);flex-shrink:0}
+.danger-card{border-color:var(--red-soft);background:#fffaf9}
+.danger-title{color:var(--red);font-weight:800;font-size:13.5px;margin-bottom:12px}
+.danger-row{display:flex;align-items:center;gap:12px;padding:6px 0;cursor:pointer}
+.danger-row .ico7{width:36px;height:36px;border-radius:10px;background:var(--red-soft);color:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.danger-row .ico7 svg{width:16px;height:16px;stroke-width:1.8}
+.danger-row b{font-size:12.8px;font-weight:700;color:var(--red);display:block}
+.danger-row span{font-size:11px;color:var(--muted);display:block;margin-top:1px}
+.danger-row .chev2{margin-left:auto;color:var(--red);flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div id="loginBox">
+    <div class="brand">
+      <div class="emblem">K</div>
+      <div><b>Kelajak Maktab</b><small>Yangi avlod — yangi imkoniyatlar</small></div>
+    </div>
+    <h1>Xush kelibsiz</h1>
+    <p>Hududingizdagi maktablarni kuzatish uchun kiring</p>
+    <label for="lPhone">Telefon raqam</label>
+    <div class="phone-wrap"><span class="pfx">+998</span><input id="lPhone" inputmode="numeric" maxlength="12" placeholder="90 123 45 67"></div>
+    <label for="lPass">Parol</label>
+    <div class="pass-wrap"><input id="lPass" type="password" placeholder="Parolingiz"><button type="button" class="eye" id="lEye">👁</button></div>
+    <button class="btn btn-primary" id="loginBtn" style="width:100%;margin-top:22px">Kirish</button>
+    <p id="loginErr"></p>
+  </div>
+</div>
+
+<div id="appScreen">
+  <div style="width:100%">
+    <div class="header">
+      <div class="logo">
+        <div class="emblem-sm">🎓</div>
+        <div class="txt"><b>KELAJAK MAKTAB</b><small>Yangi avlod — yangi imkoniyatlar</small></div>
+      </div>
+      <div class="search-box" id="searchBoxWrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input id="globalSearchInp" placeholder="Maktab, maslahatchi, tuman yoki hudud bo'yicha qidirish...">
+        <span class="kbd">Ctrl K</span>
+        <div class="dd-panel search-dd" id="searchDd" style="top:52px;left:0;right:0"></div>
+      </div>
+      <div class="hspacer"></div>
+      <div style="position:relative">
+        <button class="bell" id="bellBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="dot" id="bellDot">5</span></button>
+        <div class="dd-panel bell-panel" id="bellPanel">
+          <div class="dd-hd">Bildirishnomalar</div>
+          <div class="bell-item"><b>12-sonli maktabda yangi STEAM to'garagi ochildi</b><span>27.08.2025</span></div>
+          <div class="bell-item"><b>Maslahatchilar uchun onlayn seminar o'tkazildi</b><span>26.08.2025</span></div>
+          <div class="bell-item"><b>7-sonli maktabda o'quvchilar loyihasi g'olib bo'ldi</b><span>24.08.2025</span></div>
+        </div>
+      </div>
+      <div style="position:relative">
+        <div class="hprofile" id="profileBtn">
+          <div class="ava" id="avaIni">S</div>
+          <div><b id="hName">Direktor</b><small>Kelajak maktab direktori</small></div>
+          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="dd-panel profile-panel" id="profilePanel">
+          <div class="dd-item" data-view-link="settings">👤 Profilim</div>
+          <div class="dd-item" data-view-link="settings">⚙️ Sozlamalar</div>
+          <div class="dd-sep"></div>
+          <div class="dd-item" id="ddLogoutBtn" style="color:var(--red)">🚪 Chiqish</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toastBox"></div>
+
+    <div class="shell">
+      <div class="sidebar">
+        <button class="nav-item active" data-view="home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+          Bosh sahifa
+        </button>
+        <button class="nav-item" data-view="schools">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
+          Maktab
+        </button>
+        <button class="nav-item" data-view="advisors">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Maslahatchilar
+        </button>
+        <button class="nav-item" data-view="reports">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>
+          Tahlil va hisobotlar
+        </button>
+        <button class="nav-item" data-view="monitoring">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M18 17V9M13 17V5M8 17v-4"/></svg>
+          Monitoring
+        </button>
+        <button class="nav-item" data-view="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Sozlamalar
+        </button>
+
+        <div class="school-card">
+          <div class="img"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1"/></svg></div>
+          <b>Kelajak maktabi — kelajak jamiyati!</b>
+          <small>Ta'lim — taraqqiyot poydevori.</small>
+        </div>
+      </div>
+
+      <div class="main">
+        <!-- ============ BOSH SAHIFA ============ -->
+        <div id="view-home">
+          <div class="top-row">
+            <div><h1 id="welcomeH1">Xush kelibsiz!</h1><p>Kelajak maktablari faoliyati bo'yicha umumiy ko'rsatkichlar</p></div>
+            <div style="display:flex;gap:10px">
+              <div class="year-sel"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>2025-yil, 1-yan — 27-avg</div>
+              <button class="btn btn-primary" id="downloadReportBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" style="vertical-align:-2px;margin-right:6px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Hisobot yuklab olish</button>
+            </div>
+          </div>
+
+          <div class="kpi" id="kpiBox"></div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head"><b>Maktablar xaritasi</b><span class="link" data-view-link="schools">Barcha maktablar <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
+              <div class="map-wrap" id="mapWrap"></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><b>Maslahatchilar faoliyati samaradorligi</b><div class="filter-sel">Oylik bo'yicha <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div></div>
+              <div class="bars" id="barsBox"></div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head"><b>Maktablar reytingi</b><span class="link" data-view-link="schools">Barchasini ko'rish <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
+              <table>
+                <thead><tr><th>#</th><th>Maktab nomi</th><th>Tuman</th><th>O'quvchilar</th><th>O'rtacha natija</th><th>O'sish</th></tr></thead>
+                <tbody id="schoolRankBody"></tbody>
+              </table>
+            </div>
+            <div class="card">
+              <div class="card-head"><b>Maslahatchilar samaradorligi (TOP 5)</b><span class="link" data-view-link="advisors">Barchasini ko'rish <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
+              <table>
+                <thead><tr><th>#</th><th>Maslahatchi</th><th>Maktab</th><th>Natija</th><th>Ta'sir</th></tr></thead>
+                <tbody id="advisorRankBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-head"><b>Asosiy ta'sir ko'rsatkichlari</b></div>
+            <div class="impact-grid" id="impactBox"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><b>So'nggi yangiliklar</b><span class="link">Barchasi <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
+            <div id="newsBox"></div>
+          </div>
+        </div>
+
+        <!-- ============ MAKTAB (namuna) ============ -->
+        <div id="view-schools" style="display:none">
+          <div class="crumb">Bosh sahifa &gt; <b>Maktablar</b></div>
+          <div class="page-head-row">
+            <div><h1 style="font-size:23px;font-weight:800">Maktablar</h1>
+              <p style="color:var(--muted);font-size:13px;margin-top:5px">Viloyatlar va tumanlar kesimida barcha maktablar ro'yxati.</p></div>
+            <div style="display:flex;gap:10px;flex-shrink:0">
+              <div class="year-sel">Barcha viloyatlar <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+              <button class="btn btn-primary" id="addSchoolBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-right:6px"><path d="M12 5v14M5 12h14"/></svg>Yangi maktab qo'shish</button>
+            </div>
+          </div>
+
+          <div class="kpi-sm" id="schKpiBox"></div>
+
+          <div class="content-2col2">
+            <div>
+              <div class="filter-row2">
+                <div class="search-inp2"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="schoolSearchInp" placeholder="Maktab nomi yoki manzil bo'yicha qidirish..."></div>
+                <div class="filter-sel">Barcha viloyatlar <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+                <div class="filter-sel">Barcha tumanlar <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+                <div class="filter-sel">Barcha holatlar <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+                <button class="btn" style="display:flex;align-items:center;gap:7px;color:var(--primary);border-color:var(--primary-soft);background:var(--primary-soft-2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>Filtrlash</button>
+              </div>
+
+              <div class="card" style="padding:0">
+                <table>
+                  <thead><tr><th style="padding-left:20px">#</th><th>Maktab nomi</th><th>Viloyat</th><th>Tuman</th><th>O'quvchilar</th><th>Maslahatchi</th><th>O'rtacha natija</th><th>Holat</th><th style="padding-right:20px">Amallar</th></tr></thead>
+                  <tbody id="schoolsFullBody"></tbody>
+                </table>
+                <div class="page-footer">
+                  <span id="schCountTxt">Jami 0 ta maktab</span>
+                  <div class="page-nums"><button>&lt;</button><button class="cur">1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>&gt;</button></div>
+                  <span>Sahifada: 10 ▾</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="side-card">
+                <b>Maktablar hudud xaritasi</b>
+                <div class="mini-map" id="miniMapBox"></div>
+                <div class="mini-legend">
+                  <span><span class="dot" style="background:#16A34A"></span>Faol (44)</span>
+                  <span><span class="dot" style="background:#E08A15"></span>Ehtiyoj (3)</span>
+                  <span><span class="dot" style="background:#D6473C"></span>Faol emas (1)</span>
+                </div>
+              </div>
+
+              <div class="side-card">
+                <b>Viloyatlar kesimida <a href="#" style="color:var(--primary);font-size:12px">Barchasini ko'rish &rarr;</a></b>
+                <div id="regionDistBox"></div>
+              </div>
+
+              <div class="cta-mini">
+                <span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5z"/></svg></span>
+                <div><b>Maktab ma'lumotlarini yangilab boring</b><span>Aniq ma'lumot — samarali boshqaruv.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ MASLAHATCHILAR (namuna) ============ -->
+        <div id="view-advisors" style="display:none">
+          <div class="crumb">Bosh sahifa &gt; <b>Maslahatchilar</b></div>
+          <div class="page-head-row">
+            <div><h1 style="font-size:23px;font-weight:800">Maslahatchilar</h1>
+              <p style="color:var(--muted);font-size:13px;margin-top:5px">Barcha maktablardagi maslahatchilar faoliyati va natijalari.</p></div>
+            <div style="display:flex;gap:10px;flex-shrink:0">
+              <div class="year-sel"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>2025-yil, 1-yan — 31-avg</div>
+            </div>
+          </div>
+
+          <div class="kpi-sm" id="advKpiBox"></div>
+
+          <div class="content-2col2">
+            <div>
+              <div class="filter-row2">
+                <div class="search-inp2"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input placeholder="Ism, maktab yoki tuman bo'yicha qidirish..."></div>
+                <div class="filter-sel">Barcha viloyatlar <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+                <div class="filter-sel">Barcha tumanlar <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+                <div class="filter-sel">Faoliyat holati <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+                <button class="btn" style="display:flex;align-items:center;gap:7px;color:var(--primary);border-color:var(--primary-soft);background:var(--primary-soft-2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>Filtrlash</button>
+              </div>
+
+              <div class="card" style="padding:0">
+                <table>
+                  <thead><tr><th style="padding-left:20px">#</th><th>Maslahatchi</th><th>Maktab</th><th>Viloyat / Tuman</th><th>O'quvchilar soni</th><th>Samaradorlik</th><th>Holat</th><th style="padding-right:20px">Amallar</th></tr></thead>
+                  <tbody id="advisorsFullBody"></tbody>
+                </table>
+                <div class="page-footer">
+                  <span id="advCountTxt">Jami 0 ta maslahatchi</span>
+                  <div class="page-nums"><button>&lt;</button><button class="cur">1</button><button>2</button><button>4</button><button>5</button><button>&gt;</button></div>
+                  <span>Sahifada: 10 ▾</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="side-card">
+                <b>Maslahatchilar samaradorligi <span class="filter-sel" style="padding:4px 10px;font-size:11px">Barcha viloyatlar <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span></b>
+                <div class="bars" id="advBarsBox" style="height:150px"></div>
+              </div>
+              <div class="side-card">
+                <b>Maktablar bo'yicha maslahatchilar soni <span class="filter-sel" style="padding:4px 10px;font-size:11px">Top 5 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span></b>
+                <div id="advRegionDistBox"></div>
+              </div>
+              <div class="side-card">
+                <b>Faoliyat holati</b>
+                <div class="mini-donut-wrap">
+                  <div class="mini-donut"><svg id="advDonutSvg" viewBox="0 0 42 42" width="110" height="110"></svg>
+                    <div class="mini-donut-center"><b id="advDonutTotal">96</b><small>jami</small></div>
+                  </div>
+                  <div class="mini-legend2" id="advLegendBox"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="quote-banner" style="margin-top:16px;background:var(--primary-soft-2);border:1px solid var(--primary-soft);border-radius:var(--r-lg);padding:20px 24px;display:flex;align-items:center;gap:16px;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:14px">
+              <span style="width:44px;height:44px;border-radius:12px;background:#fff;color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--shadow)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></span>
+              <div><b style="font-size:14.5px;display:block">Maslahatchilar — maktab taraqqiyotining muhim bo'g'ini!</b>
+                <span style="font-size:12.5px;color:#5B5A7A;display:block;margin-top:2px">Ularning samarali faoliyati o'quvchilarning bilim sifati, tarbiyasi va maktab muhitiga ijobiy ta'sir ko'rsatadi.</span></div>
+            </div>
+            <button class="btn btn-primary">Batafsil tahlilni ko'rish <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-left:4px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+
+        <!-- ============ TAHLIL VA HISOBOTLAR ============ -->
+        <div id="view-reports" style="display:none">
+          <div class="crumb">Bosh sahifa &gt; <b>Tahlil va hisobotlar</b></div>
+          <div class="page-head-row">
+            <div><h1 style="font-size:23px;font-weight:800">Tahlil va hisobotlar</h1>
+              <p style="color:var(--muted);font-size:13px;margin-top:5px">Maktablar va maslahatchilar faoliyati bo'yicha tahliliy ma'lumotlar.</p></div>
+            <div style="display:flex;gap:10px;flex-shrink:0">
+              <div class="year-sel">2025-yil <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+              <div class="year-sel">Barcha hududlar <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+              <div class="year-sel">Barcha maktablar <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+              <button class="btn btn-primary" id="downloadReportBtn2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" style="vertical-align:-2px;margin-right:6px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Hisobot yuklab olish</button>
+            </div>
+          </div>
+
+          <div class="kpi-sm" id="repKpiBox2"></div>
+
+          <div class="tabs-list2">
+            <span class="tab-item2 active">📊 Umumiy tahlil</span>
+            <span class="tab-item2">🏫 Maktablar kesimida</span>
+            <span class="tab-item2">👥 Maslahatchilar kesimida</span>
+            <span class="tab-item2">📍 Hududlar kesimida</span>
+            <span class="tab-item2">🎓 O'quvchilar ko'rsatkichlari</span>
+            <span class="tab-item2">📄 Hisobotlar</span>
+          </div>
+
+          <div class="grid-3b">
+            <div class="card">
+              <div class="card-head"><b>Asosiy ko'rsatkichlar dinamikasi</b><div class="filter-sel">Oylar bo'yicha <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div></div>
+              <div class="line-legend">
+                <span><span class="dot" style="background:#6C4CE0"></span>O'quvchilar soni</span>
+                <span><span class="dot" style="background:#16A34A"></span>Maslahatchilar faolligi</span>
+                <span><span class="dot" style="background:#2E86C8"></span>Maktablar samaradorligi</span>
+              </div>
+              <div class="line-chart-wrap2"><svg id="multiLineSvg" width="100%" height="190" viewBox="0 0 400 190" preserveAspectRatio="none"></svg></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><b>Maktablar faoliyati toifalar bo'yicha</b></div>
+              <div class="mini-donut-wrap" style="flex-direction:column;gap:14px">
+                <div class="mini-donut" style="width:130px;height:130px"><svg id="catDonutSvg" viewBox="0 0 42 42" width="130" height="130"></svg>
+                  <div class="mini-donut-center"><b id="catDonutTotal">48</b><small>maktab</small></div>
+                </div>
+                <div class="mini-legend2" id="catLegendBox" style="width:100%"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><b>Maslahatchilar samaradorligi</b><div class="filter-sel">Top 5 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div></div>
+              <div id="repRegionBox"></div>
+            </div>
+          </div>
+
+          <div class="content-2col2" style="grid-template-columns:1fr 360px">
+            <div class="card" style="padding:0">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px 0">
+                <b style="font-size:15px;font-weight:700">So'nggi hisobotlar</b>
+                <a href="#" style="color:var(--primary);font-size:12.5px;font-weight:700">Barchasini ko'rish &rarr;</a>
+              </div>
+              <table style="margin-top:12px">
+                <thead><tr><th style="padding-left:20px">#</th><th>Hisobot nomi</th><th>Davr</th><th>Qamrov</th><th>Holat</th><th style="padding-right:20px">Amallar</th></tr></thead>
+                <tbody id="recentReportsBody2"></tbody>
+              </table>
+            </div>
+            <div class="side-card">
+              <b>Tezkor hisobotlar</b>
+              <div class="impact-grid2" id="quickRepBox2" style="grid-template-columns:1fr 1fr"></div>
+            </div>
+          </div>
+
+          <div class="quote-banner" style="margin-top:16px;background:var(--primary-soft-2);border:1px solid var(--primary-soft);border-radius:var(--r-lg);padding:20px 24px;display:flex;align-items:center;gap:16px;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:14px">
+              <span style="width:44px;height:44px;border-radius:12px;background:#fff;color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--shadow)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></span>
+              <div><b style="font-size:14.5px;display:block">Ma'lumotlar asosida yanada yaxshi natijalarga erishamiz!</b>
+                <span style="font-size:12.5px;color:#5B5A7A;display:block;margin-top:2px">Tahlillar maktablarda ta'lim sifati va maslahatchilar faoliyatini yanada samarali tashkil etish imkonini beradi.</span></div>
+            </div>
+            <button class="btn btn-primary">To'liq tahlilni ko'rish <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-left:4px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+
+        <!-- ============ MONITORING ============ -->
+        <div id="view-monitoring" style="display:none">
+          <div class="crumb">Bosh sahifa &gt; <b>Monitoring</b></div>
+          <div class="page-head-row">
+            <div><h1 style="font-size:23px;font-weight:800">Monitoring</h1>
+              <p style="color:var(--muted);font-size:13px;margin-top:5px">Maktablar va maslahatchilar faoliyatini real vaqtda kuzatish va nazorat qilish.</p></div>
+            <div style="display:flex;gap:10px;flex-shrink:0">
+              <div class="year-sel"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>2025-yil, 1-yan &mdash; 31-avg</div>
+              <div class="year-sel">Barcha viloyatlar <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+              <button class="btn btn-primary" id="downloadReportBtn3"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" style="vertical-align:-2px;margin-right:6px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Hisobot yuklab olish</button>
+            </div>
+          </div>
+
+          <div class="kpi-sm" id="monKpiBox"></div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head"><b>Maktablar holati xaritada</b><span class="link" data-view-link="schools">Barcha maktablar <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
+              <div class="map-wrap" id="monMapWrap" style="height:280px"></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><b>Monitoring ko'rsatkichlari</b><div class="filter-sel">Tizim bo'yicha <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div></div>
+              <div class="gauge-grid" id="gaugeBox"></div>
+            </div>
+          </div>
+
+          <div class="content-2col2" style="grid-template-columns:1fr 400px">
+            <div class="card" style="padding:0">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px 0">
+                <b style="font-size:15px;font-weight:700">Maktablar monitoringi</b>
+                <a href="#" style="color:var(--primary);font-size:12.5px;font-weight:700">Barcha maktablar &rarr;</a>
+              </div>
+              <table style="margin-top:12px">
+                <thead><tr><th style="padding-left:20px">#</th><th>Maktab nomi</th><th>Viloyat / Tuman</th><th>Maslahatchi</th><th>Umumiy baho</th><th>Holat</th><th style="padding-right:20px">Amallar</th></tr></thead>
+                <tbody id="monTableBody"></tbody>
+              </table>
+            </div>
+            <div class="side-card" style="margin-bottom:0">
+              <b>So'nggi monitoring voqealari <a href="#" style="color:var(--primary);font-size:12px">Barchasi &rarr;</a></b>
+              <div id="eventsBox"></div>
+            </div>
+          </div>
+
+          <div class="quote-banner" style="margin-top:16px;background:var(--primary-soft-2);border:1px solid var(--primary-soft);border-radius:var(--r-lg);padding:20px 24px;display:flex;align-items:center;gap:16px;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:14px">
+              <span style="width:44px;height:44px;border-radius:12px;background:#fff;color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--shadow)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></span>
+              <div><b style="font-size:14.5px;display:block">Muntazam monitoring &mdash; samarali ta'lim garovi!</b>
+                <span style="font-size:12.5px;color:#5B5A7A;display:block;margin-top:2px">Maktablar va maslahatchilar faoliyatini doimiy kuzatish orqali ijobiy o'zgarishlarga erishamiz.</span></div>
+            </div>
+            <button class="btn btn-primary">Batafsil tahlilni ko'rish <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-left:4px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+
+        <!-- ============ SOZLAMALAR ============ -->
+        <div id="view-settings" style="display:none">
+          <div class="crumb2"><b data-view-link="home">Bosh sahifa</b> &rsaquo; Sozlamalar</div>
+          <div class="top-row"><div><h1>Sozlamalar</h1><p>Tizim parametrlari, foydalanuvchilar, bildirishnomalar va boshqa sozlamalarni boshqaring.</p></div></div>
+
+          <div class="settings-shell">
+            <!-- Chap: sozlamalar menyusi -->
+            <div class="settings-nav-card" id="settingsNavCard">
+              <div class="settings-nav-item active" data-settings-tab="umumiy">
+                <span class="ico3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+                <div><b>Umumiy sozlamalar</b><span>Asosiy tizim parametrlari</span></div>
+              </div>
+              <div class="settings-nav-item" data-settings-tab="xavfsizlik">
+                <span class="ico3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/></svg></span>
+                <div><b>Ma'lumotlar xavfsizligi</b><span>Parol, kirish va xavfsizlik</span></div>
+              </div>
+              <div class="settings-nav-item" data-settings-tab="parametrlar">
+                <span class="ico3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg></span>
+                <div><b>Tizim parametrlari</b><span>Qo'shimcha imkoniyatlar</span></div>
+              </div>
+              <div class="settings-nav-item" data-settings-tab="integratsiya">
+                <span class="ico3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.07 0l1.93-1.93a5 5 0 00-7.07-7.07L10.5 5.5"/><path d="M14 11a5 5 0 00-7.07 0L5 12.93a5 5 0 007.07 7.07L13.5 18.5"/></svg></span>
+                <div><b>Integratsiyalar</b><span>Tashqi xizmatlar bilan ulash</span></div>
+              </div>
+              <div class="settings-nav-item" data-settings-tab="haqida">
+                <span class="ico3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+                <div><b>Tizim haqida</b><span>Versiya va texnik ma'lumotlar</span></div>
+              </div>
+            </div>
+
+            <!-- O'rta: aktiv bo'lim tarkibi -->
+            <div class="card" id="settingsMainCard">
+              <div class="settings-main-head">
+                <div><h2 id="settingsMainTitle">Umumiy sozlamalar</h2><p id="settingsMainSub">Tizimning asosiy parametrlari va ko'rsatkichlari.</p></div>
+                <div style="display:flex;gap:10px" id="settingsMainActions">
+                  <button class="btn" id="settingsResetBtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:5px"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>O'zgarishlarni qayta tiklash</button>
+                  <button class="btn btn-primary" id="settingsSaveBtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:5px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Saqlash</button>
+                </div>
+              </div>
+
+              <div id="settingsTabBody">
+                <!-- Umumiy sozlamalar tarkibi -->
+                <div id="settingsPane-umumiy">
+                  <div class="settings-sec">
+                    <div class="settings-sec-title">Tashkilot ma'lumotlari</div>
+                    <div class="form-grid2">
+                      <div>
+                        <label class="form-label">Tizim nomi</label>
+                        <input class="field-inp" id="setOrgName" value="Kelajak Maktab" style="margin-bottom:14px">
+                        <label class="form-label">Tizim tavsifi</label>
+                        <textarea class="field-inp" id="setOrgDesc">Yangi avlod — yangi imkoniyatlar</textarea>
+                      </div>
+                      <div>
+                        <label class="form-label">Logotip</label>
+                        <div class="logo-box">
+                          <div class="logo-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1"/></svg></div>
+                          <div>
+                            <button class="btn btn-sm" id="setLogoBtn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:4px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>Rasmni o'zgartirish</button>
+                            <small>Tavsiya etilgan o'lcham: 200x200 px. PNG, JPG (maks. 2MB)</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="settings-sec">
+                    <div class="settings-sec-title">Hududiy sozlamalar</div>
+                    <div style="max-width:260px">
+                      <label class="form-label">Til</label>
+                      <select class="field-inp" id="setLang"><option>O'zbekcha</option><option>Русский</option><option>English</option></select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Boshqa bo'limlar uchun vaqtinchalik joy -->
+                <div id="settingsPane-other" style="display:none">
+                  <p class="empty" id="settingsOtherTxt">Bu bo'lim tez orada qo'shiladi.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- O'ng: profil va tezkor amallar -->
+            <div>
+              <div class="card" style="margin-bottom:16px">
+                <div class="card-head"><b>Joriy foydalanuvchi</b><span class="link" id="settingsEditProfileBtn">Profilni tahrirlash</span></div>
+                <div style="text-align:center;margin-bottom:8px">
+                  <div class="profile-card-ava" id="settingsAva">S</div>
+                  <b style="font-size:15px;display:block" id="settingsName">Direktor</b>
+                  <span style="font-size:12px;color:var(--muted)">Kelajak maktab direktori</span>
+                </div>
+                <div style="margin-top:14px">
+                  <div class="info-row"><span class="ico4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z" opacity="0"/><path d="M22 6l-10 7L2 6"/><path d="M2 6h20v12H2z"/></svg></span><div class="txt3"><span class="lbl2">Email</span><span class="val2" id="settingsEmail">&mdash;</span></div></div>
+                  <div class="info-row"><span class="ico4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.68 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.32 1.85.55 2.81.68A2 2 0 0122 16.92z"/></svg></span><div class="txt3"><span class="lbl2">Telefon</span><span class="val2" id="settingsPhone">&mdash;</span></div></div>
+                  <div class="info-row"><span class="ico4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg></span><div class="txt3"><span class="lbl2">Tashkilot</span><span class="val2">Kelajak maktab</span></div></div>
+                  <div class="info-row"><span class="ico4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><div class="txt3"><span class="lbl2">Vazifa</span><span class="val2" id="settingsRole">Direktor</span></div></div>
+                  <div class="info-row"><span class="ico4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><div class="txt3"><span class="lbl2">So'nggi kirish</span><span class="val2" id="settingsLastLogin">&mdash;</span></div></div>
+                </div>
+              </div>
+
+              <div class="card" style="margin-bottom:16px">
+                <div class="card-head"><b>Tezkor amallar</b></div>
+                <div class="qa-row" id="qaChangePass"><span class="ico5 i-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></span><b>Parolni o'zgartirish</b><svg class="chev2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></div>
+                <div class="qa-row" id="qaManageUsers"><span class="ico5 i-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><b>Foydalanuvchilarni boshqarish</b><svg class="chev2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></div>
+                <div class="qa-row" id="qaBackup"><span class="ico5 i-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span><b>Ma'lumotlar zaxirasini yaratish</b><svg class="chev2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></div>
+                <div class="qa-row" id="qaRestore"><span class="ico5 i-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg></span><b>Zaxiradan tiklash</b><svg class="chev2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="assignDirModal">
+  <div class="modal">
+    <h3 id="assignDirTitle">Maktab direktorini tayinlash</h3>
+    <label for="assignDirSelect">Direktor tanlang</label>
+    <select id="assignDirSelect" class="field-inp" style="width:100%"></select>
+    <div class="foot">
+      <button class="btn" id="assignDirCancelBtn">Bekor qilish</button>
+      <button class="btn btn-primary" id="assignDirSaveBtn">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<script>
+window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-backend-production.up.railway.app';
+
+async function apiFetch(path, options){
+  options = options || {};
+  const token = localStorage.getItem('qp_kelajak_token');
+  const headers = Object.assign({ 'Content-Type': 'application/json' }, token ? { 'Authorization': 'Bearer ' + token } : {}, options.headers || {});
+  let res;
+  try { res = await fetch(window.API_BASE + path, Object.assign({}, options, { headers })); }
+  catch (e) { const err = new Error("Serverga ulanib bo'lmadi"); err.isNetworkError = true; throw err; }
+  if (res.status === 401 || res.status === 403) {
+    let detail = 'Ruxsat yo\u2018q yoki sessiya tugagan';
+    try { const j = await res.json(); detail = j.detail || detail; } catch(e){}
+    const err = new Error(detail); err.isAuthError = true; err.status = res.status; throw err;
+  }
+  if (!res.ok) {
+    let detail = 'Xatolik yuz berdi';
+    try { const j = await res.json(); detail = j.detail || detail; } catch(e){}
+    const err = new Error(detail); err.status = res.status; throw err;
+  }
+  if (res.status === 204) return null;
+  return res.json();
+}
+
+const loginScreen = document.getElementById('loginScreen');
+const appScreen = document.getElementById('appScreen');
+const loginErr = document.getElementById('loginErr');
+
+function bindPhoneMask(input){
+  input.addEventListener('input', function(){
+    let v = this.value.replace(/\D/g, '').slice(0, 9);
+    let out = v;
+    if (v.length > 7) out = v.slice(0,2) + ' ' + v.slice(2,5) + ' ' + v.slice(5,7) + ' ' + v.slice(7);
+    else if (v.length > 5) out = v.slice(0,2) + ' ' + v.slice(2,5) + ' ' + v.slice(5);
+    else if (v.length > 2) out = v.slice(0,2) + ' ' + v.slice(2);
+    this.value = out;
+  });
+}
+bindPhoneMask(document.getElementById('lPhone'));
+function fullPhone(input){ return '+998' + input.value.replace(/\D/g, ''); }
+function phoneValid(input){ return input.value.replace(/\D/g, '').length === 9; }
+document.getElementById('lEye').onclick = () => {
+  const inp = document.getElementById('lPass');
+  const open = inp.type === 'password';
+  inp.type = open ? 'text' : 'password';
+  document.getElementById('lEye').textContent = open ? '\ud83d\ude48' : '\ud83d\udc41';
+};
+
+document.getElementById('loginBtn').onclick = async () => {
+  const phoneInput = document.getElementById('lPhone');
+  const pass = document.getElementById('lPass').value;
+  if (!phoneValid(phoneInput) || !pass) { showLoginErr("Telefon va parolni to'g'ri kiriting."); return; }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Tekshirilmoqda...';
+  try {
+    const data = await apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ phone: fullPhone(phoneInput), password: pass }) });
+    if (data.user.role !== 'kelajak_direktor') { showLoginErr("Bu hisob Kelajak Markazi direktori sifatida ro'yxatga olinmagan."); return; }
+    localStorage.setItem('qp_kelajak_token', data.access_token);
+    localStorage.setItem('qp_kelajak_user', JSON.stringify(data.user));
+    startApp();
+  } catch (e) {
+    showLoginErr(e.isNetworkError ? "Serverga ulanib bo'lmadi." : (e.message || "Telefon yoki parol noto'g'ri."));
+  } finally {
+    btn.disabled = false; btn.textContent = 'Kirish';
+  }
+};
+function showLoginErr(msg){ loginErr.textContent = msg; loginErr.classList.add('show'); }
+
+document.getElementById('ddLogoutBtn').onclick = () => {
+  localStorage.removeItem('qp_kelajak_token');
+  appScreen.classList.remove('show');
+  loginScreen.style.display = 'flex';
+};
+
+function startApp(){
+  loginScreen.style.display = 'none';
+  appScreen.classList.add('show');
+  const u = JSON.parse(localStorage.getItem('qp_kelajak_user') || '{}');
+  if (u.full_name) {
+    document.getElementById('hName').textContent = u.full_name;
+    document.getElementById('welcomeH1').textContent = 'Xush kelibsiz, ' + u.full_name + '!';
+    document.getElementById('avaIni').textContent = u.full_name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  }
+  fillSettingsProfile(u);
+  loadOverview();
+  loadSchools();
+  renderSampleWidgets();
+}
+
+document.querySelectorAll('.nav-item[data-view]').forEach(b => b.onclick = () => switchView(b.dataset.view));
+document.querySelectorAll('[data-view-link]').forEach(b => b.onclick = () => switchView(b.dataset.viewLink));
+function switchView(view){
+  document.querySelectorAll('.nav-item[data-view]').forEach(x => x.classList.toggle('active', x.dataset.view === view));
+  ['home','schools','advisors','reports','monitoring','settings'].forEach(v => {
+    document.getElementById('view-' + v).style.display = v === view ? 'block' : 'none';
+  });
+}
+
+function kpiCard(icoClass, iconSvg, label, value, delta){
+  return `<div class="kpi-card"><span class="kpi-ico ${icoClass}">${iconSvg}</span>
+    <div><div class="lbl">${label}</div><div class="val">${value}</div>${delta ? `<span class="delta">\u2191 ${delta}</span>` : ''}</div></div>`;
+}
+
+let SCHOOLS = [];
+async function loadOverview(){
+  try {
+    const d = await apiFetch('/api/kelajak-direktor/overview');
+    document.getElementById('kpiBox').innerHTML =
+      kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>', 'Jami maktablar', d.school_count, '2') +
+      kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', 'Maslahatchilar soni', 96, '5') +
+      kpiCard('i-blue', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', "Jami o'quvchilar", d.student_count, '3%') +
+      kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>', "O'rtacha natija", (d.avg_grade ? Math.round(d.avg_grade*10) : 0) + '%', '6%');
+  } catch (e) { console.warn(e.message); }
+}
+
+async function loadSchools(){
+  try {
+    const res = await apiFetch('/api/kelajak-direktor/schools');
+    SCHOOLS = res.schools || [];
+  } catch (e) { console.warn(e.message); SCHOOLS = []; }
+  renderMap();
+  renderSchoolRank();
+}
+
+function renderMap(){
+  const districts = [
+    { name: 'Namangan', x: 42, y: 22 }, { name: 'Pop', x: 52, y: 40, dot: true, big: true },
+    { name: 'Chortoq', x: 78, y: 30 }, { name: 'Uychi', x: 45, y: 52 },
+    { name: 'Kosonsoy', x: 68, y: 55 }, { name: 'Chust', x: 20, y: 62 }, { name: 'Mingbuloq', x: 48, y: 78 },
+  ];
+  const dots = [
+    { x: 12, y: 38, c: 'green' }, { x: 30, y: 20, c: 'amber' }, { x: 65, y: 18, c: 'amber' },
+    { x: 20, y: 45, c: 'green' }, { x: 40, y: 45, c: 'red' }, { x: 60, y: 45, c: 'red' },
+    { x: 40, y: 70, c: 'amber' }, { x: 58, y: 80, c: 'red' },
+  ];
+  const colorMap = { green: '#16A34A', amber: '#E08A15', red: '#D6473C' };
+  const wrap = document.getElementById('mapWrap');
+  let html = '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">' +
+    '<path d="M8,25 Q20,8 45,10 Q75,8 90,25 Q95,45 85,65 Q75,88 50,92 Q25,90 12,68 Q3,48 8,25 Z" fill="#DAD3F7" stroke="#C7BDF2" stroke-width="0.6"/></svg>';
+  districts.forEach(d => {
+    html += `<span class="map-label" style="left:${d.x}%;top:${d.y}%">${d.name}</span>`;
+    if (d.dot) html += `<span class="map-dot" style="left:${d.x}%;top:${d.y}%;background:${PRIMARY_C}"></span>`;
+  });
+  dots.forEach(d => {
+    html += `<span class="map-dot" style="left:${d.x}%;top:${d.y}%;background:${colorMap[d.c]}"></span>`;
+  });
+  html += `<div class="map-legend">
+    <div class="row"><span class="dot" style="background:#16A34A"></span>Yuqori samaradorlik</div>
+    <div class="row"><span class="dot" style="background:#E08A15"></span>O'rta samaradorlik</div>
+    <div class="row"><span class="dot" style="background:#D6473C"></span>Past samaradorlik</div>
+  </div>`;
+  wrap.innerHTML = html;
+}
+const PRIMARY_C = '#4C2CE2';
+
+function renderSchoolRank(){
+  const ranked = [...SCHOOLS].sort((a,b) => (b.avg_grade||0)-(a.avg_grade||0)).slice(0,5);
+  const rows = ranked.length ? ranked : SAMPLE_SCHOOLS;
+  document.getElementById('schoolRankBody').innerHTML = rows.map((s, i) => {
+    const pct = s.avg_grade ? Math.round(s.avg_grade*10) : s.pct;
+    const pillClass = pct >= 85 ? 'pill-green' : pct >= 70 ? 'pill-amber' : 'pill-red';
+    return `<tr><td>${i+1}</td><td>${s.name}</td><td>${s.district || '\u2014'}</td><td>${s.student_count || s.students}</td>
+      <td><span class="idx-pill ${pillClass}">${pct}%</span></td><td class="up-txt">\u2191 ${s.growth || (5+i)}%</td></tr>`;
+  }).join('');
+
+  renderSchoolsPage();
+}
+
+const SAMPLE_SCHOOLS = [
+  { name: '12-sonli umumiy o\u2018rta ta\u2019lim maktabi', region: 'Namangan', district: 'Pop', students: 582, advisor: 'Aliyeva M.', pct: 92, status: 'Faol', growth: 8 },
+  { name: '7-sonli maktab', region: 'Namangan', district: 'Pop', students: 516, advisor: 'Karimov A.', pct: 87, status: 'Faol', growth: 6 },
+  { name: '25-sonli maktab', region: 'Namangan', district: 'Chortoq', students: 498, advisor: 'Ismoilova D.', pct: 84, status: 'Faol', growth: 5 },
+  { name: '11-sonli maktab', region: 'Namangan', district: 'Namangan', students: 612, advisor: 'Nosirov S.', pct: 81, status: 'Ehtiyoj', growth: 4 },
+  { name: '3-sonli maktab', region: 'Namangan', district: 'Uychi', students: 467, advisor: 'Abdullayeva S.', pct: 78, status: 'Ehtiyoj', growth: 7 },
+  { name: '9-sonli maktab', region: 'Andijon', district: 'Asaka', students: 503, advisor: 'Tursunova N.', pct: 76, status: 'Faol', growth: 3 },
+  { name: '14-sonli maktab', region: 'Andijon', district: 'Marhamat', students: 489, advisor: 'Saidov B.', pct: 69, status: 'Faol', growth: 2 },
+  { name: '5-sonli maktab', region: 'Farg\u2018ona', district: 'Qo\u2018qon', students: 721, advisor: 'Raxmonova Z.', pct: 88, status: 'Faol', growth: 9 },
+  { name: '22-sonli maktab', region: 'Farg\u2018ona', district: 'Beshariq', students: 395, advisor: 'Xolmatov J.', pct: 73, status: 'Ehtiyoj', growth: 1 },
+  { name: '1-sonli maktab', region: 'Toshkent', district: 'Chirchiq', students: 648, advisor: 'To\u2018xtayeva G.', pct: 90, status: 'Faol', growth: 6 },
+];
+const REGION_DIST = [
+  { name: 'Namangan', n: 12 }, { name: 'Andijon', n: 8 }, { name: 'Farg\u2018ona', n: 7 },
+  { name: 'Toshkent', n: 6 }, { name: 'Samarqand', n: 5 }, { name: 'Buxoro', n: 4 },
+  { name: 'Qashqadaryo', n: 3 }, { name: 'Boshqalar', n: 3 },
+];
+const MAP_DOTS2 = [
+  { x: 12, y: 38, c: '#16A34A' }, { x: 30, y: 20, c: '#16A34A' }, { x: 65, y: 18, c: '#16A34A' },
+  { x: 20, y: 45, c: '#16A34A' }, { x: 52, y: 42, c: '#4C2CE2', label: 'Pop tumani \u2014 12 ta maktab' },
+  { x: 40, y: 45, c: '#D6473C' }, { x: 60, y: 45, c: '#16A34A' }, { x: 40, y: 70, c: '#E08A15' }, { x: 58, y: 80, c: '#16A34A' },
+];
+
+function renderSchoolsPage(){
+  const myRegion = (JSON.parse(localStorage.getItem('qp_kelajak_user') || '{}').region) || 'Viloyat';
+  const all = SCHOOLS.length ? SCHOOLS.map(s => ({
+    id: s.id, name: s.name, region: myRegion, district: s.district || '\u2014', students: s.student_count,
+    advisor: s.director_name || '\u2014', pct: s.avg_grade ? Math.round(s.avg_grade*10) : 0,
+    status: (s.avg_grade ? Math.round(s.avg_grade*10) : 0) >= 70 ? 'Faol' : 'Ehtiyoj', growth: 5,
+  })) : SAMPLE_SCHOOLS;
+
+  const activeCount = all.filter(s => s.status === 'Faol').length;
+  const needCount = all.filter(s => s.status === 'Ehtiyoj').length;
+  const inactiveCount = all.filter(s => s.status === 'Faol emas').length;
+  document.getElementById('schKpiBox').innerHTML =
+    kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>', 'Jami maktablar', all.length) +
+    kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>', 'Faol maktablar', activeCount, Math.round(activeCount/all.length*100) + '%') +
+    kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>', 'Ehtiyoj talab qiladi', needCount, Math.round(needCount/all.length*100) + '%') +
+    kpiCard('i-red', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>', 'Faol emas', inactiveCount, Math.round(inactiveCount/all.length*100) + '%');
+
+  document.getElementById('schCountTxt').textContent = `Jami ${all.length} ta maktab`;
+  document.getElementById('schoolsFullBody').innerHTML = all.map((s, i) => {
+    const pillClass = s.pct >= 85 ? 'pill-green' : s.pct >= 70 ? 'pill-amber' : 'pill-red';
+    const statusColor = s.status === 'Faol' ? '#16A34A' : s.status === 'Ehtiyoj' ? '#E08A15' : '#D6473C';
+    return `<tr>
+      <td style="padding-left:20px">${i+1}</td>
+      <td><span class="school-name-cell"><span class="school-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg></span>${s.name}</span></td>
+      <td>${s.region}</td><td>${s.district}</td><td>${s.students}</td><td>${s.advisor}</td>
+      <td><span class="idx-pill ${pillClass}">${s.pct}%</span></td>
+      <td><span class="status-dot2" style="background:${statusColor}"></span>${s.status}</td>
+      <td style="padding-right:20px"><button class="icon-btn" data-view-school="${i}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn dots-btn" data-school-id="${s.id || ''}" data-school-name="${s.name}">\u22ee</button></td>
+    </tr>`;
+  }).join('');
+  document.querySelectorAll('[data-view-school]').forEach(b => b.onclick = () => showToast(all[+b.dataset.viewSchool].name + " ma'lumotlari"));
+  document.querySelectorAll('#schoolsFullBody .dots-btn').forEach(b => b.onclick = e => openSchoolDotsMenu(e, b.dataset.schoolId, b.dataset.schoolName));
+
+  /* Mini xarita */
+  const mm = document.getElementById('miniMapBox');
+  let html = '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">' +
+    '<path d="M8,25 Q20,8 45,10 Q75,8 90,25 Q95,45 85,65 Q75,88 50,92 Q25,90 12,68 Q3,48 8,25 Z" fill="#DAD3F7" stroke="#C7BDF2" stroke-width="0.6"/></svg>';
+  MAP_DOTS2.forEach(d => {
+    html += `<span class="mini-map-dot" style="left:${d.x}%;top:${d.y}%;background:${d.c}"${d.label ? ` title="${d.label}"` : ''}></span>`;
+    if (d.label) html += `<span class="mini-map-tip" style="left:${d.x}%;top:${d.y}%">${d.label}</span>`;
+  });
+  mm.innerHTML = html;
+
+  /* Viloyatlar kesimida */
+  const maxR = Math.max(...REGION_DIST.map(r => r.n));
+  document.getElementById('regionDistBox').innerHTML = REGION_DIST.map(r => `
+    <div class="dist-row2"><span class="lbl">${r.name}</span>
+      <span class="track"><span class="fill" style="width:${r.n/maxR*100}%"></span></span>
+      <span class="num">${r.n}</span></div>`).join('');
+}
+
+function renderSampleWidgets(){
+  /* Oylik bar chart */
+  const months = [['Yan',62],['Fev',68],['Mar',71],['Apr',75],['May',77],['Iyn',80],['Iyl',82],['Avg',85]];
+  document.getElementById('barsBox').innerHTML = months.map(m => `
+    <div class="bar-col"><span class="pct">${m[1]}%</span><div class="fill" style="height:${m[1]}%"></div><span class="lbl">${m[0]}</span></div>`).join('');
+
+  /* Maslahatchilar TOP5 */
+  const advisors = [
+    { name: 'Aliyeva Madina', school: '12-sonli maktab', pct: 94, impact: "Juda yuqori" },
+    { name: 'Karimov Akmal', school: '7-sonli maktab', pct: 90, impact: 'Yuqori' },
+    { name: 'Ismoilova Dildora', school: '25-sonli maktab', pct: 87, impact: 'Yuqori' },
+    { name: 'Nodirov Sardor', school: '11-sonli maktab', pct: 85, impact: "O'rta" },
+    { name: 'Abdullayeva Sevinch', school: '3-sonli maktab', pct: 83, impact: "O'rta" },
+  ];
+  const advRow = a => {
+    const pillClass = a.impact === "Juda yuqori" || a.impact === 'Yuqori' ? 'pill-green' : 'pill-amber';
+    return `<tr><td>${advisors.indexOf(a)+1}</td>
+      <td><span class="stu-name"><span class="stu-ava">${a.name.split(' ').map(w=>w[0]).join('')}</span>${a.name}</span></td>
+      <td>${a.school}</td><td><span class="idx-pill pill-green">${a.pct}%</span></td>
+      <td><span class="idx-pill ${pillClass}">${a.impact}</span></td></tr>`;
+  };
+  document.getElementById('advisorRankBody').innerHTML = advisors.map(advRow).join('');
+
+  renderAdvisorsPage();
+  loadReports();
+  loadMonitoring();
+
+  /* Ta'sir ko'rsatkichlari */
+  const impacts = [
+    { g: '\ud83d\udcc8', t: "O'quvchilarda qiziqish", v: '+28%', bg: '#E9F8EF', c: '#16A34A' },
+    { g: '\ud83c\udfaf', t: "To'garaklar qamrovi", v: '+35%', bg: '#E8F1FE', c: '#2E86C8' },
+    { g: '\ud83d\udcda', t: "Fanlar bo'yicha o'sish", v: '+18%', bg: '#FEF4E4', c: '#E08A15' },
+    { g: '\u23f0', t: 'Davomat', v: '+12%', bg: '#FDECEB', c: '#D6473C' },
+  ];
+  document.getElementById('impactBox').innerHTML = impacts.map(i => `
+    <div class="impact-card"><span class="ico" style="background:${i.bg};color:${i.c}">${i.g}</span>
+      <div class="val">${i.v}</div><div class="lbl">${i.t}</div>
+      <div style="font-size:10.5px;color:var(--muted);margin-top:6px">O'tgan davrga nisbatan</div></div>`).join('');
+
+  /* Yangiliklar */
+  const news = [
+    { ico: '\ud83c\udfc6', bg: '#F0EEFC', txt: "12-sonli maktabda yangi STEAM to'garagi ochildi", date: '27.08.2025' },
+    { ico: '\ud83d\udcac', bg: '#E8F1FE', txt: "Maslahatchilar uchun onlayn seminar o'tkazildi", date: '26.08.2025' },
+    { ico: '\ud83c\udfc5', bg: '#FEF4E4', txt: "7-sonli maktabda o'quvchilar loyihasi g'olib bo'ldi", date: '24.08.2025' },
+  ];
+  document.getElementById('newsBox').innerHTML = news.map(n => `
+    <div class="news-row"><span class="news-ico" style="background:${n.bg}">${n.ico}</span>
+      <span class="txt">${n.txt}</span><span class="date">${n.date}</span></div>`).join('');
+}
+
+function renderDonutMini(svgId, legendId, totalId, data, total){
+  let offset = 0;
+  document.getElementById(svgId).innerHTML = data.map(d => {
+    const dash = d.val, gap = 100 - d.val;
+    const circle = `<circle cx="21" cy="21" r="15.9" fill="transparent" stroke="${d.color}" stroke-width="6"
+      stroke-dasharray="${dash} ${gap}" stroke-dashoffset="${-offset}" transform="rotate(-90 21 21)"/>`;
+    offset += d.val;
+    return circle;
+  }).join('');
+  document.getElementById(legendId).innerHTML = data.map(d => `
+    <div class="row"><span class="dot" style="background:${d.color}"></span>${d.label}</div>`).join('');
+  if (totalId) document.getElementById(totalId).textContent = total;
+}
+
+const ADVISORS_SAMPLE = [
+  { name: 'Aliyeva Madina', school: '12-sonli maktab', region: 'Namangan', district: 'Pop', students: 582, pct: 94, status: 'Faol' },
+  { name: 'Karimov Akmal', school: '7-sonli maktab', region: 'Namangan', district: 'Pop', students: 516, pct: 90, status: 'Faol' },
+  { name: 'Ismoilova Dildora', school: '25-sonli maktab', region: 'Namangan', district: 'Chortoq', students: 498, pct: 87, status: 'Faol' },
+  { name: 'Nosirov Sardor', school: '11-sonli maktab', region: 'Namangan', district: 'Namangan', students: 612, pct: 85, status: 'Faol' },
+  { name: 'Abdullayeva Sevinch', school: '3-sonli maktab', region: 'Namangan', district: 'Uychi', students: 467, pct: 83, status: 'Faol' },
+  { name: 'Tursunova Nilufar', school: '9-sonli maktab', region: 'Andijon', district: 'Asaka', students: 503, pct: 76, status: 'Ehtiyoj' },
+  { name: 'Saidov Bobur', school: '14-sonli maktab', region: 'Andijon', district: 'Marhamat', students: 489, pct: 69, status: 'Ehtiyoj' },
+  { name: 'Raxmonova Zulfiya', school: '5-sonli maktab', region: 'Farg\u2018ona', district: 'Qo\u2018qon', students: 721, pct: 88, status: 'Faol' },
+  { name: 'Xolmatov Javohir', school: '22-sonli maktab', region: 'Farg\u2018ona', district: 'Beshariq', students: 395, pct: 73, status: 'Ehtiyoj' },
+  { name: 'To\u2018xtayeva Gulnora', school: '1-sonli maktab', region: 'Toshkent', district: 'Chirchiq', students: 648, pct: 90, status: 'Faol' },
+];
+
+let REAL_ADVISORS = [];
+let ADV_KPI = { total: 0, active: 0, avg_score: 0 };
+async function renderAdvisorsPage(){
+  try {
+    const res = await apiFetch('/api/kelajak-direktor/advisors');
+    REAL_ADVISORS = res.advisors || [];
+    ADV_KPI = res.kpi || ADV_KPI;
+  } catch (e) { console.warn("Maslahatchilarni yuklab bo'lmadi:", e.message); REAL_ADVISORS = []; }
+
+  const list = REAL_ADVISORS.length ? REAL_ADVISORS.map(a => ({
+    name: a.full_name, school: a.school_name || '\u2014', district: a.district || '\u2014',
+    students: a.student_count, pct: a.score_percent, status: a.status,
+  })) : ADVISORS_SAMPLE;
+
+  document.getElementById('advKpiBox').innerHTML =
+    kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', 'Jami maslahatchilar', REAL_ADVISORS.length ? ADV_KPI.total : 96, REAL_ADVISORS.length ? null : '5') +
+    kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>', 'Faol maslahatchilar', REAL_ADVISORS.length ? ADV_KPI.active : 88) +
+    kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>', "O'rtacha samaradorlik", (REAL_ADVISORS.length ? ADV_KPI.avg_score : 78) + '%') +
+    kpiCard('i-red', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>', 'Rivojlanish ko\u2018rsatkichi', '+18%');
+
+  document.getElementById('advCountTxt').textContent = `Jami ${list.length} ta maslahatchi`;
+  document.getElementById('advisorsFullBody').innerHTML = list.map((a, i) => {
+    const pillClass = a.pct >= 85 ? 'pill-green' : a.pct >= 70 ? 'pill-amber' : 'pill-red';
+    const statusColor = a.status === 'Faol' ? '#16A34A' : '#E08A15';
+    return `<tr>
+      <td style="padding-left:20px">${i+1}</td>
+      <td><span class="stu-name"><span class="stu-ava">${a.name.split(' ').map(w=>w[0]).join('')}</span>${a.name}</span></td>
+      <td>${a.school}</td><td>${a.district}</td><td>${a.students}</td>
+      <td><span class="idx-pill ${pillClass}">${a.pct}%</span></td>
+      <td><span class="status-dot2" style="background:${statusColor}"></span>${a.status}</td>
+      <td style="padding-right:20px"><button class="icon-btn" data-view-advisor="${i}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn dots-btn">\u22ee</button></td>
+    </tr>`;
+  }).join('');
+  document.querySelectorAll('[data-view-advisor]').forEach(b => b.onclick = () => showToast(list[+b.dataset.viewAdvisor].name + " ma'lumotlari"));
+
+  const months2 = [['Yan',62],['Fev',68],['Mar',71],['Apr',75],['May',77],['Iyn',80],['Iyl',82],['Avg',85]];
+  document.getElementById('advBarsBox').innerHTML = months2.map(m => `
+    <div class="bar-col"><span class="pct">${m[1]}%</span><div class="fill" style="height:${m[1]}%"></div><span class="lbl">${m[0]}</span></div>`).join('');
+
+  const maxR2 = Math.max(...REGION_DIST.slice(0,5).map(r => r.n * 1.5));
+  document.getElementById('advRegionDistBox').innerHTML = REGION_DIST.slice(0,5).map(r => `
+    <div class="dist-row2"><span class="lbl">${r.name}</span>
+      <span class="track"><span class="fill" style="width:${r.n*1.5/maxR2*100}%"></span></span>
+      <span class="num">${r.n*1.5|0}</span></div>`).join('');
+
+  renderDonutMini('advDonutSvg', 'advLegendBox', 'advDonutTotal', [
+    { label: 'Faol \u2014 88 (92%)', val: 92, color: '#16A34A' },
+    { label: 'Ehtiyoj \u2014 6 (9%)', val: 6, color: '#E08A15' },
+    { label: 'Faol emas \u2014 2 (2%)', val: 2, color: '#D6473C' },
+  ], 96);
+}
+
+async function loadReports(){
+  try {
+    const d = await apiFetch('/api/kelajak-direktor/reports');
+    renderReportsPage2(d);
+  } catch (e) { console.warn(e.message); renderReportsPage2(null); }
+}
+
+function renderReportsPage2(data){
+  const kpi = data && data.kpi;
+  document.getElementById('repKpiBox2').innerHTML =
+    kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', "Jami o'quvchilar", kpi ? kpi.student_count.toLocaleString('ru-RU') : '24 532', '6%') +
+    kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/></svg>', 'Faol maslahatchilar', kpi ? kpi.active_advisors : 88, '12%') +
+    kpiCard('i-blue', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>', 'Maktablar soni', kpi ? kpi.school_count : 48) +
+    kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>', "O'rtacha samaradorlik", (kpi ? kpi.avg_score_percent : 78) + '%', '8%');
+
+  /* Uch chiziqli grafik */
+  const months3 = ['Yan','Fev','Mar','Apr','May','Iyn','Iyl','Avg','Sen','Noy','Dek'];
+  const s1 = [22,28,35,42,48,55,62,68,74,80,88];   // o'quvchilar soni (shartli shkala)
+  const s2 = [10,14,18,22,27,32,37,42,46,50,55];   // maslahatchilar faolligi
+  const s3 = [5,8,12,16,20,24,28,32,36,40,44];     // maktablar samaradorligi
+  const W = 400, H = 190, padL = 28, padB = 22, padT = 10;
+  const chW = W - padL - 10, chH = H - padB - padT;
+  function pathFor(arr){
+    return arr.map((v, i) => {
+      const x = padL + (i / (arr.length - 1)) * chW;
+      const y = padT + chH - (v / 100) * chH;
+      return (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1);
+    }).join(' ');
+  }
+  const gridLines2 = [0,25,50,75,100].map(g => {
+    const y = padT + chH - (g/100)*chH;
+    return `<line x1="${padL}" y1="${y}" x2="${W-6}" y2="${y}" stroke="#F1F0F9" stroke-width="1"/><text x="0" y="${y+3}" font-size="9" fill="#7A7A96">${g}</text>`;
+  }).join('');
+  const xLabels = months3.map((m, i) => {
+    const x = padL + (i / (months3.length - 1)) * chW;
+    return `<text x="${x}" y="${H-4}" text-anchor="middle" font-size="9" fill="#7A7A96">${m}</text>`;
+  }).join('');
+  document.getElementById('multiLineSvg').innerHTML = gridLines2 + xLabels +
+    `<path d="${pathFor(s1)}" fill="none" stroke="#6C4CE0" stroke-width="2.2"/>` +
+    `<path d="${pathFor(s2)}" fill="none" stroke="#16A34A" stroke-width="2.2"/>` +
+    `<path d="${pathFor(s3)}" fill="none" stroke="#2E86C8" stroke-width="2.2"/>`;
+
+  const catData = (data && data.category_distribution && data.category_distribution.length) ? data.category_distribution : [
+    { label: "Yuqori \u2014 22 (46%)", val: 46, color: '#16A34A' },
+    { label: "O'rta \u2014 18 (38%)", val: 38, color: '#2E86C8' },
+    { label: "Past \u2014 6 (12%)", val: 12, color: '#E08A15' },
+    { label: 'Qoniqarsiz \u2014 2 (4%)', val: 4, color: '#D6473C' },
+  ];
+  renderDonutMini('catDonutSvg', 'catLegendBox', 'catDonutTotal', catData, kpi ? kpi.school_count : 48);
+
+  const repRegion = (data && data.district_performance && data.district_performance.length)
+    ? data.district_performance
+    : REGION_DIST.slice(0,5).map((r,i) => ({ name: r.name, pct: [92,87,83,78,76][i] }));
+  document.getElementById('repRegionBox').innerHTML = repRegion.map(r => `
+    <div class="dist-row2"><span class="lbl">${r.name}</span>
+      <span class="track"><span class="fill" style="width:${r.pct}%;background:linear-gradient(90deg,#8B6EF0,#6C4CE0)"></span></span>
+      <span class="num">${r.pct}%</span></div>`).join('');
+
+  const recentReports2 = [
+    { name: 'Maktablar umumiy hisoboti', period: '2025-yil II chorak', cov: '48 maktab' },
+    { name: 'Maslahatchilar faoliyati tahlili', period: '2025-yil II chorak', cov: '96 maslahatchi' },
+    { name: "O'quvchilar ko'rsatkichlari", period: '2025-yil II chorak', cov: "24 532 o'quvchi" },
+    { name: 'Hududlar kesimida tahlil', period: '2025-yil II chorak', cov: '14 tuman' },
+    { name: 'Tavsiyalar va takliflar', period: '2025-yil II chorak', cov: '48 maktab' },
+  ];
+  document.getElementById('recentReportsBody2').innerHTML = recentReports2.map((r, i) => `
+    <tr><td style="padding-left:20px">${i+1}</td><td>${r.name}</td><td>${r.period}</td><td>${r.cov}</td>
+    <td><span class="status-dot2" style="background:#16A34A"></span>Tayyor</td>
+    <td style="padding-right:20px"><button class="icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></button><button class="icon-btn dots-btn">\u22ee</button></td></tr>`).join('');
+
+  const quickReps2 = [
+    { name: 'Maktablar kesimida', bg:'#EEE9FE', c:'#6C4CE0', ico:'\uD83D\uDCCA' },
+    { name: 'Maslahatchilar kesimida', bg:'#E8F1FE', c:'#2E86C8', ico:'\uD83D\uDC65' },
+    { name: "O'quvchilar kesimida", bg:'#E9F8EF', c:'#1D9E63', ico:'\uD83E\uDDD1\u200D\uD83C\uDF93' },
+    { name: 'Hududlar kesimida', bg:'#FEF4E4', c:'#E08A15', ico:'\uD83D\uDDFA' },
+    { name: 'Muammo va tavsiyalar', bg:'#FDECEB', c:'#D6473C', ico:'\u26A0' },
+    { name: 'Hisobot (Excel/PDF)', bg:'#F0EEFC', c:'#6C4CE0', ico:'\uD83D\uDCC4' },
+  ];
+  document.getElementById('quickRepBox2').innerHTML = quickReps2.map(q => `
+    <div class="quick-rep-card2" style="background:${q.bg}"><span class="ico">${q.ico}</span>
+      <b style="color:${q.c}">${q.name}</b></div>`).join('');
+}
+document.addEventListener('click', e => {
+  const tab = e.target.closest('.tab-item2');
+  if (tab) {
+    tab.parentElement.querySelectorAll('.tab-item2').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    showToast(tab.textContent.trim() + ' bo\u2018limi tanlandi');
+  }
+});
+
+function gaugeSvg(pct, color){
+  const dash = pct, gap = 100 - pct;
+  return `<svg viewBox="0 0 42 42" width="110" height="110">
+    <circle cx="21" cy="21" r="17" fill="transparent" stroke="#F1F0F9" stroke-width="4"/>
+    <circle cx="21" cy="21" r="17" fill="transparent" stroke="${color}" stroke-width="4"
+      stroke-dasharray="${dash} ${gap}" stroke-dashoffset="25" transform="rotate(-90 21 21)" stroke-linecap="round"/>
+  </svg>`;
+}
+
+const MON_SCHOOLS = [
+  { name: '12-sonli maktab', region: 'Namangan / Pop', advisor: 'Aliyeva M.', pct: 92, status: 'Yaxshi' },
+  { name: '7-sonli maktab', region: 'Namangan / Pop', advisor: 'Karimov A.', pct: 87, status: 'Yaxshi' },
+  { name: '25-sonli maktab', region: 'Namangan / Chortoq', advisor: 'Ismoilova D.', pct: 76, status: "O'rtacha" },
+  { name: '11-sonli maktab', region: 'Andijon / Asaka', advisor: 'Nosirov S.', pct: 68, status: 'Muammo' },
+  { name: '3-sonli maktab', region: "Farg'ona / Qo'qon", advisor: 'Abdullayeva S.', pct: 83, status: 'Yaxshi' },
+];
+
+async function loadMonitoring(){
+  try {
+    const d = await apiFetch('/api/kelajak-direktor/monitoring');
+    renderMonitoringPage(d);
+  } catch (e) { console.warn(e.message); renderMonitoringPage(null); }
+}
+
+function renderMonitoringPage(data){
+  const kpi = data && data.kpi;
+  document.getElementById('monKpiBox').innerHTML =
+    kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>', 'Jami maktablar', kpi ? kpi.school_count : 48, '2') +
+    kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', 'Faol maslahatchilar', kpi ? kpi.active_advisors : 88, '5') +
+    kpiCard('i-blue', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', "Jami o'quvchilar", kpi ? kpi.student_count.toLocaleString('ru-RU') : '24 532', '3%') +
+    kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>', "O'rtacha samaradorlik", (kpi ? kpi.avg_score_percent : 78) + '%', '6%');
+
+  /* Xarita */
+  const monDots = [
+    { x: 20, y: 30, c: '#16A34A' }, { x: 35, y: 22, c: '#D6473C' }, { x: 55, y: 20, c: '#E08A15' },
+    { x: 65, y: 40, c: '#16A34A' }, { x: 33, y: 55, c: '#16A34A' }, { x: 50, y: 45, c: '#4C2CE2', big: true },
+    { x: 60, y: 55, c: '#E08A15' }, { x: 42, y: 68, c: '#16A34A' }, { x: 65, y: 72, c: '#D6473C' },
+  ];
+  let mapHtml = '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">' +
+    '<path d="M8,25 Q20,8 45,10 Q75,8 90,25 Q95,45 85,65 Q75,88 50,92 Q25,90 12,68 Q3,48 8,25 Z" fill="#DAD3F7" stroke="#C7BDF2" stroke-width="0.6"/></svg>';
+  monDots.forEach(d => { mapHtml += `<span class="map-dot" style="left:${d.x}%;top:${d.y}%;background:${d.c}${d.big?';width:16px;height:16px':''}"></span>`; });
+  mapHtml += `<div class="map-legend">
+    <div class="row"><span class="dot" style="background:#16A34A"></span>Yaxshi (35)</div>
+    <div class="row"><span class="dot" style="background:#E08A15"></span>O'rtacha (9)</div>
+    <div class="row"><span class="dot" style="background:#D6473C"></span>Muammo (4)</div>
+  </div>
+  <div class="map-zoom"><button id="mapZoomIn">+</button><button id="mapZoomOut">\u2212</button></div>`;
+  document.getElementById('monMapWrap').innerHTML = mapHtml;
+  const zin = document.getElementById('mapZoomIn'), zout = document.getElementById('mapZoomOut');
+  if (zin) zin.onclick = () => showToast("Xarita kattalashtirildi");
+  if (zout) zout.onclick = () => showToast("Xarita kichraytirildi");
+
+  /* Gauge'lar */
+  const gauges = [
+    { pct: 92, color: '#16A34A', ico: '\uD83C\uDF93', lbl: 'Darslarga qatnashish', goal: 90 },
+    { pct: 78, color: '#2E86C8', ico: '\uD83D\uDC65', lbl: 'Maslahatchi faoliyati', goal: 80 },
+    { pct: 71, color: '#E08A15', ico: '\uD83D\uDCC8', lbl: 'Tarbiyaviy ishlar', goal: 75 },
+    { pct: 85, color: '#6C4CE0', ico: '\uD83C\uDFC6', lbl: 'Loyiha va tanlovlar', goal: 80 },
+  ];
+  document.getElementById('gaugeBox').innerHTML = gauges.map(g => `
+    <div class="gauge-card">
+      <div class="gauge-wrap">${gaugeSvg(g.pct, g.color)}
+        <div class="gauge-center"><span class="ico2">${g.ico}</span><b>${g.pct}%</b></div>
+      </div>
+      <div class="lbl">${g.lbl}</div>
+      <div class="goal">Maqsad: ${g.goal}%</div>
+    </div>`).join('');
+
+  /* Maktablar monitoringi jadvali */
+  const monRows = (data && data.schools && data.schools.length) ? data.schools : MON_SCHOOLS;
+  document.getElementById('monTableBody').innerHTML = monRows.map((s, i) => {
+    const pillClass = s.pct >= 85 ? 'pill-green' : s.pct >= 70 ? 'pill-amber' : 'pill-red';
+    const statusColor = s.status === 'Yaxshi' ? '#16A34A' : s.status === "O'rtacha" ? '#E08A15' : '#D6473C';
+    return `<tr>
+      <td style="padding-left:20px">${i+1}</td>
+      <td><span class="school-name-cell"><span class="school-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg></span>${s.name}</span></td>
+      <td>${s.region}</td><td>${s.advisor}</td>
+      <td><span class="idx-pill ${pillClass}">${s.pct}%</span></td>
+      <td><span class="status-dot2" style="background:${statusColor}"></span>${s.status}</td>
+      <td style="padding-right:20px"><button class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn dots-btn">\u22ee</button></td>
+    </tr>`;
+  }).join('');
+
+  /* So'nggi voqealar */
+  const events = (data && data.recent_events && data.recent_events.length) ? data.recent_events.map(e => ({ ico: '\u2713', bg: '#16A34A', txt: e.text, date: e.date })) : [
+    { ico: '\u23F1', bg: '#D6473C', txt: "25-sonli maktabda dars qoldirish ko\u2018paygan", date: 'Bugun, 10:24' },
+    { ico: '\uD83D\uDCDD', bg: '#2E86C8', txt: "11-sonli maktabda yangi loyiha boshlangan", date: 'Bugun, 09:15' },
+    { ico: '\u2713', bg: '#16A34A', txt: '<a href="#">7-sonli maktabda</a> tadbir muvaffaqiyatli o\u2018tkazildi', date: 'Kecha, 16:40' },
+    { ico: '\u26A0', bg: '#E08A15', txt: "3-sonli maktabda maslahatchi almashgan", date: 'Kecha, 14:30' },
+    { ico: '\u24D8', bg: '#2E86C8', txt: "12-sonli maktabda o\u2018quvchilar faolligi oshgan", date: '23.08.2025' },
+    { ico: '\u2713', bg: '#16A34A', txt: "Viloyat bo\u2018yicha hisobot yangilandi", date: '23.08.2025' },
+  ];
+  document.getElementById('eventsBox').innerHTML = events.map(e => `
+    <div class="event-row"><span class="event-ico" style="background:${e.bg}">${e.ico}</span>
+      <span class="txt">${e.txt}</span><span class="date">${e.date}</span></div>`).join('');
+}
+document.getElementById('downloadReportBtn3').onclick = () => showToast('Hisobot yuklanmoqda...');
+
+/* ============ Direktor tayinlash ============ */
+let openSchoolMenu = null;
+function openSchoolDotsMenu(e, schoolId, schoolName){
+  e.stopPropagation();
+  if (openSchoolMenu) { openSchoolMenu.remove(); openSchoolMenu = null; }
+  const menu = document.createElement('div');
+  menu.className = 'dd-panel open';
+  menu.style.position = 'fixed';
+  const rect = e.target.closest('button').getBoundingClientRect();
+  menu.style.top = (rect.bottom + 4) + 'px';
+  menu.style.right = (window.innerWidth - rect.right) + 'px';
+  menu.innerHTML = schoolId
+    ? `<div class="dd-item" data-act="view">\uD83D\uDC41 Ma'lumotlarini ko'rish</div>
+       <div class="dd-item" data-act="assign">\uD83D\uDC64 Direktor tayinlash</div>`
+    : `<div class="dd-item" style="color:var(--muted)">Bu namunaviy maktab \u2014 amal yo'q</div>`;
+  document.body.appendChild(menu);
+  openSchoolMenu = menu;
+  menu.querySelectorAll('[data-act]').forEach(item => item.onclick = () => {
+    if (item.dataset.act === 'assign') openAssignDirModal(schoolId, schoolName);
+    else showToast(schoolName + " ma'lumotlari");
+    menu.remove(); openSchoolMenu = null;
+  });
+}
+document.addEventListener('click', e => {
+  if (openSchoolMenu && !e.target.closest('.dd-panel')) { openSchoolMenu.remove(); openSchoolMenu = null; }
+});
+
+const assignDirModal = document.getElementById('assignDirModal');
+let assignDirSchoolId = null;
+async function openAssignDirModal(schoolId, schoolName){
+  assignDirSchoolId = schoolId;
+  document.getElementById('assignDirTitle').textContent = schoolName + ' \u2014 direktor tayinlash';
+  try {
+    const res = await apiFetch('/api/kelajak-direktor/directors');
+    const list = res.directors || [];
+    document.getElementById('assignDirSelect').innerHTML = list.length
+      ? list.map(d => `<option value="${d.id}">${d.full_name}</option>`).join('')
+      : '<option value="">Bu hududda bo\u2018sh direktor hisobi topilmadi</option>';
+    assignDirModal.classList.add('open');
+  } catch (e) { showToast(e.message || 'Xatolik yuz berdi'); }
+}
+document.getElementById('assignDirCancelBtn').onclick = () => assignDirModal.classList.remove('open');
+document.getElementById('assignDirSaveBtn').onclick = async () => {
+  const dirId = +document.getElementById('assignDirSelect').value;
+  if (!dirId) return;
+  try {
+    await apiFetch(`/api/kelajak-direktor/schools/${assignDirSchoolId}/director`, {
+      method: 'PATCH', body: JSON.stringify({ director_id: dirId }),
+    });
+    assignDirModal.classList.remove('open');
+    showToast('Direktor tayinlandi \u2713');
+    loadSchools();
+  } catch (e) { showToast(e.message || 'Xatolik yuz berdi'); }
+};
+function showToast(msg){
+  const box = document.getElementById('toastBox');
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  box.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = '.25s'; setTimeout(() => t.remove(), 250); }, 2400);
+}
+function closeAllDropdowns(except){ document.querySelectorAll('.dd-panel.open').forEach(p => { if (p !== except) p.classList.remove('open'); }); }
+document.addEventListener('click', e => {
+  if (!e.target.closest('.dd-panel') && !e.target.closest('#bellBtn') && !e.target.closest('#profileBtn') && !e.target.closest('.filter-sel')) closeAllDropdowns();
+});
+document.getElementById('bellBtn').onclick = e => { e.stopPropagation(); const p = document.getElementById('bellPanel'); closeAllDropdowns(p); p.classList.toggle('open'); document.getElementById('bellDot').style.display='none'; };
+document.getElementById('profileBtn').onclick = e => { e.stopPropagation(); const p = document.getElementById('profilePanel'); closeAllDropdowns(p); p.classList.toggle('open'); };
+document.querySelectorAll('#profilePanel [data-view-link]').forEach(b => b.onclick = () => { switchView(b.dataset.viewLink); document.getElementById('profilePanel').classList.remove('open'); });
+
+document.getElementById('downloadReportBtn').onclick = () => showToast('Hisobot yuklanmoqda...');
+document.getElementById('addSchoolBtn').onclick = () => showToast("Yangi maktab qo'shish \u2014 bu amal admin panel orqali bajariladi.");
+document.getElementById('downloadReportBtn2').onclick = () => showToast('Hisobot yuklanmoqda...');
+document.querySelectorAll('.page-nums button').forEach(b => b.onclick = () => {
+  if (/^[0-9]+$/.test(b.textContent.trim())) {
+    b.parentElement.querySelectorAll('button').forEach(x => x.classList.remove('cur'));
+    b.classList.add('cur');
+  }
+});
+document.addEventListener('click', e => {
+  const fs = e.target.closest('.filter-sel');
+  if (fs) showToast('Filtr tez orada to\u2018liq ishlaydi');
+});
+
+const SEARCH_INDEX = SAMPLE_SCHOOLS.map(s => ({ t: s.name, sub: 'Maktab \u00b7 ' + s.district, view: 'schools' }));
+const searchInp = document.getElementById('globalSearchInp');
+const searchDd = document.getElementById('searchDd');
+searchInp.addEventListener('input', () => {
+  const q = searchInp.value.trim().toLowerCase();
+  if (!q) { searchDd.classList.remove('open'); return; }
+  const found = SEARCH_INDEX.filter(x => x.t.toLowerCase().includes(q));
+  searchDd.innerHTML = found.length ? found.map(x => `<div class="dd-item" data-goto="${x.view}">${x.t}</div>`).join('') : '<div class="dd-item" style="color:var(--muted)">Hech narsa topilmadi</div>';
+  searchDd.classList.add('open');
+  searchDd.querySelectorAll('[data-goto]').forEach(el => el.onclick = () => { switchView(el.dataset.goto); searchInp.value=''; searchDd.classList.remove('open'); });
+});
+
+document.getElementById('lPass').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginBtn').click(); });
+document.getElementById('lPhone').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('lPass').focus(); });
+
+/* ============ SOZLAMALAR ============ */
+const SETTINGS_TABS = {
+  umumiy: { title: 'Umumiy sozlamalar', sub: "Tizimning asosiy parametrlari va ko'rsatkichlari." },
+  xavfsizlik: { title: "Ma'lumotlar xavfsizligi", sub: 'Parol, kirish va xavfsizlik sozlamalari.' },
+  parametrlar: { title: 'Tizim parametrlari', sub: "Qo'shimcha imkoniyatlar." },
+  integratsiya: { title: 'Integratsiyalar', sub: 'Tashqi xizmatlar bilan ulash.' },
+  haqida: { title: 'Tizim haqida', sub: 'Versiya va texnik ma\u2019lumotlar.' },
+};
+document.querySelectorAll('.settings-nav-item[data-settings-tab]').forEach(item => item.onclick = () => {
+  const tab = item.dataset.settingsTab;
+  document.querySelectorAll('.settings-nav-item[data-settings-tab]').forEach(x => x.classList.toggle('active', x === item));
+  const info = SETTINGS_TABS[tab] || { title: '', sub: '' };
+  document.getElementById('settingsMainTitle').textContent = info.title;
+  document.getElementById('settingsMainSub').textContent = info.sub;
+  const isUmumiy = tab === 'umumiy';
+  document.getElementById('settingsPane-umumiy').style.display = isUmumiy ? 'block' : 'none';
+  document.getElementById('settingsPane-other').style.display = isUmumiy ? 'none' : 'block';
+  document.getElementById('settingsMainActions').style.display = isUmumiy ? 'flex' : 'none';
+  if (!isUmumiy) document.getElementById('settingsOtherTxt').textContent = `"${info.title}" bo'limi tez orada qo'shiladi.`;
+});
+
+document.getElementById('settingsSaveBtn').onclick = () => showToast('Sozlamalar saqlandi \u2713');
+document.getElementById('settingsResetBtn').onclick = () => showToast("O'zgarishlar bekor qilindi");
+document.getElementById('setLogoBtn').onclick = () => showToast('Logotipni yuklash tez orada qo\u2018shiladi');
+document.getElementById('settingsEditProfileBtn').onclick = () => showToast('Profilni tahrirlash tez orada qo\u2018shiladi');
+document.getElementById('qaChangePass').onclick = () => showToast('Parolni o\u2018zgartirish tez orada qo\u2018shiladi');
+document.getElementById('qaManageUsers').onclick = () => showToast('Foydalanuvchilarni boshqarish \u2014 admin panel orqali bajariladi.');
+document.getElementById('qaBackup').onclick = () => showToast('Zaxira nusxa yaratilmoqda...');
+document.getElementById('qaRestore').onclick = () => showToast('Zaxiradan tiklash tez orada qo\u2018shiladi');
+
+function fillSettingsProfile(u){
+  u = u || {};
+  const name = u.full_name || 'Direktor';
+  document.getElementById('settingsName').textContent = name;
+  document.getElementById('settingsAva').textContent = name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  document.getElementById('settingsEmail').textContent = u.email || '\u2014';
+  document.getElementById('settingsPhone').textContent = u.phone || '\u2014';
+  document.getElementById('settingsRole').textContent = 'Kelajak Markazi direktori';
+  document.getElementById('settingsLastLogin').textContent = new Date().toLocaleString('uz-UZ', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+/* Avtomatik-login: barcha o'zgaruvchilar va funksiyalar e'lon qilingandan
+   KEYIN chaqiriladi — aks holda startApp() pastroqdagi const/let
+   o'zgaruvchilarga (REGION_DIST, SCHOOLS, REAL_ADVISORS va h.k.) ishga
+   tushmasdan turib murojaat qilib, "before initialization" xatosini
+   berardi va shu sabab sidebar menyu tugmalariga onclick bog'lovchi kod
+   hech qachon ishga tushmasdi. */
+if (localStorage.getItem('qp_kelajak_token')) startApp();
+</script>
+</body>
+</html>

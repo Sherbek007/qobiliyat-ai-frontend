@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelajak Maktab — Ota-ona paneli</title>
+<style>
+:root{
+  --primary:#4C2CE2; --primary-dark:#1B1440;
+  --primary-soft:#EEE9FE; --primary-soft-2:#F5F2FF;
+  --bg:#F7F7FC; --ink:#171543; --muted:#7A7A96;
+  --line:#E9E8F4; --line-2:#F1F0F9;
+  --green:#16A34A; --green-soft:#E9F8EF;
+  --amber:#E08A15; --amber-soft:#FEF4E4;
+  --red:#D6473C;   --red-soft:#FDECEB;
+  --blue:#2E86C8;  --blue-soft:#E8F1FE;
+  --r-sm:10px; --r-md:14px; --r-lg:18px;
+  --shadow:0 1px 2px rgba(23,21,67,.04), 0 6px 20px rgba(23,21,67,.045);
+  --header-h:70px; --sidebar-w:230px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:inherit;font-size:14px;color:var(--ink)}
+a{color:inherit;text-decoration:none}
+
+.field-inp{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);background:#fcfcfe}
+.field-inp:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.btn{padding:10px 18px;border-radius:var(--r-sm);font-size:13.5px;font-weight:700;border:1px solid var(--line);background:#fff}
+.btn:hover{background:var(--primary-soft-2)}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 6px 16px rgba(76,44,226,.22)}
+.btn-primary:hover{background:#3B1CC4}
+
+#appScreen{display:none}
+#appScreen.show{display:flex}
+.header{position:sticky;top:0;z-index:40;height:var(--header-h);background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:22px;padding:0 26px}
+.logo{display:flex;align-items:center;gap:12px;min-width:230px;flex-shrink:0}
+.emblem-sm{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#4C2CE2,#16A34A);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.logo .txt b{display:block;font-size:15px;font-weight:800;letter-spacing:-.2px}
+.logo .txt small{font-size:11px;color:var(--muted)}
+.header-spacer{flex:1}
+.child-switch{position:relative}
+.child-switch-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:#fcfcfe;font-size:13px;font-weight:600}
+.child-switch-btn:hover{background:var(--primary-soft-2)}
+.icon-btn{position:relative;width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0}
+.icon-btn:hover{background:var(--bg)}
+.badge-dot{position:absolute;top:5px;right:5px;background:var(--red);color:#fff;font-size:9.5px;font-weight:800;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.hprofile{display:flex;align-items:center;gap:10px;cursor:pointer}
+.hprofile .ava{width:38px;height:38px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;overflow:hidden}
+.hprofile .ava img{width:100%;height:100%;object-fit:cover}
+.hprofile b{font-size:13.5px;display:block}
+.hprofile small{font-size:11.5px;color:var(--muted)}
+.hprofile .chev{color:var(--muted);margin-left:2px}
+.dd-panel{position:absolute;top:calc(100% + 10px);right:0;background:#fff;border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow);min-width:220px;padding:8px;display:none;z-index:50}
+.dd-panel.open{display:block}
+.dd-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;font-size:13px;width:100%;text-align:left}
+.dd-item:hover{background:var(--bg)}
+.dd-item.danger{color:var(--red)}
+
+.shell{display:flex;min-height:calc(100vh - var(--header-h))}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:#fff;border-right:1px solid var(--line);padding:18px 14px;display:flex;flex-direction:column;position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h))}
+.nav-item{display:flex;align-items:center;gap:11px;width:100%;padding:11px 13px;border-radius:12px;font-size:13.5px;font-weight:600;color:var(--muted);margin-bottom:3px}
+.nav-item svg{width:18px;height:18px;flex-shrink:0}
+.nav-item:hover{background:var(--bg);color:var(--ink)}
+.nav-item.active{background:var(--primary);color:#fff;box-shadow:0 6px 16px rgba(76,44,226,.22)}
+.side-promo{margin-top:auto;background:linear-gradient(160deg,#EEE9FE,#F5F2FF);border-radius:var(--r-md);padding:16px;text-align:center}
+.side-promo .ico{width:52px;height:52px;margin:0 auto 10px;color:var(--primary)}
+.side-promo b{font-size:13px;display:block;line-height:1.4}
+
+.main{flex:1;padding:26px 30px;min-width:0}
+.crumb2{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+.crumb2 b{color:var(--primary);font-weight:600;cursor:pointer}
+.top-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;gap:16px;flex-wrap:wrap}
+.top-row h1{font-size:22px;font-weight:800;letter-spacing:-.3px}
+.top-row p{color:var(--muted);font-size:13px;margin-top:4px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:20px}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.card-head b{font-size:14.5px;font-weight:800}
+.card-head .link{font-size:12.5px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:4px;cursor:pointer}
+.empty{color:var(--muted);text-align:center;padding:26px;font-size:13px}
+.empty.err{color:var(--red)}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;padding:0 10px 10px;border-bottom:1px solid var(--line-2)}
+td{padding:11px 10px;font-size:13.3px;border-bottom:1px solid var(--line-2)}
+tr:last-child td{border-bottom:none}
+.grade-pill{display:inline-flex;min-width:26px;justify-content:center;padding:3px 9px;border-radius:8px;font-size:12.5px;font-weight:800}
+.grade-good{background:var(--green-soft);color:var(--green)}
+.grade-mid{background:var(--amber-soft);color:var(--amber)}
+.grade-low{background:var(--red-soft);color:var(--red)}
+.subj-ico{width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;margin-right:9px;vertical-align:middle}
+.subj-ico svg{width:14px;height:14px}
+
+.toast-box{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{background:var(--ink);color:#fff;padding:11px 20px;border-radius:11px;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.18);opacity:0;transform:translateY(8px);transition:.25s}
+.toast.show{opacity:1;transform:translateY(0)}
+
+.i-violet2{background:var(--primary-soft);color:var(--primary)}
+.i-green2{background:var(--green-soft);color:var(--green)}
+.i-amber2{background:var(--amber-soft);color:var(--amber)}
+.i-blue2{background:var(--blue-soft);color:var(--blue)}
+
+.welcome-banner{position:relative;border-radius:var(--r-lg);overflow:hidden;padding:28px 32px;margin-bottom:20px;
+  background:linear-gradient(120deg,#DCEBFB 0%,#EAF1FC 55%,#F3F0FC 100%);display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:150px}
+.welcome-banner h1{font-size:24px;font-weight:800;letter-spacing:-.4px}
+.welcome-banner p{color:#4B4A66;font-size:13.5px;margin-top:6px;max-width:420px}
+.welcome-banner .quote{font-size:14px;font-weight:700;color:#2A2860;text-align:right;max-width:190px;flex-shrink:0;line-height:1.4;font-style:italic}
+.welcome-banner .deco{position:absolute;right:190px;bottom:0;opacity:.95;color:#2E86C8}
+.welcome-banner .deco svg{width:260px;height:130px}
+
+.child-card{display:flex;align-items:center;gap:18px;margin-bottom:18px;flex-wrap:wrap}
+.child-card .photo{width:74px;height:74px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:24px;flex-shrink:0;overflow:hidden}
+.child-card .photo img{width:100%;height:100%;object-fit:cover}
+.child-card .info{flex:1;min-width:180px}
+.child-card .info b{font-size:19px;font-weight:800;display:block}
+.child-card .info .meta{color:var(--muted);font-size:13px;margin-top:3px}
+.status-pill{display:inline-flex;align-items:center;gap:6px;background:var(--green-soft);color:var(--green);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-top:8px}
+.status-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+
+.kpi-simple-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+@media (max-width:1000px){.kpi-simple-grid{grid-template-columns:repeat(2,1fr)}}
+.kpi-simple{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:12px}
+.kpi-simple .ico8{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kpi-simple .ico8 svg{width:20px;height:20px}
+.kpi-simple .lbl3{font-size:12.5px;color:var(--muted);font-weight:600}
+.kpi-simple .val3{font-size:22px;font-weight:800;display:flex;align-items:baseline;gap:7px}
+.kpi-simple .val3 .delta{font-size:12px;font-weight:700;color:var(--green)}
+.kpi-simple .val3 .delta.neg{color:var(--red)}
+.kpi-simple .sub3{font-size:11.5px;color:var(--muted)}
+
+.home-grid3{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:16px;margin-bottom:16px}
+@media (max-width:1100px){.home-grid3{grid-template-columns:1fr}}
+
+.advisor-note{display:flex;gap:10px;align-items:flex-start}
+.advisor-note .ava2{width:36px;height:36px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex-shrink:0;overflow:hidden}
+.advisor-note .ava2 img{width:100%;height:100%;object-fit:cover}
+.advisor-note .name-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.advisor-note b{font-size:13px}
+.advisor-note .role{font-size:11.5px;color:var(--muted);display:block;margin-bottom:6px}
+.advisor-note .text-box{background:var(--bg);border-radius:12px;padding:12px 14px;font-size:12.8px;color:#3E3D5C;line-height:1.5;margin-top:8px}
+
+.ach-row{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line-2)}
+.ach-row:last-child{border-bottom:none}
+.ach-row .ico9{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ach-row b{font-size:12.8px;font-weight:700;display:block}
+.ach-row small{color:var(--muted);font-size:11px;white-space:nowrap;margin-left:auto;padding-left:8px}
+
+.news-row{display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line-2)}
+.news-row:last-child{border-bottom:none}
+.news-row .ico10{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.news-row .ico10 svg{width:15px;height:15px}
+.news-row .txt4{flex:1;min-width:0}
+.news-row .head-row{display:flex;justify-content:space-between;gap:8px}
+.news-row b{font-size:12.6px;font-weight:700}
+.news-row small{color:var(--muted);font-size:10.8px;white-space:nowrap;flex-shrink:0}
+.news-row p{font-size:11.8px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.reminder-card{display:flex;gap:12px;align-items:flex-start;background:var(--amber-soft);border-radius:var(--r-md);padding:14px 16px}
+.reminder-card .ico11{width:34px;height:34px;border-radius:9px;background:#fff;color:var(--amber);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.reminder-card b{font-size:12.8px;display:block;margin-bottom:2px}
+.reminder-card p{font-size:12px;color:#6B5A3D}
+
+.contact-bar{display:flex;align-items:center;gap:16px;justify-content:space-between;background:linear-gradient(120deg,#F5F2FF,#EEE9FE);border-radius:var(--r-lg);padding:20px 26px;flex-wrap:wrap;margin-top:4px}
+.contact-bar .left{display:flex;align-items:center;gap:14px}
+.contact-bar .ico12{width:46px;height:46px;border-radius:12px;background:#fff;color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-bar b{font-size:14.5px;display:block}
+.contact-bar span{font-size:12.5px;color:var(--muted)}
+
+.farzandim-shell{display:grid;grid-template-columns:300px 1fr;gap:16px}
+@media (max-width:1000px){.farzandim-shell{grid-template-columns:1fr}}
+.child-list-item{display:flex;align-items:center;gap:12px;padding:12px;border:1.5px solid transparent;border-radius:var(--r-md);cursor:pointer;margin-bottom:8px}
+.child-list-item:hover{background:var(--bg)}
+.child-list-item.active{border-color:var(--primary);background:var(--primary-soft-2)}
+.child-list-item .photo2{width:52px;height:52px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0;overflow:hidden}
+.child-list-item .photo2 img{width:100%;height:100%;object-fit:cover}
+.child-list-item b{font-size:13.3px;display:block}
+.child-list-item small{color:var(--muted);font-size:11.8px;display:block;margin-top:2px}
+.child-list-item .chev3{margin-left:auto;color:var(--muted);flex-shrink:0}
+.child-detail-head{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:20px}
+
+.notif-row{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line-2)}
+.notif-row:last-child{border-bottom:none}
+.notif-row.unread{background:var(--primary-soft-2);margin:0 -12px;padding:13px 12px;border-radius:10px;border-bottom:none}
+.notif-row .ico10{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.notif-row .ico10 svg{width:17px;height:17px}
+
+.info-cell{background:var(--bg);border-radius:12px;padding:13px 15px}
+.info-cell .lbl4{font-size:11px;color:var(--muted);display:block;margin-bottom:3px}
+.info-cell .val4{font-size:13.3px;font-weight:700}
+
+.child-tabs{display:flex;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+.child-tab{display:flex;align-items:center;gap:12px;padding:12px 18px;border:1.5px solid var(--line);border-radius:var(--r-md);background:#fff;cursor:pointer;flex:1;min-width:210px}
+.child-tab:hover{background:var(--bg)}
+.child-tab.active{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.child-tab .photo3{width:46px;height:46px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;overflow:hidden}
+.child-tab b{font-size:13.5px;font-weight:800;color:var(--primary);display:block}
+.child-tab small{font-size:12px;color:var(--muted)}
+.res-grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+@media (max-width:1150px){.res-grid2{grid-template-columns:1fr}}
+.dyn-up{color:var(--green);font-weight:800;display:flex;align-items:center;gap:4px;font-size:12.8px}
+.dyn-down{color:var(--red);font-weight:800;display:flex;align-items:center;gap:4px;font-size:12.8px}
+.dyn-flat{color:var(--muted);font-weight:800;display:flex;align-items:center;gap:4px;font-size:12.8px}
+.tip-bar{display:flex;align-items:center;gap:16px;justify-content:space-between;background:var(--amber-soft);border-radius:var(--r-lg);padding:18px 24px;flex-wrap:wrap;margin-top:16px}
+.tip-bar .left{display:flex;align-items:flex-start;gap:14px}
+.tip-bar .ico14{width:42px;height:42px;border-radius:11px;background:#fff;color:var(--amber);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tip-bar b{font-size:13.5px;display:block;margin-bottom:2px}
+.tip-bar p{font-size:12.5px;color:#6B5A3D;line-height:1.5}
+</style>
+</head>
+<body>
+
+<div id="appScreen">
+  <div style="width:100%">
+  <div class="header">
+    <div class="logo">
+      <div class="emblem-sm">🌱</div>
+      <div class="txt"><b>KELAJAK MAKTAB</b><small>Yangi avlod — yangi imkoniyatlar</small></div>
+    </div>
+    <div class="header-spacer"></div>
+    <div class="child-switch" id="childSwitchBox" style="display:none">
+      <button class="child-switch-btn" id="childSwitchBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="childSwitchLabel">Farzand</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dd-panel" id="childSwitchPanel"></div>
+    </div>
+    <button class="icon-btn" id="bellBtn">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="badge-dot" id="bellBadge" style="display:none">0</span>
+    </button>
+    <div style="position:relative">
+      <div class="hprofile" id="profileBtn">
+        <div class="ava" id="avaIni">O</div>
+        <div><b id="hName">Ota-ona</b><small>Ota-ona</small></div>
+        <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="dd-panel" id="profilePanel">
+        <button class="dd-item" data-view-link="settings"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Sozlamalar</button>
+        <div style="height:1px;background:var(--line);margin:6px 0"></div>
+        <button class="dd-item danger" id="ddLogoutBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Chiqish</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="shell">
+    <div class="sidebar">
+      <button class="nav-item active" data-view="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>Bosh sahifa</button>
+      <button class="nav-item" data-view="farzandim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Farzandim</button>
+      <button class="nav-item" data-view="natijalar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Natijalar</button>
+      <button class="nav-item" data-view="xabarlar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Xabarlar</button>
+      <button class="nav-item" data-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Sozlamalar</button>
+
+      <div class="side-promo">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m5-9a4 4 0 110 8 4 4 0 010-8zM9 12a4 4 0 100-8 4 4 0 000 8z"/></svg>
+        <b>Farzandingiz kelajagi uchun birgamiz!</b>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- ============ BOSH SAHIFA ============ -->
+      <div id="view-home">
+        <div class="welcome-banner">
+          <div>
+            <h1 id="welcomeH1">Xush kelibsiz!</h1>
+            <p>Farzandingizning ta'lim jarayoni haqida asosiy ma'lumotlar shu yerda.</p>
+          </div>
+          <div class="deco">
+            <svg viewBox="0 0 300 150" fill="none">
+              <ellipse cx="150" cy="140" rx="150" ry="10" fill="#C9DCEF" opacity=".4"/>
+              <circle cx="255" cy="95" r="30" fill="#8FBF8A"/><rect x="251" y="120" width="8" height="18" fill="#9A7B54"/>
+              <circle cx="30" cy="100" r="24" fill="#A3CC9E"/><rect x="27" y="120" width="6" height="16" fill="#9A7B54"/>
+              <rect x="65" y="35" width="170" height="100" rx="6" fill="#E8DFCF"/>
+              <rect x="65" y="35" width="170" height="14" rx="6" fill="#D8CBAE"/>
+              <rect x="140" y="95" width="20" height="40" rx="2" fill="#7A6A4F"/>
+              <rect x="80" y="60" width="22" height="22" rx="2" fill="#BBD9F0"/>
+              <rect x="112" y="60" width="22" height="22" rx="2" fill="#BBD9F0"/>
+              <rect x="166" y="60" width="22" height="22" rx="2" fill="#BBD9F0"/>
+              <rect x="198" y="60" width="22" height="22" rx="2" fill="#BBD9F0"/>
+              <rect x="80" y="95" width="22" height="22" rx="2" fill="#BBD9F0"/>
+              <rect x="198" y="95" width="22" height="22" rx="2" fill="#BBD9F0"/>
+              <rect x="95" y="20" width="8" height="18" fill="#C0392B"/><path d="M103 20l16 6-16 6z" fill="#D6473C"/>
+            </svg>
+          </div>
+          <div class="quote">"Har bir bola —<br>katta imkoniyat"</div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px" id="childCardWrap">
+          <div class="child-card" id="childCard"></div>
+          <div class="kpi-simple-grid" id="kpiBox"></div>
+        </div>
+
+        <div class="home-grid3">
+          <div class="card">
+            <div class="card-head"><b>So'nggi natijalar</b><span class="link" data-view-link="natijalar">Barchasini ko'rish <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span></div>
+            <table>
+              <thead><tr><th>Fan</th><th>So'nggi baho</th><th>Sana</th></tr></thead>
+              <tbody id="recentGradesBody"><tr><td colspan="3" class="empty">Yuklanmoqda...</td></tr></tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card-head"><b>Maslahatchi fikri</b></div>
+            <div id="advisorNoteBox"><p class="empty">Yuklanmoqda...</p></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><b>So'nggi xabarlar</b><span class="link" data-view-link="xabarlar">Barchasini ko'rish <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span></div>
+            <div id="homeNewsBox"><p class="empty">Yuklanmoqda...</p></div>
+          </div>
+        </div>
+
+        <div class="home-grid3" style="grid-template-columns:1.3fr 1fr">
+          <div class="card">
+            <div class="card-head"><b>Farzandim yutuqlari</b><span class="link" data-view-link="natijalar">Barchasini ko'rish <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span></div>
+            <div id="homeAchBox"><p class="empty">Yuklanmoqda...</p></div>
+          </div>
+          <div class="reminder-card">
+            <span class="ico11"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a7 7 0 00-7 7c0 3 1.5 4.5 2 6h10c.5-1.5 2-3 2-6a7 7 0 00-7-7z"/><path d="M9 21h6"/></svg></span>
+            <div><b>Eslatma</b><p>Farzandingizning batafsil ma'lumotlarini maktab maslahatchisidan olishingiz mumkin.</p></div>
+          </div>
+        </div>
+
+        <div class="contact-bar">
+          <div class="left">
+            <span class="ico12"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+            <div><b>Farzandingiz kelajagi — biz uchun muhim!</b><span>Savol yoki takliflaringiz bo'lsa, maktab ma'muriyati bilan bog'laning.</span></div>
+          </div>
+          <button class="btn btn-primary" id="contactBtn">Aloqa uchun murojaat <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-left:4px"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+
+      <!-- ============ FARZANDIM ============ -->
+      <div id="view-farzandim" style="display:none">
+        <div class="crumb2"><b data-view-link="home">Bosh sahifa</b> &rsaquo; Farzandim</div>
+        <div class="top-row">
+          <div><h1>Farzandim</h1><p>Farzandlaringiz haqidagi ma'lumotlarni shu yerda ko'rishingiz mumkin.</p></div>
+        </div>
+        <div class="farzandim-shell">
+          <div class="card" style="align-self:start">
+            <div class="card-head"><b id="childListTitle">Mening farzandlarim</b></div>
+            <div id="childListBox"><p class="empty">Yuklanmoqda...</p></div>
+          </div>
+          <div id="childDetailBox"></div>
+        </div>
+      </div>
+
+      <!-- ============ NATIJALAR ============ -->
+      <div id="view-natijalar" style="display:none">
+        <div class="crumb2"><b data-view-link="home">Bosh sahifa</b> &rsaquo; Natijalar</div>
+        <div class="top-row">
+          <div><h1>Natijalar</h1><p>Farzandingizning o'quv natijalari va yutuqlarini shu yerda kuzatishingiz mumkin.</p></div>
+        </div>
+        <div class="child-tabs" id="natChildTabs"><p class="empty">Yuklanmoqda...</p></div>
+        <div id="natBody" style="display:none">
+          <div class="kpi-simple-grid" id="natKpiBox"></div>
+          <div class="res-grid2">
+            <div class="card">
+              <div class="card-head"><b>Fanlar bo'yicha natijalar</b></div>
+              <table>
+                <thead><tr><th>#</th><th>Fan nomi</th><th>Chorak bahosi</th><th>Yil boshidan o'rtacha</th><th>Dinamika</th></tr></thead>
+                <tbody id="subjResultsBody"></tbody>
+              </table>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:16px">
+                <div class="card-head"><b>O'rtacha baho dinamikasi</b></div>
+                <div id="dynChartBox"></div>
+              </div>
+              <div class="card">
+                <div class="card-head"><b>So'nggi baholar</b></div>
+                <table>
+                  <thead><tr><th>Sana</th><th>Fan</th><th>Mavzu</th><th>Baho</th></tr></thead>
+                  <tbody id="lastGradesBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="tip-bar">
+            <div class="left">
+              <span class="ico14"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a7 7 0 00-7 7c0 3 1.5 4.5 2 6h10c.5-1.5 2-3 2-6a7 7 0 00-7-7z"/><path d="M9 21h6"/></svg></span>
+              <div><b>Maslahat</b><p>Farzandingiz natijalarini muntazam kuzatib boring va uni qo'llab-quvvatlang.<br>Barqaror rivojlanish uchun o'qituvchilar va maslahatchi tavsiyalariga e'tibor bering.</p></div>
+            </div>
+            <button class="btn btn-primary" id="advTipBtn">Maslahatchidan tavsiya olish <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-left:4px"><path d="M9 6l6 6-6 6"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ XABARLAR ============ -->
+      <div id="view-xabarlar" style="display:none">
+        <div class="top-row"><div><h1>Xabarlar</h1><p>Maktab va tizim bildirishnomalari</p></div></div>
+        <div class="card" id="notifListBox"><p class="empty">Yuklanmoqda...</p></div>
+      </div>
+
+      <!-- ============ SOZLAMALAR ============ -->
+      <div id="view-settings" style="display:none">
+        <div class="top-row"><div><h1>Sozlamalar</h1><p>Hisobingiz ma'lumotlari</p></div></div>
+        <div class="card" style="max-width:480px">
+          <div class="card-head"><b>Shaxsiy ma'lumotlar</b></div>
+          <div class="info-cell" style="margin-bottom:10px"><span class="lbl4">To'liq ism</span><span class="val4" id="setParentName">—</span></div>
+          <div class="info-cell" style="margin-bottom:10px"><span class="lbl4">Telefon raqam</span><span class="val4" id="setParentPhone">—</span></div>
+          <div class="info-cell"><span class="lbl4">Rol</span><span class="val4">Ota-ona</span></div>
+          <button class="btn" style="margin-top:16px;width:100%" id="setChangePassBtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Parolni o'zgartirish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="toast-box" id="toastBox"></div>
+
+<script>
+window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-backend-production.up.railway.app';
+
+function showToast(msg){
+  const box = document.getElementById('toastBox');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  box.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+async function apiFetch(path, options){
+  options = options || {};
+  const token = localStorage.getItem('qp_parent_token');
+  const headers = Object.assign(
+    { 'Content-Type': 'application/json' },
+    token ? { 'Authorization': 'Bearer ' + token } : {},
+    options.headers || {}
+  );
+  let res;
+  try {
+    res = await fetch(window.API_BASE + path, Object.assign({}, options, { headers }));
+  } catch (e) {
+    const err = new Error("Serverga ulanib bo'lmadi. Backend ishga tushirilganini tekshiring.");
+    err.isNetworkError = true;
+    throw err;
+  }
+  if (res.status === 401 || res.status === 403) {
+    let detail = 'Ruxsat yo\u2018q yoki sessiya tugagan';
+    try { const j = await res.json(); detail = j.detail || detail; } catch(e){}
+    localStorage.removeItem('qp_parent_token');
+    localStorage.removeItem('qp_parent_user');
+    window.location.href = 'qobiliyat-ai.html';
+    const err = new Error(detail); err.isAuthError = true; err.status = res.status; throw err;
+  }
+  if (!res.ok) {
+    let detail = 'Xatolik yuz berdi';
+    try { const j = await res.json(); detail = j.detail || detail; } catch(e){}
+    const err = new Error(detail); err.status = res.status; throw err;
+  }
+  if (res.status === 204) return null;
+  return res.json();
+}
+
+function ini(name){ return (name || '').split(' ').filter(Boolean).slice(0,2).map(w => w[0]).join('').toUpperCase(); }
+function errMsg(e){ return e && e.message ? e.message : "Ma'lumotlarni yuklab bo'lmadi."; }
+
+const appScreen = document.getElementById('appScreen');
+
+document.getElementById('ddLogoutBtn').onclick = () => {
+  localStorage.removeItem('qp_parent_token');
+  localStorage.removeItem('qp_parent_user');
+  window.location.href = 'qobiliyat-ai.html';
+};
+
+function closeAllDropdowns(except){
+  if (except !== 'profile') document.getElementById('profilePanel').classList.remove('open');
+  if (except !== 'child') { const p = document.getElementById('childSwitchPanel'); if (p) p.classList.remove('open'); }
+}
+document.getElementById('bellBtn').onclick = (e) => { e.stopPropagation(); switchView('xabarlar'); };
+document.getElementById('profileBtn').onclick = (e) => { e.stopPropagation(); closeAllDropdowns('profile'); document.getElementById('profilePanel').classList.toggle('open'); };
+document.addEventListener('click', () => closeAllDropdowns());
+document.querySelectorAll('.dd-panel').forEach(p => p.onclick = e => e.stopPropagation());
+
+function switchView(view){
+  document.querySelectorAll('.nav-item[data-view]').forEach(x => x.classList.toggle('active', x.dataset.view === view));
+  ['home','farzandim','natijalar','xabarlar','settings'].forEach(v => {
+    document.getElementById('view-' + v).style.display = v === view ? 'block' : 'none';
+  });
+  const c = currentChild();
+  if (view === 'farzandim') { renderChildList(); renderFarzandim(c); }
+  if (view === 'natijalar') { renderNatChildTabs(); if (c) loadResults(c.id); }
+  if (view === 'xabarlar' && c) loadNotifications(c.id, false);
+}
+document.querySelectorAll('.nav-item[data-view]').forEach(b => b.onclick = () => switchView(b.dataset.view));
+document.querySelectorAll('[data-view-link]').forEach(b => b.onclick = () => switchView(b.dataset.viewLink));
+
+document.getElementById('contactBtn').onclick = () => showToast("Xabaringiz maktab ma'muriyatiga yuborildi (namuna).");
+document.getElementById('setChangePassBtn').onclick = () => showToast("Parolni o'zgartirish tez orada qo'shiladi.");
+document.getElementById('advTipBtn').onclick = () => showToast('Maslahatchiga so\u2018rov yuborildi (namuna).');
+
+/* ============ Bosh ilova ============ */
+let CHILDREN = [];
+let currentChildId = null;
+let natChildId = null;
+
+function startApp(){
+  appScreen.classList.add('show');
+  const u = JSON.parse(localStorage.getItem('qp_parent_user') || 'null');
+  if (u) {
+    document.getElementById('hName').textContent = u.full_name;
+    document.getElementById('avaIni').innerHTML = u.photo ? `<img src="${u.photo}">` : ini(u.full_name);
+    document.getElementById('welcomeH1').textContent = `Xush kelibsiz, ${u.full_name}!`;
+    document.getElementById('setParentName').textContent = u.full_name;
+    document.getElementById('setParentPhone').textContent = '+' + u.phone;
+  }
+  loadChildren();
+}
+
+function currentChild(){ return CHILDREN.find(c => c.id === currentChildId); }
+
+function showDataError(msg){
+  document.getElementById('childCardWrap').innerHTML = `<p class="empty err">${msg}</p>`;
+  document.getElementById('childListTitle').textContent = 'Mening farzandlarim';
+  document.getElementById('childListBox').innerHTML = `<p class="empty err">${msg}</p>`;
+  document.getElementById('childDetailBox').innerHTML = '';
+  document.getElementById('natChildTabs').innerHTML = `<p class="empty err">${msg}</p>`;
+  document.getElementById('notifListBox').innerHTML = `<p class="empty err">${msg}</p>`;
+  document.getElementById('recentGradesBody').innerHTML = `<tr><td colspan="3" class="empty err">${msg}</td></tr>`;
+  document.getElementById('advisorNoteBox').innerHTML = `<p class="empty err">${msg}</p>`;
+  document.getElementById('homeNewsBox').innerHTML = `<p class="empty err">${msg}</p>`;
+  document.getElementById('homeAchBox').innerHTML = `<p class="empty err">${msg}</p>`;
+}
+
+async function loadChildren(){
+  try {
+    CHILDREN = await apiFetch('/api/parent/children');
+  } catch (e) {
+    showDataError(errMsg(e));
+    return;
+  }
+  if (!CHILDREN.length) {
+    showDataError("Sizga hali farzand bog'lanmagan. Maktab administratoriga murojaat qiling.");
+    return;
+  }
+  if (CHILDREN.length > 1) {
+    document.getElementById('childSwitchBox').style.display = 'block';
+    document.getElementById('childSwitchPanel').innerHTML = CHILDREN.map(c => `
+      <button class="dd-item" data-child-id="${c.id}">${c.full_name}${c.cls ? ' \u2014 ' + c.cls : ''}</button>`).join('');
+    document.getElementById('childSwitchPanel').querySelectorAll('[data-child-id]').forEach(btn => btn.onclick = () => {
+      currentChildId = +btn.dataset.childId;
+      document.getElementById('childSwitchPanel').classList.remove('open');
+      const visibleView = ['home','farzandim','natijalar','xabarlar','settings'].find(v => document.getElementById('view-' + v).style.display !== 'none');
+      switchView(visibleView || 'home');
+    });
+    document.getElementById('childSwitchBtn').onclick = (e) => { e.stopPropagation(); closeAllDropdowns('child'); document.getElementById('childSwitchPanel').classList.toggle('open'); };
+  }
+  currentChildId = CHILDREN[0].id;
+  document.getElementById('childListTitle').textContent = `Mening farzandlarim (${CHILDREN.length})`;
+  renderChildList();
+  renderHome();
+}
+
+function renderChildList(){
+  const box = document.getElementById('childListBox');
+  if (!box) return;
+  box.innerHTML = CHILDREN.map(c => `
+    <div class="child-list-item ${c.id === currentChildId ? 'active' : ''}" data-child-id="${c.id}">
+      <span class="photo2">${c.photo ? `<img src="${c.photo}">` : ini(c.full_name)}</span>
+      <div><b>${c.full_name}</b><small>${c.cls || '\u2014'}</small><small>${c.school_name || ''}</small></div>
+      <svg class="chev3" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg>
+    </div>`).join('');
+  box.querySelectorAll('[data-child-id]').forEach(el => el.onclick = () => {
+    currentChildId = +el.dataset.childId;
+    renderChildList();
+    renderFarzandim(currentChild());
+  });
+}
+
+function gradeClass(score){ return score >= 9 ? 'grade-good' : (score >= 7 ? 'grade-mid' : 'grade-low'); }
+
+const SUBJ_ICON_MAP = {
+  default: { bg: 'var(--primary-soft)', color: 'var(--primary)', svg: '<path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>' },
+  'Matematika': { bg: 'var(--blue-soft)', color: 'var(--blue)', svg: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8M12 8v8"/>' },
+  'Ona tili': { bg: 'var(--primary-soft)', color: 'var(--primary)', svg: '<path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>' },
+  "Ingliz tili": { bg: 'var(--red-soft)', color: 'var(--red)', svg: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20 15 15 0 010-20z"/>' },
+  'Tarix': { bg: 'var(--amber-soft)', color: 'var(--amber)', svg: '<path d="M3 21h18M5 21V7l7-4 7 4v14"/>' },
+  'Biologiya': { bg: 'var(--green-soft)', color: 'var(--green)', svg: '<path d="M12 2C8 6 4 9 4 14a8 8 0 0016 0c0-5-4-8-8-12z"/>' },
+  'Fizika': { bg: 'var(--blue-soft)', color: 'var(--blue)', svg: '<circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="4.5"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(120 12 12)"/>' },
+  'Kimyo': { bg: 'var(--red-soft)', color: 'var(--red)', svg: '<path d="M9 2v6L4 20a1 1 0 001 1h14a1 1 0 001-1L15 8V2"/><path d="M9 2h6M8 15h8"/>' },
+  'Geografiya': { bg: 'var(--blue-soft)', color: 'var(--blue)', svg: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2c2.5 2.7 4 6.3 4 10s-1.5 7.3-4 10c-2.5-2.7-4-6.3-4-10s1.5-7.3 4-10z"/>' },
+  'Informatika': { bg: 'var(--primary-soft)', color: 'var(--primary)', svg: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>' },
+  'Jismoniy tarbiya': { bg: 'var(--primary-soft)', color: 'var(--primary)', svg: '<circle cx="13" cy="4" r="2"/><path d="M4 20l3-6 3 2 2-4 4 1 3 6M9 12l2-5 4 1"/>' },
+};
+function subjIcon(name){
+  const s = SUBJ_ICON_MAP[name] || SUBJ_ICON_MAP.default;
+  return `<span class="subj-ico" style="background:${s.bg};color:${s.color}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${s.svg}</svg></span>`;
+}
+
+const ACH_ICONS = {
+  olimpiada: { bg: 'var(--amber-soft)', color: 'var(--amber)', ic: '🏆' },
+  sport: { bg: 'var(--blue-soft)', color: 'var(--blue)', ic: '⚽' },
+  ijod: { bg: 'var(--primary-soft)', color: 'var(--primary)', ic: '🎨' },
+  loyiha: { bg: 'var(--green-soft)', color: 'var(--green)', ic: '💡' },
+  sertifikat: { bg: 'var(--red-soft)', color: 'var(--red)', ic: '📜' },
+};
+
+const NOTIF_ICONS = {
+  yutuq: { bg: 'var(--green-soft)', color: 'var(--green)', svg: '<path d="M12 2l2.9 6.3 6.9.6-5.2 4.6 1.6 6.8L12 16.9l-6.2 3.4 1.6-6.8L2.2 8.9l6.9-.6z"/>' },
+  test: { bg: 'var(--blue-soft)', color: 'var(--blue)', svg: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
+  ai: { bg: 'var(--primary-soft)', color: 'var(--primary)', svg: '<circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/>' },
+  tizim: { bg: 'var(--blue-soft)', color: 'var(--blue)', svg: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>' },
+  ogohl: { bg: 'var(--red-soft)', color: 'var(--red)', svg: '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/>' },
+  xabar: { bg: 'var(--amber-soft)', color: 'var(--amber)', svg: '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>' },
+};
+function notifIcon(type){ const n = NOTIF_ICONS[type] || NOTIF_ICONS.xabar; return `<span class="ico10" style="background:${n.bg};color:${n.color}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${n.svg}</svg></span>`; }
+
+function advisorNoteHtml(c){
+  if (!c.advisor_name) return `<p class="empty">Sinf maslahatchisi hali tayinlanmagan.</p>`;
+  return `
+    <div class="advisor-note">
+      <span class="ava2">${c.advisor_photo ? `<img src="${c.advisor_photo}">` : ini(c.advisor_name)}</span>
+      <div style="flex:1;min-width:0">
+        <div class="name-row"><b>${c.advisor_name}</b>${c.advisor_note_date ? `<small style="color:var(--muted);font-size:11px">${c.advisor_note_date}</small>` : ''}</div>
+        <span class="role">Maktab maslahatchisi</span>
+        <div class="text-box">${c.advisor_note ? c.advisor_note : 'Maslahatchi hali fikr qoldirmagan.'}</div>
+      </div>
+    </div>`;
+}
+
+function renderHome(){
+  const c = currentChild();
+  if (!c) return;
+  document.getElementById('childSwitchLabel').textContent = c.full_name;
+
+  document.getElementById('childCard').innerHTML = `
+    <div class="photo">${c.photo ? `<img src="${c.photo}">` : ini(c.full_name)}</div>
+    <div class="info">
+      <b>${c.full_name}</b>
+      <div class="meta">${c.cls || '\u2014'}${c.school_name ? '  |  ' + c.school_name : ''}</div>
+      <span class="status-pill"><span class="dot"></span>Faol o'quvchi</span>
+    </div>
+    <button class="btn" data-view-link="farzandim">Batafsil ma'lumot <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-1px;margin-left:2px"><path d="M9 6l6 6-6 6"/></svg></button>`;
+  document.getElementById('childCard').querySelector('[data-view-link]').onclick = () => switchView('farzandim');
+
+  document.getElementById('kpiBox').innerHTML = `
+    <div class="kpi-simple">
+      <span class="ico8 i-violet2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>
+      <div class="lbl3">O'rtacha baho</div>
+      <div class="val3">${c.avg_grade || '\u2014'}</div>
+      <div class="sub3">10 balllik tizimda</div>
+    </div>
+    <div class="kpi-simple">
+      <span class="ico8 i-green2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+      <div class="lbl3">Qobiliyat indeksi</div>
+      <div class="val3">${c.skill_index || 0}%</div>
+      <div class="sub3">AI tahlili asosida</div>
+    </div>
+    <div class="kpi-simple">
+      <span class="ico8 i-amber2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.6 1.6 6.8L12 16.9l-6.2 3.4 1.6-6.8L2.2 8.9l6.9-.6z"/></svg></span>
+      <div class="lbl3">Yutuqlar soni</div>
+      <div class="val3">${c.achievements_count || 0}</div>
+      <div class="sub3">Jami qayd etilgan</div>
+    </div>
+    <div class="kpi-simple">
+      <span class="ico8 i-blue2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 00-6 0v4M5 9h14l-1 11H6z"/></svg></span>
+      <div class="lbl3">Sinf</div>
+      <div class="val3" style="font-size:18px">${c.cls || '\u2014'}</div>
+      <div class="sub3">${c.school_name || ''}</div>
+    </div>`;
+
+  document.getElementById('advisorNoteBox').innerHTML = advisorNoteHtml(c);
+  loadGradesHome(c.id);
+  loadAchievementsHome(c.id);
+  loadNotifications(c.id, true);
+}
+
+function renderFarzandim(c){
+  const box = document.getElementById('childDetailBox');
+  if (!box) return;
+  if (!c) { box.innerHTML = ''; return; }
+
+  box.innerHTML = `
+    <div class="card" style="margin-bottom:16px">
+      <div class="child-detail-head">
+        <div class="photo" style="width:84px;height:84px;font-size:26px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:800;overflow:hidden">${c.photo ? `<img src="${c.photo}" style="width:100%;height:100%;object-fit:cover">` : ini(c.full_name)}</div>
+        <div style="flex:1;min-width:180px">
+          <b style="font-size:19px;font-weight:800;display:block">${c.full_name}</b>
+          <span style="color:var(--muted);font-size:13.5px">${c.cls || '\u2014'}${c.school_name ? '  |  ' + c.school_name : ''}</span>
+        </div>
+      </div>
+      <div class="kpi-simple-grid" style="margin-bottom:0">
+        <div class="kpi-simple">
+          <span class="ico8 i-green2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>
+          <div class="lbl3">O'rtacha baho</div>
+          <div class="val3">${c.avg_grade || '\u2014'}</div>
+          <div class="sub3">10 balllik tizimda</div>
+        </div>
+        <div class="kpi-simple">
+          <span class="ico8 i-blue2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+          <div class="lbl3">Qobiliyat indeksi</div>
+          <div class="val3">${c.skill_index || 0}%</div>
+          <div class="sub3">AI tahlili asosida</div>
+        </div>
+        <div class="kpi-simple">
+          <span class="ico8 i-amber2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.6 1.6 6.8L12 16.9l-6.2 3.4 1.6-6.8L2.2 8.9l6.9-.6z"/></svg></span>
+          <div class="lbl3">Yutuqlar soni</div>
+          <div class="val3">${c.achievements_count || 0}</div>
+          <div class="sub3">Jami qayd etilgan</div>
+        </div>
+        <div class="kpi-simple">
+          <span class="ico8" style="background:var(--primary-soft);color:var(--primary)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a3 3 0 00-2-2.83M16 3.13a3 3 0 010 5.75"/></svg></span>
+          <div class="lbl3">Sinf maslahatchisi</div>
+          <div class="val3" style="font-size:15px">${c.advisor_name || '\u2014'}</div>
+          <div class="sub3">${c.school_name || ''}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-grid3" style="grid-template-columns:1.3fr 1fr">
+      <div class="card">
+        <div class="card-head"><b>So'nggi natijalar</b><span class="link" data-view-link="natijalar">Barchasini ko'rish <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span></div>
+        <table>
+          <thead><tr><th>Fan</th><th>So'nggi baho</th><th>Sana</th></tr></thead>
+          <tbody id="farzGradesBody"><tr><td colspan="3" class="empty">Yuklanmoqda...</td></tr></tbody>
+        </table>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-head"><b>Maslahatchi fikri</b></div>
+          <div id="farzAdvisorBox">${advisorNoteHtml(c)}</div>
+        </div>
+        <div class="card">
+          <div class="card-head"><b>So'nggi yutuqlar</b></div>
+          <div id="farzAchBox"><p class="empty">Yuklanmoqda...</p></div>
+        </div>
+      </div>
+    </div>`;
+
+  box.querySelectorAll('[data-view-link]').forEach(b => b.onclick = () => switchView(b.dataset.viewLink));
+  loadGradesInto('farzGradesBody', c.id);
+  loadAchievementsInto('farzAchBox', c.id);
+}
+
+async function loadGradesHome(childId){
+  try {
+    const grades = await apiFetch(`/api/parent/children/${childId}/grades`);
+    document.getElementById('recentGradesBody').innerHTML = grades.length ? [...grades].sort((a,b) => (b.date||'').localeCompare(a.date||'')).slice(0,5).map(g => `
+      <tr><td>${subjIcon(g.subject)}${g.subject}</td><td><span class="grade-pill ${gradeClass(g.score)}">${g.score}</span></td><td style="color:var(--muted);font-size:12px">${g.date || g.quarter + '-chorak'}</td></tr>`).join('')
+      : `<tr><td colspan="3" class="empty">Hali baho kiritilmagan</td></tr>`;
+  } catch (e) {
+    document.getElementById('recentGradesBody').innerHTML = `<tr><td colspan="3" class="empty err">${errMsg(e)}</td></tr>`;
+  }
+}
+
+async function loadGradesInto(elId, childId){
+  try {
+    const grades = await apiFetch(`/api/parent/children/${childId}/grades`);
+    document.getElementById(elId).innerHTML = grades.length ? [...grades].sort((a,b) => (b.date||'').localeCompare(a.date||'')).slice(0,5).map(g => `
+      <tr><td>${subjIcon(g.subject)}${g.subject}</td><td><span class="grade-pill ${gradeClass(g.score)}">${g.score}</span></td><td style="color:var(--muted);font-size:12px">${g.date || g.quarter + '-chorak'}</td></tr>`).join('')
+      : `<tr><td colspan="3" class="empty">Hali baho kiritilmagan</td></tr>`;
+  } catch (e) {
+    document.getElementById(elId).innerHTML = `<tr><td colspan="3" class="empty err">${errMsg(e)}</td></tr>`;
+  }
+}
+
+async function loadAchievementsHome(childId){
+  try {
+    const achs = await apiFetch(`/api/parent/children/${childId}/achievements`);
+    document.getElementById('homeAchBox').innerHTML = achs.length ? achs.slice(0,3).map(a => {
+      const ic = ACH_ICONS[a.category] || ACH_ICONS.sertifikat;
+      return `<div class="ach-row"><span class="ico9" style="background:${ic.bg};color:${ic.color}">${ic.ic}</span><b>${a.name}</b><small>${a.date || ''}</small></div>`;
+    }).join('') : `<p class="empty">Hali yutuq qayd etilmagan</p>`;
+  } catch (e) {
+    document.getElementById('homeAchBox').innerHTML = `<p class="empty err">${errMsg(e)}</p>`;
+  }
+}
+
+async function loadAchievementsInto(elId, childId){
+  try {
+    const achs = await apiFetch(`/api/parent/children/${childId}/achievements`);
+    document.getElementById(elId).innerHTML = achs.length ? achs.slice(0,3).map(a => {
+      const ic = ACH_ICONS[a.category] || ACH_ICONS.sertifikat;
+      return `<div class="ach-row"><span class="ico9" style="background:${ic.bg};color:${ic.color}">${ic.ic}</span><b>${a.name}</b><small>${a.date || ''}</small></div>`;
+    }).join('') : `<p class="empty">Hali yutuq qayd etilmagan</p>`;
+  } catch (e) {
+    document.getElementById(elId).innerHTML = `<p class="empty err">${errMsg(e)}</p>`;
+  }
+}
+
+async function loadNotifications(childId, forHomeOnly){
+  try {
+    const notes = await apiFetch(`/api/parent/children/${childId}/notifications`);
+    const unread = notes.filter(n => !n.is_read).length;
+    document.getElementById('bellBadge').style.display = unread ? 'flex' : 'none';
+    document.getElementById('bellBadge').textContent = unread;
+    if (forHomeOnly) {
+      document.getElementById('homeNewsBox').innerHTML = notes.length ? notes.slice(0,3).map(n => `
+        <div class="news-row">${notifIcon(n.type)}<div class="txt4"><div class="head-row"><b>${n.title}</b><small>${n.created_at}</small></div><p>${n.text}</p></div></div>`).join('')
+        : `<p class="empty">Hali xabar yo'q</p>`;
+      return;
+    }
+    document.getElementById('notifListBox').innerHTML = notes.length ? notes.map(n => `
+      <div class="notif-row ${n.is_read ? '' : 'unread'}">${notifIcon(n.type)}<div class="txt4"><div class="head-row"><b>${n.title}</b><small>${n.created_at}</small></div><p style="white-space:normal;color:#4B4A66;font-size:12.6px;margin-top:3px">${n.text}</p></div></div>`).join('')
+      : `<p class="empty">Hali xabar yo'q</p>`;
+  } catch (e) {
+    const msg = errMsg(e);
+    if (forHomeOnly) document.getElementById('homeNewsBox').innerHTML = `<p class="empty err">${msg}</p>`;
+    else document.getElementById('notifListBox').innerHTML = `<p class="empty err">${msg}</p>`;
+  }
+}
+
+/* ============ NATIJALAR sahifasi ============ */
+function renderNatChildTabs(){
+  natChildId = currentChildId;
+  document.getElementById('natChildTabs').innerHTML = CHILDREN.map(c => `
+    <div class="child-tab ${c.id === natChildId ? 'active' : ''}" data-nat-child="${c.id}">
+      <span class="photo3">${c.photo ? `<img src="${c.photo}" style="width:100%;height:100%;object-fit:cover">` : ini(c.full_name)}</span>
+      <div><b>${c.full_name}</b><small>${c.cls || '\u2014'}</small></div>
+    </div>`).join('');
+  document.querySelectorAll('.child-tab[data-nat-child]').forEach(t => t.onclick = () => {
+    natChildId = +t.dataset.natChild;
+    document.querySelectorAll('.child-tab[data-nat-child]').forEach(x => x.classList.toggle('active', +x.dataset.natChild === natChildId));
+    loadResults(natChildId);
+  });
+}
+
+function renderDynChart(vals){
+  const present = vals.map((v, i) => v !== null && v !== undefined ? { v, i } : null).filter(Boolean);
+  if (!present.length) { document.getElementById('dynChartBox').innerHTML = `<p class="empty">Hali baho kiritilmagan</p>`; return; }
+  const w = 460, h = 190, padL = 34, padR = 30, padT = 22, padB = 26;
+  const min = 1, max = 10;
+  const stepX = (w - padL - padR) / 3;
+  const xy = present.map(p => [padL + p.i * stepX, padT + (h - padT - padB) * (1 - (p.v - min) / (max - min))]);
+  const linePath = xy.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  const areaPath = linePath + ` L${xy[xy.length-1][0]},${h-padB} L${xy[0][0]},${h-padB} Z`;
+  const yLabels = [10,8,6,4,2];
+  const xLabels = ['I chorak','II chorak','III chorak','IV chorak'];
+  let svg = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:190px">`;
+  yLabels.forEach(v => {
+    const y = padT + (h - padT - padB) * (1 - (v - min) / (max - min));
+    svg += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${w-padR}" y2="${y.toFixed(1)}" stroke="var(--line-2)" stroke-width="1"/>`;
+    svg += `<text x="${padL-8}" y="${(y+3).toFixed(1)}" font-size="10" fill="var(--muted)" text-anchor="end">${v}</text>`;
+  });
+  svg += `<path d="${areaPath}" fill="var(--primary-soft)" opacity="0.6"/>`;
+  svg += `<path d="${linePath}" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  xy.forEach((p, i) => {
+    svg += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4" fill="#fff" stroke="var(--primary)" stroke-width="2.5"/>`;
+    svg += `<text x="${p[0].toFixed(1)}" y="${(p[1]-12).toFixed(1)}" font-size="12" font-weight="800" fill="var(--ink)" text-anchor="middle">${present[i].v}</text>`;
+    const anchor = present[i].i === 0 ? 'start' : (present[i].i === 3 ? 'end' : 'middle');
+    svg += `<text x="${p[0].toFixed(1)}" y="${h-8}" font-size="10.5" fill="var(--muted)" text-anchor="${anchor}">${xLabels[present[i].i]}</text>`;
+  });
+  svg += `</svg>`;
+  document.getElementById('dynChartBox').innerHTML = svg;
+}
+
+async function loadResults(childId){
+  document.getElementById('natBody').style.display = 'block';
+  document.getElementById('natKpiBox').innerHTML = `<p class="empty">Yuklanmoqda...</p>`;
+  try {
+    const d = await apiFetch(`/api/parent/children/${childId}/results`);
+    document.getElementById('natKpiBox').innerHTML = `
+      <div class="kpi-simple">
+        <span class="ico8 i-green2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>
+        <div class="lbl3">O'rtacha baho</div>
+        <div class="val3">${d.kpi.avg || '\u2014'} ${d.kpi.avg_delta ? `<span class="delta ${d.kpi.avg_delta < 0 ? 'neg' : ''}">${d.kpi.avg_delta > 0 ? '\u2191 +' : (d.kpi.avg_delta < 0 ? '\u2193 ' : '')}${d.kpi.avg_delta}</span>` : ''}</div>
+        <div class="sub3">O'tgan chorakka nisbatan</div>
+      </div>
+      <div class="kpi-simple">
+        <span class="ico8 i-blue2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg></span>
+        <div class="lbl3">Jami baholar</div>
+        <div class="val3">${d.kpi.total_grades} ta</div>
+        <div class="sub3">Shu o'quv yilida</div>
+      </div>
+      <div class="kpi-simple">
+        <span class="ico8 i-amber2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.6 1.6 6.8L12 16.9l-6.2 3.4 1.6-6.8L2.2 8.9l6.9-.6z"/></svg></span>
+        <div class="lbl3">A'lo baholar</div>
+        <div class="val3">${d.kpi.top_grades} ta</div>
+        <div class="sub3">${d.kpi.top_pct}%</div>
+      </div>
+      <div class="kpi-simple">
+        <span class="ico8 i-violet2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M9 13.5L7 22l5-3 5 3-2-8.5"/></svg></span>
+        <div class="lbl3">Sifat ko'rsatkichi</div>
+        <div class="val3">${d.kpi.quality_pct}%</div>
+        <div class="sub3">(7 va undan yuqori baholar)</div>
+      </div>`;
+
+    document.getElementById('subjResultsBody').innerHTML = d.subjects.length ? d.subjects.map((s, i) => {
+      let dynCls = 'dyn-flat', dynIcon = '\u2212', dynTxt = '0';
+      if (s.delta > 0) { dynCls = 'dyn-up'; dynIcon = '\u2191'; dynTxt = '+' + s.delta; }
+      else if (s.delta < 0) { dynCls = 'dyn-down'; dynIcon = '\u2193'; dynTxt = s.delta; }
+      return `<tr><td style="color:var(--muted)">${i+1}</td><td>${subjIcon(s.name)}${s.name}</td><td><span class="grade-pill ${gradeClass(s.quarter_score)}">${s.quarter_score}</span></td><td>${s.year_avg}</td><td><span class="${dynCls}">${dynIcon} ${dynTxt}</span></td></tr>`;
+    }).join('') : `<tr><td colspan="5" class="empty">Hali baho kiritilmagan</td></tr>`;
+
+    document.getElementById('lastGradesBody').innerHTML = d.recent_grades.length ? d.recent_grades.map(g => `
+      <tr><td style="color:var(--muted);font-size:12px">${g.date || '\u2014'}</td><td>${subjIcon(g.subject)}${g.subject}</td><td style="color:var(--muted)">${g.topic || '\u2014'}</td><td><span class="grade-pill ${gradeClass(g.score)}">${g.score}</span></td></tr>`).join('')
+      : `<tr><td colspan="4" class="empty">Hali baho kiritilmagan</td></tr>`;
+
+    renderDynChart(d.quarterly_avg);
+  } catch (e) {
+    const msg = errMsg(e);
+    document.getElementById('natKpiBox').innerHTML = `<p class="empty err">${msg}</p>`;
+    document.getElementById('subjResultsBody').innerHTML = `<tr><td colspan="5" class="empty err">${msg}</td></tr>`;
+    document.getElementById('lastGradesBody').innerHTML = `<tr><td colspan="4" class="empty err">${msg}</td></tr>`;
+    document.getElementById('dynChartBox').innerHTML = `<p class="empty err">${msg}</p>`;
+  }
+}
+
+if (localStorage.getItem('qp_parent_token')) startApp();
+else window.location.href = 'qobiliyat-ai.html';
+</script>
+</body>
+</html>

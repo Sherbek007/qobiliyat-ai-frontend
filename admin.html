@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin panel — Qobiliyat Portfolisi AI</title>
+<style>
+:root{--primary:#4C2CE2;--bg:#F7F7FC;--ink:#171543;--muted:#8B899E;--line:#E4E1F0;--red:#E4453A;--green:#16A34A}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,select{font-family:inherit;font-size:13px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+.btn{padding:9px 16px;border-radius:9px;font-size:13px;font-weight:600;border:1px solid var(--line);background:#fff}
+.btn:hover{background:#F5F2FF}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-primary:hover{background:#3d22b8}
+.btn-danger{color:var(--red)}
+
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center}
+#loginBox{background:#fff;border-radius:16px;padding:36px;width:340px;box-shadow:0 10px 40px rgba(23,21,67,.08)}
+#loginBox h1{font-size:18px;margin-bottom:4px}
+#loginBox p{color:var(--muted);font-size:13px;margin-bottom:22px}
+#loginBox label{font-size:12.5px;font-weight:600;display:block;margin:14px 0 6px}
+#loginBox input{width:100%}
+#loginErr{color:var(--red);font-size:12.5px;margin-top:12px;display:none}
+#loginErr.show{display:block}
+
+#appScreen{display:none;min-height:100vh}
+#appScreen.show{display:flex}
+.sidebar{width:200px;background:#fff;border-right:1px solid var(--line);padding:20px 12px;flex-shrink:0}
+.sidebar h2{font-size:15px;padding:0 10px 20px}
+.nav-item{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:500;color:var(--muted);text-align:left}
+.nav-item:hover{background:#F5F2FF;color:var(--ink)}
+.nav-item.active{background:#EEE9FE;color:var(--primary)}
+.main{flex:1;padding:28px 32px;overflow-y:auto}
+.main h1{font-size:20px;margin-bottom:20px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:#fff;border-radius:12px;padding:16px}
+.kpi small{color:var(--muted);font-size:12px}
+.kpi b{display:block;font-size:24px;margin-top:4px}
+
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden}
+th{text-align:left;font-size:11.5px;color:var(--muted);text-transform:uppercase;padding:11px 14px;border-bottom:1px solid var(--line)}
+td{padding:11px 14px;font-size:13.5px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:none}
+.pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11.5px;font-weight:600;background:#F0EEFC;color:var(--primary)}
+.row-acts{display:flex;gap:8px}
+.row-acts button{color:var(--muted)}
+.row-acts button:hover{color:var(--ink)}
+
+.overlay{position:fixed;inset:0;background:rgba(23,21,67,.35);display:none;align-items:center;justify-content:center;z-index:50}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px;padding:24px;width:380px;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:16px;margin-bottom:16px}
+.field{margin-bottom:12px}
+.field label{font-size:12.5px;font-weight:600;display:block;margin-bottom:6px}
+.field input,.field select{width:100%}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.empty{color:var(--muted);text-align:center;padding:30px;font-size:13px}
+
+.phone-wrap{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden}
+.phone-wrap .pfx{padding:9px 0 9px 11px;color:var(--muted);font-size:13px}
+.phone-wrap input{border:none;flex:1;padding-left:6px}
+.phone-wrap input:focus{outline:none}
+.phone-wrap.err{border-color:var(--red)}
+.pass-wrap{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden}
+.pass-wrap input{border:none;flex:1}
+.pass-wrap input:focus{outline:none}
+.pass-wrap .eye{padding:0 12px;color:var(--muted);font-size:15px}
+.pass-wrap.err{border-color:var(--red)}
+.hint{font-size:11.5px;color:var(--muted);margin-top:5px}
+.hint.err{color:var(--red)}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div id="loginBox">
+    <h1>Admin panel</h1>
+    <p>Qobiliyat Portfolisi AI — tizim boshqaruvi</p>
+    <label for="lPhone">Telefon raqam</label>
+    <div class="phone-wrap"><span class="pfx">+998</span><input id="lPhone" inputmode="numeric" maxlength="12" placeholder="90 123 45 67"></div>
+    <label for="lPass">Parol</label>
+    <div class="pass-wrap"><input id="lPass" type="password" placeholder="Parolingiz"><button type="button" class="eye" id="lEye">👁</button></div>
+    <button class="btn btn-primary" id="loginBtn" style="width:100%;margin-top:18px">Kirish</button>
+    <p id="loginErr"></p>
+  </div>
+</div>
+
+<div id="appScreen">
+  <div class="sidebar">
+    <h2>Admin panel</h2>
+    <button class="nav-item active" data-view="home">Bosh sahifa</button>
+    <button class="nav-item" data-view="schools">Maktablar</button>
+    <button class="nav-item" data-view="regions">Viloyat va tumanlar</button>
+    <button class="nav-item" data-view="opportunities">Kurslar va imkoniyatlar</button>
+    <button class="nav-item" data-view="users">Foydalanuvchilar</button>
+    <button class="nav-item" data-view="settings">Sozlamalar</button>
+    <div style="height:1px;background:var(--line);margin:14px 0"></div>
+    <button class="nav-item" id="logoutBtn" style="color:var(--red)">Chiqish</button>
+  </div>
+
+  <div class="main">
+    <div id="view-home">
+      <h1>Bosh sahifa</h1>
+      <div class="kpis">
+        <div class="kpi"><small>Maktablar</small><b id="kpiSchools">—</b></div>
+        <div class="kpi"><small>Foydalanuvchilar</small><b id="kpiUsers">—</b></div>
+        <div class="kpi"><small>O'quvchilar</small><b id="kpiStudents">—</b></div>
+        <div class="kpi"><small>Sinflar</small><b id="kpiClasses">—</b></div>
+      </div>
+    </div>
+
+    <div id="view-schools" style="display:none">
+      <div class="toolbar">
+        <h1 style="margin:0">Maktablar</h1>
+        <button class="btn btn-primary" id="addSchoolBtn">+ Maktab qo'shish</button>
+      </div>
+      <input id="schoolSearch" placeholder="🔍 Nomi, viloyati yoki tumani bo'yicha qidirish..." style="width:100%;margin-bottom:14px">
+      <table>
+        <thead><tr><th>Nomi</th><th>Viloyat</th><th>Tuman</th><th>O'quvchi</th><th>Foydalanuvchi</th><th></th></tr></thead>
+        <tbody id="schoolsBody"></tbody>
+      </table>
+    </div>
+
+    <div id="view-users" style="display:none">
+      <div class="toolbar">
+        <h1 style="margin:0">Foydalanuvchilar</h1>
+        <button class="btn btn-primary" id="addUserBtn">+ Foydalanuvchi qo'shish</button>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <input id="userSearch" placeholder="🔍 Telefon, maktab, tuman yoki viloyat bo'yicha qidirish..." style="flex:1">
+        <select id="userRegionFilter" style="width:200px"><option value="">Barcha viloyatlar</option></select>
+        <select id="userDistrictFilter" style="width:200px"><option value="">Barcha tumanlar</option></select>
+      </div>
+      <table>
+        <thead><tr><th>Ism</th><th>Telefon</th><th>Rol</th><th>Maktab</th><th>Hudud</th><th></th></tr></thead>
+        <tbody id="usersBody"></tbody>
+      </table>
+    </div>
+
+    <div id="view-regions" style="display:none">
+      <h1>Viloyat va tumanlar</h1>
+      <div style="display:grid;grid-template-columns:260px 1fr;gap:16px;align-items:start">
+        <div>
+          <div class="toolbar"><b style="font-size:13px">Viloyatlar</b><button class="btn btn-primary" style="padding:6px 12px;font-size:12px" id="addRegionBtn">+ Qo'shish</button></div>
+          <div id="regionsList" style="background:#fff;border-radius:12px;overflow:hidden"></div>
+        </div>
+        <div>
+          <div class="toolbar"><b style="font-size:13px" id="districtsTitle">Tumanlar</b><button class="btn btn-primary" style="padding:6px 12px;font-size:12px" id="addDistrictBtn">+ Tuman qo'shish</button></div>
+          <div id="districtsList" style="background:#fff;border-radius:12px;overflow:hidden"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-opportunities" style="display:none">
+      <div class="toolbar">
+        <h1 style="margin:0">Kurslar va imkoniyatlar</h1>
+        <button class="btn btn-primary" id="addOppBtn">+ Qo'shish</button>
+      </div>
+      <p style="color:var(--muted);font-size:12.5px;margin-bottom:14px">
+        Bu yerga kiritilgan haqiqiy kurs/to'garak/markazlar AI rivojlanish rejasi
+        yaratayotganda ishlatiladi — o'ylab topilgan tavsiyalar o'rniga.
+      </p>
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <input id="oppSearch" placeholder="🔍 Nomi bo'yicha qidirish..." style="flex:1">
+        <select id="oppRegionFilter" style="width:200px"><option value="">Barcha viloyatlar</option></select>
+      </div>
+      <table>
+        <thead><tr><th>Nomi</th><th>Turi</th><th>Hudud</th><th></th></tr></thead>
+        <tbody id="oppBody"></tbody>
+      </table>
+    </div>
+
+    <div id="view-settings" style="display:none">
+      <h1>Sozlamalar</h1>
+      <div class="kpi" style="max-width:420px;margin-bottom:24px">
+        <small>Backend manzili</small>
+        <b id="apiBaseShow" style="font-size:14px;word-break:break-all"></b>
+      </div>
+
+      <div id="adminManageSection" style="display:none">
+        <div class="toolbar">
+          <h1 style="margin:0;font-size:16px">Admin panel foydalanuvchilari</h1>
+          <button class="btn btn-primary" id="addAdminBtn">+ Admin qo'shish</button>
+        </div>
+        <p style="color:var(--muted);font-size:12.5px;margin-bottom:14px">
+          Faqat siz (bosh administrator) yangi admin qo'sha olasiz va ularning huquqlarini belgilay olasiz.
+          Har bir admin faqat siz bergan bo'limlarni boshqara oladi.
+        </p>
+        <table>
+          <thead><tr><th>Ism</th><th>Telefon</th><th>Huquqlar</th><th></th></tr></thead>
+          <tbody id="adminsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="schoolModal">
+  <div class="modal">
+    <h3 id="schoolModalTitle">Maktab qo'shish</h3>
+    <div class="field"><label>Nomi</label><input id="sName"></div>
+    <div class="field"><label>Viloyat</label>
+      <select id="sRegion"><option value="">Viloyatni tanlang</option></select>
+    </div>
+    <div class="field"><label>Tuman</label>
+      <input id="sDistrict" list="districtList" placeholder="Tumanni tanlang yoki yozing">
+      <datalist id="districtList"></datalist>
+      <p class="hint">Ro'yxatda yo'q bo'lsa, qo'lda yozishingiz mumkin</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close>Bekor qilish</button>
+      <button class="btn btn-primary" id="saveSchoolBtn">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="userModal">
+  <div class="modal">
+    <h3 id="userModalTitle">Foydalanuvchi qo'shish</h3>
+    <div class="field" id="uNameField"><label>To'liq ism</label><input id="uName"></div>
+    <div class="field" id="uPhoneField"><label>Telefon</label>
+      <div class="phone-wrap" id="uPhoneWrap"><span class="pfx">+998</span><input id="uPhone" inputmode="numeric" maxlength="12" placeholder="90 123 45 67"></div>
+    </div>
+    <div class="field" id="uPassField"><label>Parol</label>
+      <div class="pass-wrap" id="uPassWrap"><input id="uPass" type="password" placeholder="Kamida 6 belgi, harf va raqam"><button type="button" class="eye" id="uEye">👁</button></div>
+      <p class="hint" id="uPassHint">Kamida 6 belgi, harf va raqam aralash bo'lsin</p>
+    </div>
+    <div class="field"><label>Rol</label>
+      <select id="uRole">
+        <option value="maslahatchi">Maktab maslahatchisi</option>
+        <option value="direktor">Maktab direktori</option>
+        <option value="kelajak_direktor">Kelajak Markazi direktori</option>
+        <option value="viloyat_mudiri">Viloyat Kelajak Markazi mudiri</option>
+        <option value="ota_ona">Ota-ona</option>
+        <option value="admin" id="uRoleAdminOpt">Administrator</option>
+      </select>
+    </div>
+    <div class="field" id="uSchoolField"><label>Maktab</label><select id="uSchool"><option value="">— Belgilanmagan —</option></select></div>
+    <div class="field" id="uRegionField" style="display:none">
+      <label>Viloyat (Kelajak Markazi direktori uchun)</label>
+      <select id="uRegion"><option value="">— Belgilanmagan —</option></select>
+    </div>
+
+    <div class="field" id="uChildrenField" style="display:none">
+      <label>Farzandlar</label>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input id="childSearch" placeholder="O'quvchi ismini qidiring..." style="flex:1">
+      </div>
+      <div id="childSearchResults" style="max-height:140px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;display:none"></div>
+      <div id="linkedChildren" style="display:flex;flex-direction:column;gap:6px;margin-top:8px"></div>
+      <p class="hint" id="uChildrenHint">Foydalanuvchini avval saqlang, keyin farzand qo'sha olasiz.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close>Bekor qilish</button>
+      <button class="btn btn-primary" id="saveUserBtn">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="oppModal">
+  <div class="modal">
+    <h3 id="oppModalTitle">Kurs/imkoniyat qo'shish</h3>
+    <div class="field"><label>Nomi</label><input id="oppName" placeholder="Masalan: Python dasturlash kursi"></div>
+    <div class="field"><label>Turi</label>
+      <select id="oppType">
+        <option value="kurs">Kurs</option>
+        <option value="togarak">To'garak</option>
+        <option value="markaz">Markaz</option>
+        <option value="olimpiada">Olimpiada</option>
+        <option value="tanlov">Tanlov</option>
+      </select>
+    </div>
+    <div class="field"><label>Tavsif</label><input id="oppDesc" placeholder="Qisqacha tavsif (ixtiyoriy)"></div>
+    <div class="field">
+      <label>Logotip <small style="color:var(--muted);font-weight:400">(ixtiyoriy)</small></label>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div id="oppLogoBox" style="width:56px;height:56px;border-radius:12px;background:var(--bg,#F5F5FA);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid var(--line,#E9E8F4)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B2CB" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button type="button" class="btn" id="oppLogoBtn">Rasm tanlash</button>
+          <button type="button" class="btn" id="oppLogoRemoveBtn" style="display:none;color:var(--red)">O'chirish</button>
+        </div>
+        <input type="file" id="oppLogoInput" accept="image/*" style="display:none">
+      </div>
+    </div>
+    <div class="field">
+      <label>Rasmlar <small style="color:var(--muted);font-weight:400">(ixtiyoriy, maks. 2 ta)</small></label>
+      <div id="oppImagesBox" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px"></div>
+      <button type="button" class="btn" id="oppImagesBtn">+ Rasm qo'shish</button>
+      <input type="file" id="oppImagesInput" accept="image/*" style="display:none">
+    </div>
+    <div class="field">
+      <label style="display:flex;align-items:center;gap:8px;font-weight:500">
+        <input type="checkbox" id="oppOnline" style="width:auto"> Onlayn (joylashuvdan qat'i nazar mavjud)
+      </label>
+    </div>
+    <div class="field" id="oppRegionField"><label>Viloyat</label>
+      <select id="oppRegion"><option value="">Barcha viloyatlar (butun mamlakat)</option></select>
+    </div>
+    <div class="field" id="oppDistrictField"><label>Tuman</label>
+      <select id="oppDistrict"><option value="">Butun viloyat</option></select>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close>Bekor qilish</button>
+      <button class="btn btn-primary" id="saveOppBtn">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="adminModal">
+  <div class="modal">
+    <h3 id="adminModalTitle">Admin qo'shish</h3>
+    <div class="field" id="aNameField"><label>To'liq ism</label><input id="aName"></div>
+    <div class="field" id="aPhoneField"><label>Telefon</label>
+      <div class="phone-wrap" id="aPhoneWrap"><span class="pfx">+998</span><input id="aPhone" inputmode="numeric" maxlength="12" placeholder="90 123 45 67"></div>
+    </div>
+    <div class="field" id="aPassField"><label>Parol</label>
+      <div class="pass-wrap" id="aPassWrap"><input id="aPass" type="password" placeholder="Kamida 6 belgi, harf va raqam"><button type="button" class="eye" id="aEye">👁</button></div>
+    </div>
+    <div class="field">
+      <label>Huquqlar (qaysi bo'limlarni boshqara oladi)</label>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:500;margin-top:8px">
+        <input type="checkbox" id="permSchools" style="width:auto"> Maktablarni boshqarish
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:500;margin-top:8px">
+        <input type="checkbox" id="permRegions" style="width:auto"> Viloyat/tumanlarni boshqarish
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:500;margin-top:8px">
+        <input type="checkbox" id="permOpportunities" style="width:auto"> Kurslar/imkoniyatlarni boshqarish
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:500;margin-top:8px">
+        <input type="checkbox" id="permUsers" style="width:auto"> Foydalanuvchilarni boshqarish
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close>Bekor qilish</button>
+      <button class="btn btn-primary" id="saveAdminBtn">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="passModal">
+  <div class="modal">
+    <h3>Parolni almashtirish</h3>
+    <p style="color:var(--muted);font-size:12.5px;margin-bottom:14px" id="passModalWho"></p>
+    <div class="field"><label>Yangi parol</label>
+      <div class="pass-wrap" id="npPassWrap"><input id="npPass" type="password" placeholder="Kamida 6 belgi, harf va raqam"><button type="button" class="eye" id="npEye">👁</button></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close>Bekor qilish</button>
+      <button class="btn btn-primary" id="savePassBtn">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<script>
+window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-backend-production.up.railway.app';
+document.getElementById('apiBaseShow').textContent = window.API_BASE;
+
+const regionSel = document.getElementById('sRegion');
+let REGIONS_DB = [];   // [{id, name, district_count}]
+let DISTRICTS_CACHE = {};  // region_id -> [{id, name}]
+
+async function loadRegionsForSchoolForm(){
+  try {
+    REGIONS_DB = await apiFetch('/api/admin/regions');
+    regionSel.innerHTML = '<option value="">Viloyatni tanlang</option>' +
+      REGIONS_DB.map(r => `<option value="${r.name}" data-id="${r.id}">${r.name}</option>`).join('');
+  } catch (e) { console.warn(e.message); }
+}
+regionSel.addEventListener('change', async () => {
+  const opt = regionSel.selectedOptions[0];
+  const regionId = opt ? opt.dataset.id : null;
+  const list = regionId ? await getDistrictsFor(+regionId) : [];
+  document.getElementById('districtList').innerHTML = list.map(d => `<option value="${d.name}">`).join('');
+});
+async function getDistrictsFor(regionId){
+  if (DISTRICTS_CACHE[regionId]) return DISTRICTS_CACHE[regionId];
+  try {
+    const list = await apiFetch(`/api/admin/districts?region_id=${regionId}`);
+    DISTRICTS_CACHE[regionId] = list;
+    return list;
+  } catch (e) { return []; }
+}
+
+/* ============ Telefon formatlash: faqat raqam, +998 dan keyin 9 xona ============ */
+function bindPhoneInput(input, wrap){
+  input.addEventListener('input', () => {
+    let v = input.value.replace(/\D/g, '').slice(0, 9);
+    let out = v;
+    if (v.length > 7) out = v.slice(0,2) + ' ' + v.slice(2,5) + ' ' + v.slice(5,7) + ' ' + v.slice(7);
+    else if (v.length > 5) out = v.slice(0,2) + ' ' + v.slice(2,5) + ' ' + v.slice(5);
+    else if (v.length > 2) out = v.slice(0,2) + ' ' + v.slice(2);
+    input.value = out;
+    wrap.classList.remove('err');
+  });
+}
+bindPhoneInput(document.getElementById('lPhone'), document.getElementById('lPhone').parentElement);
+bindPhoneInput(document.getElementById('uPhone'), document.getElementById('uPhoneWrap'));
+function fullPhone(input){ return '+998' + input.value.replace(/\D/g, ''); }
+function phoneValid(input){ return input.value.replace(/\D/g, '').length === 9; }
+
+/* ============ Parolni ko'rsatish/yashirish ============ */
+function bindEye(eyeBtn, input){
+  eyeBtn.onclick = () => {
+    const open = input.type === 'password';
+    input.type = open ? 'text' : 'password';
+    eyeBtn.textContent = open ? '🙈' : '👁';
+  };
+}
+bindEye(document.getElementById('lEye'), document.getElementById('lPass'));
+bindEye(document.getElementById('uEye'), document.getElementById('uPass'));
+
+/* ============ Parol kuchini tekshirish (harf + raqam, kamida 6 belgi) ============ */
+function passwordValid(pw){ return pw.length >= 6 && /[A-Za-z]/.test(pw) && /[0-9]/.test(pw); }
+document.getElementById('uPass').addEventListener('input', function(){
+  const hint = document.getElementById('uPassHint');
+  const wrap = document.getElementById('uPassWrap');
+  if (!this.value) { hint.classList.remove('err'); wrap.classList.remove('err'); return; }
+  const ok = passwordValid(this.value);
+  hint.classList.toggle('err', !ok);
+  wrap.classList.toggle('err', !ok);
+  hint.textContent = ok ? "Parol yetarlicha kuchli" : "Kamida 6 belgi, harf va raqam aralash bo'lsin";
+});
+
+async function apiFetch(path, options){
+  options = options || {};
+  const token = localStorage.getItem('qp_admin_token');
+  const headers = Object.assign(
+    { 'Content-Type': 'application/json' },
+    token ? { 'Authorization': 'Bearer ' + token } : {},
+    options.headers || {}
+  );
+  let res;
+  try {
+    res = await fetch(window.API_BASE + path, Object.assign({}, options, { headers }));
+  } catch (e) {
+    const err = new Error("Serverga ulanib bo'lmadi"); err.isNetworkError = true; throw err;
+  }
+  if (res.status === 401 || res.status === 403) {
+    let detail = 'Ruxsat yo\u2018q yoki sessiya tugagan';
+    try { const j = await res.json(); detail = j.detail || detail; } catch(e){}
+    const err = new Error(detail); err.isAuthError = true; err.status = res.status; throw err;
+  }
+  if (!res.ok) {
+    let detail = 'Xatolik yuz berdi';
+    try { const j = await res.json(); detail = j.detail || detail; } catch(e){}
+    const err = new Error(detail); err.status = res.status; throw err;
+  }
+  if (res.status === 204) return null;
+  return res.json();
+}
+
+const loginScreen = document.getElementById('loginScreen');
+const appScreen = document.getElementById('appScreen');
+const loginErr = document.getElementById('loginErr');
+
+document.getElementById('loginBtn').onclick = async () => {
+  const phoneInput = document.getElementById('lPhone');
+  const pass = document.getElementById('lPass').value;
+  let bad = false;
+  if (!phoneValid(phoneInput)) { phoneInput.parentElement.classList.add('err'); bad = true; }
+  if (!pass) { document.getElementById('lPass').parentElement.classList.add('err'); bad = true; }
+  if (bad) { showLoginErr("Telefon va parolni to'g'ri kiriting."); return; }
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Tekshirilmoqda...';
+  try {
+    const data = await apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ phone: fullPhone(phoneInput), password: pass }) });
+    if (data.user.role !== 'admin') {
+      showLoginErr("Bu hisobda administrator huquqi yo'q.");
+      return;
+    }
+    localStorage.setItem('qp_admin_token', data.access_token);
+    localStorage.setItem('qp_admin_user', JSON.stringify(data.user));
+    startApp();
+  } catch (e) {
+    showLoginErr(e.isNetworkError ? "Serverga ulanib bo'lmadi. Backend ishga tushirilganini tekshiring." : (e.message || "Telefon yoki parol noto'g'ri."));
+  } finally {
+    btn.disabled = false; btn.textContent = 'Kirish';
+  }
+};
+function showLoginErr(msg){ loginErr.textContent = msg; loginErr.classList.add('show'); }
+
+document.getElementById('logoutBtn').onclick = () => {
+  localStorage.removeItem('qp_admin_token');
+  appScreen.classList.remove('show');
+  loginScreen.style.display = 'flex';
+};
+
+function startApp(){
+  loginScreen.style.display = 'none';
+  appScreen.classList.add('show');
+  applyPermissionsToUI();
+  loadStats();
+  loadSchools();
+  loadRegionsForSchoolForm();
+  loadRegionsForUserFilter();
+}
+
+/* ============ Huquqlarga qarab menyularni ko'rsatish ============ */
+function currentAdminUser(){
+  try { return JSON.parse(localStorage.getItem('qp_admin_user') || 'null'); } catch(e) { return null; }
+}
+function hasPerm(perm){
+  const u = currentAdminUser();
+  if (!u) return false;
+  if (u.is_superadmin) return true;
+  return !!(u.permissions || {})[perm];
+}
+function applyPermissionsToUI(){
+  const u = currentAdminUser();
+  if (!u) return;
+  document.querySelector('[data-view="schools"]').style.display = hasPerm('manage_schools') ? '' : 'none';
+  document.querySelector('[data-view="regions"]').style.display = hasPerm('manage_regions') ? '' : 'none';
+  document.querySelector('[data-view="opportunities"]').style.display = hasPerm('manage_opportunities') ? '' : 'none';
+  document.querySelector('[data-view="users"]').style.display = hasPerm('manage_users') ? '' : 'none';
+  document.getElementById('addSchoolBtn').style.display = hasPerm('manage_schools') ? '' : 'none';
+  document.getElementById('addUserBtn').style.display = hasPerm('manage_users') ? '' : 'none';
+  document.getElementById('addOppBtn').style.display = hasPerm('manage_opportunities') ? '' : 'none';
+  document.getElementById('adminManageSection').style.display = u.is_superadmin ? 'block' : 'none';
+  document.getElementById('uRoleAdminOpt').style.display = u.is_superadmin ? '' : 'none';
+}
+
+if (localStorage.getItem('qp_admin_token')) startApp();
+
+document.querySelectorAll('.nav-item[data-view]').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.nav-item[data-view]').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  ['home','schools','regions','opportunities','users','settings'].forEach(v => {
+    document.getElementById('view-' + v).style.display = v === b.dataset.view ? 'block' : 'none';
+  });
+  if (b.dataset.view === 'users') loadUsers();
+  if (b.dataset.view === 'schools') loadSchools();
+  if (b.dataset.view === 'regions') loadRegions();
+  if (b.dataset.view === 'opportunities') loadOpportunities();
+  if (b.dataset.view === 'settings' && currentAdminUser()?.is_superadmin) loadAdmins();
+});
+
+async function loadStats(){
+  try {
+    const s = await apiFetch('/api/admin/stats');
+    document.getElementById('kpiSchools').textContent = s.school_count;
+    document.getElementById('kpiUsers').textContent = s.user_count;
+    document.getElementById('kpiStudents').textContent = s.student_count;
+    document.getElementById('kpiClasses').textContent = s.class_count;
+  } catch (e) { console.warn(e.message); }
+}
+
+let SCHOOLS = [];
+async function loadSchools(){
+  try {
+    SCHOOLS = await apiFetch('/api/admin/schools');
+    renderSchoolsTable(SCHOOLS);
+    fillSchoolSelect();
+  } catch (e) { console.warn(e.message); }
+}
+function renderSchoolsTable(list){
+  document.getElementById('schoolsBody').innerHTML = list.length ? list.map(s => `
+      <tr>
+        <td>${s.name}</td><td>${s.region || '\u2014'}</td><td>${s.district || '\u2014'}</td>
+        <td>${s.student_count}</td><td>${s.user_count}</td>
+        <td class="row-acts">
+          <button data-edit-school="${s.id}">Tahrirlash</button>
+          <button class="btn-danger" data-del-school="${s.id}" title="O'chirish" style="font-size:15px;font-weight:700">✕</button>
+        </td>
+      </tr>`).join('') : `<tr><td colspan="6" class="empty">Hech narsa topilmadi</td></tr>`;
+  bindSchoolActions();
+}
+document.getElementById('schoolSearch').addEventListener('input', function(){
+  const q = this.value.trim().toLowerCase();
+  if (!q) { renderSchoolsTable(SCHOOLS); return; }
+  renderSchoolsTable(SCHOOLS.filter(s =>
+    (s.name || '').toLowerCase().includes(q) ||
+    (s.region || '').toLowerCase().includes(q) ||
+    (s.district || '').toLowerCase().includes(q)
+  ));
+});
+function bindSchoolActions(){
+  document.querySelectorAll('[data-edit-school]').forEach(b => b.onclick = () => openSchoolModal(+b.dataset.editSchool));
+  document.querySelectorAll('[data-del-school]').forEach(b => b.onclick = async () => {
+    const s = SCHOOLS.find(x => x.id === +b.dataset.delSchool);
+    if (!confirm(`"${s.name}" maktabini o'chirasizmi?`)) return;
+    try { await apiFetch(`/api/admin/schools/${s.id}`, { method: 'DELETE' }); loadSchools(); loadStats(); }
+    catch (e) { alert(e.message); }
+  });
+}
+function fillSchoolSelect(){
+  const sel = document.getElementById('uSchool');
+  sel.innerHTML = '<option value="">\u2014 Belgilanmagan \u2014</option>' +
+    SCHOOLS.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+}
+
+const schoolModal = document.getElementById('schoolModal');
+let editingSchoolId = null;
+function openSchoolModal(id){
+  editingSchoolId = id || null;
+  const s = id ? SCHOOLS.find(x => x.id === id) : null;
+  document.getElementById('schoolModalTitle').textContent = id ? "Maktabni tahrirlash" : "Maktab qo'shish";
+  document.getElementById('sName').value = s ? s.name : '';
+  document.getElementById('sRegion').value = s ? (s.region || '') : '';
+  const selOpt = regionSel.selectedOptions[0];
+  const selRegionId = selOpt ? selOpt.dataset.id : null;
+  document.getElementById('districtList').innerHTML = '';
+  if (selRegionId) {
+    getDistrictsFor(+selRegionId).then(list => {
+      document.getElementById('districtList').innerHTML = list.map(d => `<option value="${d.name}">`).join('');
+    });
+  }
+  document.getElementById('sDistrict').value = s ? (s.district || '') : '';
+  schoolModal.classList.add('open');
+}
+document.getElementById('addSchoolBtn').onclick = () => openSchoolModal(null);
+document.getElementById('saveSchoolBtn').onclick = async () => {
+  const name = document.getElementById('sName').value.trim();
+  if (!name) { alert("Maktab nomini kiriting."); return; }
+  const payload = { name, region: document.getElementById('sRegion').value.trim(), district: document.getElementById('sDistrict').value.trim() };
+  try {
+    if (editingSchoolId) await apiFetch(`/api/admin/schools/${editingSchoolId}`, { method: 'PATCH', body: JSON.stringify(payload) });
+    else await apiFetch('/api/admin/schools', { method: 'POST', body: JSON.stringify(payload) });
+    schoolModal.classList.remove('open');
+    loadSchools(); loadStats();
+  } catch (e) { alert(e.message); }
+};
+
+const ROLE_LABELS = {
+  admin: 'Administrator', maslahatchi: 'Maslahatchi', direktor: 'Maktab direktori',
+  kelajak_direktor: 'Markaz direktori', viloyat_mudiri: 'Viloyat mudiri',
+};
+let USERS = [];
+async function loadUsers(){
+  try {
+    USERS = await apiFetch('/api/admin/users');
+    applyUserFilters();
+  } catch (e) { console.warn(e.message); }
+}
+function renderUsersTable(list){
+  document.getElementById('usersBody').innerHTML = list.length ? list.map(u => `
+      <tr>
+        <td>${u.full_name}</td><td>${u.phone}</td>
+        <td><span class="pill">${ROLE_LABELS[u.role] || u.role}</span></td>
+        <td>${u.school_name || '\u2014'}</td>
+        <td>${[u.district, u.region].filter(Boolean).join(', ') || '\u2014'}</td>
+        <td class="row-acts">
+          <button data-edit-user="${u.id}">Tahrirlash</button>
+          <button data-pass-user="${u.id}">Parolni almashtirish</button>
+          <button class="btn-danger" data-del-user="${u.id}">O'chirish</button>
+        </td>
+      </tr>`).join('') : `<tr><td colspan="6" class="empty">Hech narsa topilmadi</td></tr>`;
+  bindUserActions();
+}
+function applyUserFilters(){
+  const q = document.getElementById('userSearch').value.trim().toLowerCase();
+  const region = document.getElementById('userRegionFilter').value;
+  const district = document.getElementById('userDistrictFilter').value;
+  let list = USERS;
+  if (region) list = list.filter(u => u.region === region);
+  if (district) list = list.filter(u => u.district === district);
+  if (q) list = list.filter(u =>
+    (u.phone || '').toLowerCase().includes(q) ||
+    (u.school_name || '').toLowerCase().includes(q) ||
+    (u.region || '').toLowerCase().includes(q) ||
+    (u.district || '').toLowerCase().includes(q)
+  );
+  renderUsersTable(list);
+}
+document.getElementById('userSearch').addEventListener('input', applyUserFilters);
+document.getElementById('userRegionFilter').addEventListener('change', async function(){
+  const opt = this.selectedOptions[0];
+  const regionId = opt ? opt.dataset.id : null;
+  const distSel = document.getElementById('userDistrictFilter');
+  distSel.innerHTML = '<option value="">Barcha tumanlar</option>';
+  if (regionId) {
+    const list = await getDistrictsFor(+regionId);
+    distSel.innerHTML += list.map(d => `<option value="${d.name}">${d.name}</option>`).join('');
+  }
+  applyUserFilters();
+});
+document.getElementById('userDistrictFilter').addEventListener('change', applyUserFilters);
+
+async function loadRegionsForUserFilter(){
+  try {
+    const regions = await apiFetch('/api/admin/regions');
+    document.getElementById('userRegionFilter').innerHTML = '<option value="">Barcha viloyatlar</option>' +
+      regions.map(r => `<option value="${r.name}" data-id="${r.id}">${r.name}</option>`).join('');
+  } catch (e) { console.warn(e.message); }
+}
+function bindUserActions(){
+  document.querySelectorAll('[data-edit-user]').forEach(b => b.onclick = () => openUserModal(+b.dataset.editUser));
+  document.querySelectorAll('[data-pass-user]').forEach(b => b.onclick = () => openPassModal(+b.dataset.passUser));
+  document.querySelectorAll('[data-del-user]').forEach(b => b.onclick = async () => {
+    const u = USERS.find(x => x.id === +b.dataset.delUser);
+    if (!confirm(`"${u.full_name}" hisobini o'chirasizmi?`)) return;
+    try { await apiFetch(`/api/admin/users/${u.id}`, { method: 'DELETE' }); loadUsers(); loadStats(); }
+    catch (e) { alert(e.message); }
+  });
+}
+
+/* ============ Parolni almashtirish ============ */
+const passModal = document.getElementById('passModal');
+let passUserId = null;
+bindEye(document.getElementById('npEye'), document.getElementById('npPass'));
+
+function openPassModal(id){
+  passUserId = id;
+  const u = USERS.find(x => x.id === id);
+  document.getElementById('passModalWho').textContent = `${u.full_name} (${u.phone}) uchun yangi parol`;
+  document.getElementById('npPass').value = '';
+  document.getElementById('npPassWrap').classList.remove('err');
+  passModal.classList.add('open');
+}
+document.getElementById('savePassBtn').onclick = async () => {
+  const pass = document.getElementById('npPass').value;
+  if (!passwordValid(pass)) {
+    document.getElementById('npPassWrap').classList.add('err');
+    alert("Parol kamida 6 belgi, harf va raqam aralash bo'lsin.");
+    return;
+  }
+  try {
+    await apiFetch(`/api/admin/users/${passUserId}/reset-password`, {
+      method: 'POST', body: JSON.stringify({ new_password: pass }),
+    });
+    passModal.classList.remove('open');
+    alert("Parol muvaffaqiyatli yangilandi.");
+  } catch (e) { alert(e.message); }
+};
+
+const userModal = document.getElementById('userModal');
+let editingUserId = null;
+document.getElementById('uRole').addEventListener('change', updateUserModalFields);
+function updateUserModalFields(){
+  const role = document.getElementById('uRole').value;
+  const isParent = role === 'ota_ona';
+  const isKelajakDir = role === 'kelajak_direktor';
+  document.getElementById('uSchoolField').style.display = (isParent || isKelajakDir) ? 'none' : 'block';
+  document.getElementById('uRegionField').style.display = isKelajakDir ? 'block' : 'none';
+  document.getElementById('uChildrenField').style.display = isParent ? 'block' : 'none';
+}
+
+function openUserModal(id){
+  editingUserId = id || null;
+  const u = id ? USERS.find(x => x.id === id) : null;
+  document.getElementById('userModalTitle').textContent = id ? "Foydalanuvchini tahrirlash" : "Foydalanuvchi qo'shish";
+  document.getElementById('uName').value = u ? u.full_name : '';
+  const phoneInput = document.getElementById('uPhone');
+  const digits = u ? u.phone.replace(/\D/g, '').slice(-9) : '';
+  phoneInput.value = digits;
+  phoneInput.dispatchEvent(new Event('input'));
+  document.getElementById('uPass').value = '';
+  document.getElementById('uRole').value = u ? u.role : 'maslahatchi';
+  document.getElementById('uSchool').value = u && u.school_id ? u.school_id : '';
+  document.getElementById('uRegion').innerHTML = '<option value="">— Belgilanmagan —</option>' +
+    REGIONS_DB.map(r => `<option value="${r.name}">${r.name}</option>`).join('');
+  document.getElementById('uRegion').value = u && u.region ? u.region : '';
+  document.getElementById('uPhoneField').style.display = id ? 'none' : 'block';
+  document.getElementById('uPassField').style.display = id ? 'none' : 'block';
+  document.getElementById('uPhoneWrap').classList.remove('err');
+  document.getElementById('uPassWrap').classList.remove('err');
+  document.getElementById('uPassHint').classList.remove('err');
+  document.getElementById('childSearch').value = '';
+  document.getElementById('childSearchResults').style.display = 'none';
+  document.getElementById('linkedChildren').innerHTML = '';
+  document.getElementById('uChildrenHint').style.display = id ? 'none' : 'block';
+  updateUserModalFields();
+  if (id && u.role === 'ota_ona') loadLinkedChildren(id);
+  userModal.classList.add('open');
+}
+document.getElementById('addUserBtn').onclick = () => openUserModal(null);
+document.getElementById('saveUserBtn').onclick = async () => {
+  const role = document.getElementById('uRole').value;
+  const schoolVal = document.getElementById('uSchool').value;
+  const regionVal = document.getElementById('uRegion').value;
+  try {
+    if (editingUserId) {
+      await apiFetch(`/api/admin/users/${editingUserId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          full_name: document.getElementById('uName').value.trim(),
+          role, school_id: schoolVal ? +schoolVal : null,
+          region: role === 'kelajak_direktor' ? (regionVal || null) : null,
+        }),
+      });
+      userModal.classList.remove('open');
+    } else {
+      const full_name = document.getElementById('uName').value.trim();
+      const phoneInput = document.getElementById('uPhone');
+      const password = document.getElementById('uPass').value;
+      let bad = false;
+      if (!full_name) bad = true;
+      if (!phoneValid(phoneInput)) { document.getElementById('uPhoneWrap').classList.add('err'); bad = true; }
+      if (!passwordValid(password)) { document.getElementById('uPassWrap').classList.add('err'); bad = true; }
+      if (bad) { alert("Ism to'liq, telefon 9 xonali va parol kamida 6 belgi (harf + raqam) bo'lsin."); return; }
+      const created = await apiFetch('/api/admin/users', {
+        method: 'POST',
+        body: JSON.stringify({
+          full_name, phone: fullPhone(phoneInput), password, role,
+          school_id: schoolVal ? +schoolVal : null,
+          region: role === 'kelajak_direktor' ? (regionVal || null) : null,
+        }),
+      });
+      if (role === 'ota_ona') {
+        editingUserId = created.id;
+        document.getElementById('userModalTitle').textContent = "Foydalanuvchini tahrirlash";
+        document.getElementById('uPhoneField').style.display = 'none';
+        document.getElementById('uPassField').style.display = 'none';
+        document.getElementById('uChildrenHint').style.display = 'none';
+        await loadUsers();
+        loadLinkedChildren(created.id);
+      } else {
+        userModal.classList.remove('open');
+      }
+    }
+    loadUsers(); loadStats();
+  } catch (e) { alert(e.message); }
+};
+
+/* ============ Ota-ona uchun farzand bog'lash ============ */
+async function loadLinkedChildren(userId){
+  try {
+    const children = await apiFetch(`/api/admin/users/${userId}/children`);
+    renderLinkedChildren(userId, children);
+  } catch (e) { console.warn(e.message); }
+}
+function renderLinkedChildren(userId, children){
+  document.getElementById('linkedChildren').innerHTML = children.length ? children.map(c => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 11px;background:#F5F2FF;border-radius:8px;font-size:13px">
+      <span>${c.full_name}${c.cls ? ' · ' + c.cls : ''}</span>
+      <button data-unlink-child="${c.id}" style="color:var(--red);font-size:12px">O'chirish</button>
+    </div>`).join('') : `<p class="hint">Hali farzand bog'lanmagan.</p>`;
+  document.querySelectorAll('[data-unlink-child]').forEach(b => b.onclick = async () => {
+    try {
+      await apiFetch(`/api/admin/users/${userId}/children/${b.dataset.unlinkChild}`, { method: 'DELETE' });
+      loadLinkedChildren(userId);
+    } catch (e) { alert(e.message); }
+  });
+}
+let childSearchTimer = null;
+document.getElementById('childSearch').addEventListener('input', function(){
+  clearTimeout(childSearchTimer);
+  const q = this.value.trim();
+  const box = document.getElementById('childSearchResults');
+  if (!q) { box.style.display = 'none'; return; }
+  childSearchTimer = setTimeout(async () => {
+    try {
+      const results = await apiFetch(`/api/admin/students-search?q=${encodeURIComponent(q)}`);
+      box.innerHTML = results.length ? results.map(s => `
+        <div data-pick-child="${s.id}" data-pick-name="${s.full_name}" data-pick-cls="${s.cls || ''}"
+             style="padding:8px 11px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--line)">
+          ${s.full_name}${s.cls ? ' · ' + s.cls : ''}
+        </div>`).join('') : `<div style="padding:8px 11px;font-size:13px;color:var(--muted)">Topilmadi</div>`;
+      box.style.display = 'block';
+      document.querySelectorAll('[data-pick-child]').forEach(row => row.onclick = async () => {
+        if (!editingUserId) { alert("Avval foydalanuvchini saqlang."); return; }
+        try {
+          await apiFetch(`/api/admin/users/${editingUserId}/children`, {
+            method: 'POST', body: JSON.stringify({ student_id: +row.dataset.pickChild }),
+          });
+          document.getElementById('childSearch').value = '';
+          box.style.display = 'none';
+          loadLinkedChildren(editingUserId);
+        } catch (e) { alert(e.message); }
+      });
+    } catch (e) { console.warn(e.message); }
+  }, 300);
+});
+
+document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => {
+  b.closest('.overlay').classList.remove('open');
+});
+document.querySelectorAll('.overlay').forEach(o => o.onclick = e => { if (e.target === o) o.classList.remove('open'); });
+
+/* ============ Viloyat va tumanlar boshqaruvi ============ */
+let selectedRegionId = null;
+async function loadRegions(){
+  try {
+    const regions = await apiFetch('/api/admin/regions');
+    document.getElementById('regionsList').innerHTML = regions.length ? regions.map(r => `
+      <div data-region-row="${r.id}" style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer;${selectedRegionId === r.id ? 'background:#F5F2FF' : ''}">
+        <span>${r.name}</span>
+        <span style="display:flex;align-items:center;gap:8px">
+          <small style="color:var(--muted)">${r.district_count} tuman</small>
+          <button class="btn-danger" data-del-region="${r.id}" title="O'chirish" style="font-size:12px">✕</button>
+        </span>
+      </div>`).join('') : `<div class="empty">Hali viloyat qo'shilmagan</div>`;
+
+    document.querySelectorAll('[data-region-row]').forEach(row => row.onclick = (e) => {
+      if (e.target.closest('[data-del-region]')) return;
+      selectedRegionId = +row.dataset.regionRow;
+      loadRegions();
+      loadDistrictsForRegion(selectedRegionId, regions.find(r => r.id === selectedRegionId)?.name);
+    });
+    document.querySelectorAll('[data-del-region]').forEach(b => b.onclick = async (e) => {
+      e.stopPropagation();
+      if (!confirm("Bu viloyatni (va undagi barcha tumanlarni) o'chirasizmi?")) return;
+      try {
+        await apiFetch(`/api/admin/regions/${b.dataset.delRegion}`, { method: 'DELETE' });
+        if (selectedRegionId === +b.dataset.delRegion) { selectedRegionId = null; document.getElementById('districtsList').innerHTML = ''; }
+        loadRegions();
+      } catch (err) { alert(err.message); }
+    });
+
+    if (selectedRegionId) {
+      const r = regions.find(x => x.id === selectedRegionId);
+      if (r) loadDistrictsForRegion(selectedRegionId, r.name);
+      else { selectedRegionId = null; document.getElementById('districtsList').innerHTML = ''; }
+    }
+  } catch (e) { console.warn(e.message); }
+}
+
+async function loadDistrictsForRegion(regionId, regionName){
+  document.getElementById('districtsTitle').textContent = regionName ? `${regionName} — tumanlar` : 'Tumanlar';
+  try {
+    const districts = await apiFetch(`/api/admin/districts?region_id=${regionId}`);
+    document.getElementById('districtsList').innerHTML = districts.length ? districts.map(d => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid var(--line)">
+        <span>${d.name}</span>
+        <button class="btn-danger" data-del-district="${d.id}" style="font-size:12px">O'chirish</button>
+      </div>`).join('') : `<div class="empty">Bu viloyatda hali tuman qo'shilmagan</div>`;
+    document.querySelectorAll('[data-del-district]').forEach(b => b.onclick = async () => {
+      if (!confirm("Bu tumanni o'chirasizmi?")) return;
+      try {
+        await apiFetch(`/api/admin/districts/${b.dataset.delDistrict}`, { method: 'DELETE' });
+        delete DISTRICTS_CACHE[regionId];
+        loadDistrictsForRegion(regionId, regionName);
+      } catch (err) { alert(err.message); }
+    });
+  } catch (e) { console.warn(e.message); }
+}
+
+document.getElementById('addRegionBtn').onclick = async () => {
+  const name = prompt("Viloyat nomini kiriting (masalan: Namangan viloyati):");
+  if (!name || !name.trim()) return;
+  try { await apiFetch('/api/admin/regions', { method: 'POST', body: JSON.stringify({ name: name.trim() }) }); loadRegions(); }
+  catch (e) { alert(e.message); }
+};
+document.getElementById('addDistrictBtn').onclick = async () => {
+  if (!selectedRegionId) { alert("Avval chapdan viloyatni tanlang."); return; }
+  const name = prompt("Tuman nomini kiriting:");
+  if (!name || !name.trim()) return;
+  try {
+    await apiFetch('/api/admin/districts', { method: 'POST', body: JSON.stringify({ name: name.trim(), region_id: selectedRegionId }) });
+    delete DISTRICTS_CACHE[selectedRegionId];
+    const regions = await apiFetch('/api/admin/regions');
+    loadDistrictsForRegion(selectedRegionId, regions.find(r => r.id === selectedRegionId)?.name);
+    loadRegions();
+  } catch (e) { alert(e.message); }
+};
+
+/* ============ Kurslar va imkoniyatlar ============ */
+const OPP_TYPE_LABELS = { kurs: 'Kurs', togarak: "To'garak", markaz: 'Markaz', olimpiada: 'Olimpiada', tanlov: 'Tanlov' };
+let OPPS = [];
+let ALL_REGIONS_FOR_OPP = [];
+
+async function loadOpportunities(){
+  try {
+    OPPS = await apiFetch('/api/admin/opportunities');
+    if (!ALL_REGIONS_FOR_OPP.length) {
+      ALL_REGIONS_FOR_OPP = await apiFetch('/api/admin/regions');
+      document.getElementById('oppRegionFilter').innerHTML = '<option value="">Barcha viloyatlar</option>' +
+        ALL_REGIONS_FOR_OPP.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+      document.getElementById('oppRegion').innerHTML = '<option value="">Barcha viloyatlar (butun mamlakat)</option>' +
+        ALL_REGIONS_FOR_OPP.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+    }
+    applyOppFilters();
+  } catch (e) { console.warn(e.message); }
+}
+function renderOppTable(list){
+  document.getElementById('oppBody').innerHTML = list.length ? list.map(o => `
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;border-radius:8px;background:var(--bg,#F5F5FA);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center">
+          ${o.logo ? `<img src="${o.logo}" style="width:100%;height:100%;object-fit:cover">` : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B4B2CB" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`}
+        </div>
+        <div>${o.name}${o.description ? `<br><small style="color:var(--muted)">${o.description}</small>` : ''}</div>
+      </div></td>
+      <td><span class="pill">${OPP_TYPE_LABELS[o.type] || o.type}</span></td>
+      <td>${o.online ? "Onlayn" : (o.district_name || o.region_name || 'Butun mamlakat')}</td>
+      <td class="row-acts">
+        <button data-edit-opp="${o.id}">Tahrirlash</button>
+        <button class="btn-danger" data-del-opp="${o.id}">O'chirish</button>
+      </td>
+    </tr>`).join('') : `<tr><td colspan="4" class="empty">Hali kurs/imkoniyat qo'shilmagan</td></tr>`;
+  document.querySelectorAll('[data-edit-opp]').forEach(b => b.onclick = () => openOppModal(+b.dataset.editOpp));
+  document.querySelectorAll('[data-del-opp]').forEach(b => b.onclick = async () => {
+    if (!confirm("O'chirasizmi?")) return;
+    try { await apiFetch(`/api/admin/opportunities/${b.dataset.delOpp}`, { method: 'DELETE' }); loadOpportunities(); }
+    catch (e) { alert(e.message); }
+  });
+}
+function applyOppFilters(){
+  const q = document.getElementById('oppSearch').value.trim().toLowerCase();
+  const regionId = document.getElementById('oppRegionFilter').value;
+  let list = OPPS;
+  if (regionId) list = list.filter(o => String(o.region_id) === regionId);
+  if (q) list = list.filter(o => (o.name || '').toLowerCase().includes(q));
+  renderOppTable(list);
+}
+document.getElementById('oppSearch').addEventListener('input', applyOppFilters);
+document.getElementById('oppRegionFilter').addEventListener('change', applyOppFilters);
+
+const oppModal = document.getElementById('oppModal');
+let editingOppId = null;
+
+document.getElementById('oppOnline').addEventListener('change', function(){
+  document.getElementById('oppRegionField').style.display = this.checked ? 'none' : 'block';
+  document.getElementById('oppDistrictField').style.display = this.checked ? 'none' : 'block';
+});
+document.getElementById('oppRegion').addEventListener('change', async function(){
+  const distSel = document.getElementById('oppDistrict');
+  distSel.innerHTML = '<option value="">Butun viloyat</option>';
+  if (this.value) {
+    const list = await getDistrictsFor(+this.value);
+    distSel.innerHTML += list.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+  }
+});
+
+let currentOppLogo = null;
+let currentOppImages = [];
+
+function readImageFile(file, maxMb){
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/')) { reject(new Error('Faqat rasm fayli tanlang.')); return; }
+    if (file.size > maxMb * 1024 * 1024) { reject(new Error(`Rasm hajmi ${maxMb} MB dan oshmasin.`)); return; }
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = () => reject(new Error("Rasmni o'qib bo'lmadi."));
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderOppLogoBox(){
+  const box = document.getElementById('oppLogoBox');
+  box.innerHTML = currentOppLogo
+    ? `<img src="${currentOppLogo}" style="width:100%;height:100%;object-fit:cover">`
+    : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B2CB" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`;
+  document.getElementById('oppLogoRemoveBtn').style.display = currentOppLogo ? '' : 'none';
+}
+function renderOppImagesBox(){
+  const box = document.getElementById('oppImagesBox');
+  box.innerHTML = currentOppImages.map((src, i) => `
+    <div style="position:relative;width:72px;height:72px;border-radius:10px;overflow:hidden;border:1px solid var(--line,#E9E8F4)">
+      <img src="${src}" style="width:100%;height:100%;object-fit:cover">
+      <button type="button" data-rm-img="${i}" style="position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:6px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>`).join('');
+  document.querySelectorAll('[data-rm-img]').forEach(b => b.onclick = () => {
+    currentOppImages.splice(+b.dataset.rmImg, 1);
+    renderOppImagesBox();
+    updateOppImagesBtn();
+  });
+}
+function updateOppImagesBtn(){
+  document.getElementById('oppImagesBtn').style.display = currentOppImages.length >= 2 ? 'none' : '';
+}
+
+document.getElementById('oppLogoBtn').onclick = () => document.getElementById('oppLogoInput').click();
+document.getElementById('oppLogoInput').onchange = async function(){
+  const file = this.files[0];
+  this.value = '';
+  if (!file) return;
+  try {
+    currentOppLogo = await readImageFile(file, 1.5);
+    renderOppLogoBox();
+  } catch (err) { alert(err.message); }
+};
+document.getElementById('oppLogoRemoveBtn').onclick = () => { currentOppLogo = null; renderOppLogoBox(); };
+
+document.getElementById('oppImagesBtn').onclick = () => document.getElementById('oppImagesInput').click();
+document.getElementById('oppImagesInput').onchange = async function(){
+  const file = this.files[0];
+  this.value = '';
+  if (!file) return;
+  if (currentOppImages.length >= 2) return;
+  try {
+    const dataUrl = await readImageFile(file, 2);
+    currentOppImages.push(dataUrl);
+    renderOppImagesBox();
+    updateOppImagesBtn();
+  } catch (err) { alert(err.message); }
+};
+
+function openOppModal(id){
+  editingOppId = id || null;
+  const o = id ? OPPS.find(x => x.id === id) : null;
+  document.getElementById('oppModalTitle').textContent = id ? "Tahrirlash" : "Kurs/imkoniyat qo'shish";
+  document.getElementById('oppName').value = o ? o.name : '';
+  document.getElementById('oppType').value = o ? o.type : 'kurs';
+  document.getElementById('oppDesc').value = o ? (o.description || '') : '';
+  currentOppLogo = o ? (o.logo || null) : null;
+  currentOppImages = o && Array.isArray(o.images) ? o.images.slice(0, 2) : [];
+  renderOppLogoBox();
+  renderOppImagesBox();
+  updateOppImagesBtn();
+  document.getElementById('oppOnline').checked = o ? o.online : false;
+  document.getElementById('oppOnline').dispatchEvent(new Event('change'));
+  document.getElementById('oppRegion').value = o && o.region_id ? o.region_id : '';
+  document.getElementById('oppRegion').dispatchEvent(new Event('change'));
+  setTimeout(() => { document.getElementById('oppDistrict').value = o && o.district_id ? o.district_id : ''; }, 250);
+  oppModal.classList.add('open');
+}
+document.getElementById('addOppBtn').onclick = () => openOppModal(null);
+document.getElementById('saveOppBtn').onclick = async () => {
+  const name = document.getElementById('oppName').value.trim();
+  if (!name) { alert("Nomini kiriting."); return; }
+  const online = document.getElementById('oppOnline').checked;
+  const payload = {
+    name, type: document.getElementById('oppType').value,
+    description: document.getElementById('oppDesc').value.trim() || null,
+    logo: currentOppLogo,
+    images: currentOppImages,
+    online,
+    region_id: online ? null : (document.getElementById('oppRegion').value ? +document.getElementById('oppRegion').value : null),
+    district_id: online ? null : (document.getElementById('oppDistrict').value ? +document.getElementById('oppDistrict').value : null),
+  };
+  try {
+    if (editingOppId) await apiFetch(`/api/admin/opportunities/${editingOppId}`, { method: 'PATCH', body: JSON.stringify(payload) });
+    else await apiFetch('/api/admin/opportunities', { method: 'POST', body: JSON.stringify(payload) });
+    oppModal.classList.remove('open');
+    loadOpportunities();
+  } catch (e) { alert(e.message); }
+};
+
+/* ============ Admin panel foydalanuvchilarini boshqarish (faqat bosh admin) ============ */
+const PERM_LABELS = {
+  manage_schools: 'Maktablar', manage_regions: 'Viloyat/tuman',
+  manage_opportunities: 'Kurslar', manage_users: 'Foydalanuvchilar',
+};
+let ADMINS = [];
+async function loadAdmins(){
+  try {
+    const all = await apiFetch('/api/admin/users');
+    ADMINS = all.filter(u => u.role === 'admin');
+    document.getElementById('adminsBody').innerHTML = ADMINS.length ? ADMINS.map(a => `
+      <tr>
+        <td>${a.full_name}</td><td>${a.phone}</td>
+        <td>${a.is_superadmin ? '<span class="pill">Bosh admin — barcha huquqlar</span>' :
+            (Object.entries(a.permissions || {}).filter(([k,v]) => v).map(([k]) => `<span class="pill">${PERM_LABELS[k] || k}</span>`).join(' ') || '<small style="color:var(--muted)">Hech qanday huquq yo\u2018q</small>')}</td>
+        <td class="row-acts">
+          ${a.is_superadmin ? '' : `
+            <button data-edit-admin="${a.id}">Tahrirlash</button>
+            <button class="btn-danger" data-del-admin="${a.id}">O'chirish</button>`}
+        </td>
+      </tr>`).join('') : `<tr><td colspan="4" class="empty">Hali qo'shimcha admin yo'q</td></tr>`;
+    document.querySelectorAll('[data-edit-admin]').forEach(b => b.onclick = () => openAdminModal(+b.dataset.editAdmin));
+    document.querySelectorAll('[data-del-admin]').forEach(b => b.onclick = async () => {
+      const a = ADMINS.find(x => x.id === +b.dataset.delAdmin);
+      if (!confirm(`"${a.full_name}" administrator hisobini o'chirasizmi?`)) return;
+      try { await apiFetch(`/api/admin/users/${a.id}`, { method: 'DELETE' }); loadAdmins(); }
+      catch (e) { alert(e.message); }
+    });
+  } catch (e) { console.warn(e.message); }
+}
+
+const adminModal = document.getElementById('adminModal');
+let editingAdminId = null;
+bindPhoneInput(document.getElementById('aPhone'), document.getElementById('aPhoneWrap'));
+bindEye(document.getElementById('aEye'), document.getElementById('aPass'));
+
+function openAdminModal(id){
+  editingAdminId = id || null;
+  const a = id ? ADMINS.find(x => x.id === id) : null;
+  document.getElementById('adminModalTitle').textContent = id ? "Admin huquqlarini tahrirlash" : "Admin qo'shish";
+  document.getElementById('aName').value = a ? a.full_name : '';
+  document.getElementById('aPhone').value = '';
+  document.getElementById('aPass').value = '';
+  document.getElementById('aNameField').style.display = id ? 'none' : 'block';
+  document.getElementById('aPhoneField').style.display = id ? 'none' : 'block';
+  document.getElementById('aPassField').style.display = id ? 'none' : 'block';
+  const perms = a ? (a.permissions || {}) : {};
+  document.getElementById('permSchools').checked = !!perms.manage_schools;
+  document.getElementById('permRegions').checked = !!perms.manage_regions;
+  document.getElementById('permOpportunities').checked = !!perms.manage_opportunities;
+  document.getElementById('permUsers').checked = !!perms.manage_users;
+  adminModal.classList.add('open');
+}
+document.getElementById('addAdminBtn').onclick = () => openAdminModal(null);
+document.getElementById('saveAdminBtn').onclick = async () => {
+  const permissions = {
+    manage_schools: document.getElementById('permSchools').checked,
+    manage_regions: document.getElementById('permRegions').checked,
+    manage_opportunities: document.getElementById('permOpportunities').checked,
+    manage_users: document.getElementById('permUsers').checked,
+  };
+  try {
+    if (editingAdminId) {
+      await apiFetch(`/api/admin/users/${editingAdminId}`, { method: 'PATCH', body: JSON.stringify({ permissions }) });
+    } else {
+      const full_name = document.getElementById('aName').value.trim();
+      const phoneInput = document.getElementById('aPhone');
+      const password = document.getElementById('aPass').value;
+      let bad = false;
+      if (!full_name) bad = true;
+      if (!phoneValid(phoneInput)) { document.getElementById('aPhoneWrap').classList.add('err'); bad = true; }
+      if (!passwordValid(password)) { document.getElementById('aPassWrap').classList.add('err'); bad = true; }
+      if (bad) { alert("Ism to'liq, telefon 9 xonali va parol kamida 6 belgi (harf + raqam) bo'lsin."); return; }
+      await apiFetch('/api/admin/users', {
+        method: 'POST',
+        body: JSON.stringify({ full_name, phone: fullPhone(phoneInput), password, role: 'admin', permissions }),
+      });
+    }
+    adminModal.classList.remove('open');
+    loadAdmins();
+  } catch (e) { alert(e.message); }
+};
+</script>
+</body>
+</html>
