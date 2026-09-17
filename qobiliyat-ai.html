@@ -3825,10 +3825,10 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
     <div class="field">
       <label class="field-lbl">Kim sifatida?</label>
       <select class="inp" style="margin-top:9px" id="rRole">
-        <option>Maktab direktori</option>
-        <option>Kelajak Markazi direktori</option>
-        <option>Maktab maslahatchisi</option>
-        <option>Ota-ona</option>
+        <option value="Maktab maslahatchisi">Maktab maslahatchisi</option>
+        <option value="Maktab direktori" disabled>Maktab direktori (tez orada)</option>
+        <option value="Kelajak Markazi direktori" disabled>Kelajak Markazi direktori (tez orada)</option>
+        <option value="Ota-ona" disabled>Ota-ona (tez orada)</option>
       </select>
     </div>
 
@@ -3836,19 +3836,8 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
       <label class="field-lbl" id="orgLabel">Maktab</label>
       <select class="inp" style="margin-top:9px" id="rOrg">
         <option value="">Maktabni tanlang</option>
-        <option value="__new__">+ Yangi maktab qo'shish</option>
       </select>
-    </div>
-
-    <div id="newSchoolFields" style="display:none">
-      <div class="field"><label class="field-lbl" for="rSchoolName">Maktab nomi</label>
-        <input id="rSchoolName" class="inp" style="margin-top:9px" placeholder="Masalan: 25-son umumiy o'rta ta'lim maktabi"></div>
-      <div class="two">
-        <div class="field"><label class="field-lbl" for="rSchoolRegion">Viloyat</label>
-          <input id="rSchoolRegion" class="inp" style="margin-top:9px" placeholder="Namangan viloyati"></div>
-        <div class="field"><label class="field-lbl" for="rSchoolDistrict">Tuman</label>
-          <input id="rSchoolDistrict" class="inp" style="margin-top:9px" placeholder="Pop tumani"></div>
-      </div>
+      <p style="font-size:12px;color:var(--muted,#6B6584);margin:6px 2px 0">Ro'yxatda yo'q maktab uchun administratorga murojaat qiling.</p>
     </div>
 
     <div class="field">
@@ -7594,7 +7583,6 @@ document.getElementById('openReg').onclick    = e => { e.preventDefault(); open(
 function resetModals(){
   document.getElementById('regForm').style.display = 'block';
   document.getElementById('regDone').style.display = 'none';
-  document.getElementById('newSchoolFields').style.display = 'none';
   showForgotStep(1);
   document.getElementById('codeInput').value = '';
   document.getElementById('newPw').value = '';
@@ -7740,13 +7728,6 @@ document.getElementById('regBtn').onclick = async () => {
     orgSel.classList.add('err');
     if (!bad) bad = orgSel;
   }
-  /* yangi maktab tanlangan bo'lsa — nomi kiritilishi shart */
-  const isNewSchool = orgSel.value === '__new__';
-  const schoolNameEl = document.getElementById('rSchoolName');
-  if (isNewSchool && !schoolNameEl.value.trim()) {
-    schoolNameEl.classList.add('err');
-    if (!bad) bad = schoolNameEl;
-  }
 
   if (bad) {
     err.textContent = bad.id === 'rPw'
@@ -7766,14 +7747,8 @@ document.getElementById('regBtn').onclick = async () => {
       full_name: `${document.getElementById('rName').value.trim()} ${document.getElementById('rSur').value.trim()}`,
       phone: '+998' + document.getElementById('rTel').value.replace(/\D/g, ''),
       password: document.getElementById('rPw').value,
+      school_id: +orgSel.value,
     };
-    if (isNewSchool) {
-      payload.school_name = schoolNameEl.value.trim();
-      payload.school_region = document.getElementById('rSchoolRegion').value.trim();
-      payload.school_district = document.getElementById('rSchoolDistrict').value.trim();
-    } else {
-      payload.school_id = +orgSel.value;
-    }
 
     const data = await apiFetch('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) });
     localStorage.setItem('qp_token', data.access_token);
@@ -7781,7 +7756,6 @@ document.getElementById('regBtn').onclick = async () => {
 
     regFields.forEach(el => el.value = '');
     regSelects.forEach(sel => sel.selectedIndex = 0);
-    document.getElementById('newSchoolFields').style.display = 'none';
     err.classList.remove('show');
     document.getElementById('regForm').style.display = 'none';
     document.getElementById('regDone').style.display = 'block';
@@ -7811,14 +7785,12 @@ async function loadSchoolsForReg(){
     REAL_SCHOOLS = await apiFetch('/api/auth/schools') || [];
   } catch (e) { REAL_SCHOOLS = []; }
   const opts = ['<option value="">Maktabni tanlang</option>']
-    .concat(REAL_SCHOOLS.map(s => `<option value="${s.id}">${s.name}${s.district ? ' · ' + s.district : ''}</option>`))
-    .concat(['<option value="__new__">+ Yangi maktab qo\'shish</option>']);
+    .concat(REAL_SCHOOLS.map(s => `<option value="${s.id}">${s.name}${s.district ? ' · ' + s.district : ''}</option>`));
   orgSel.innerHTML = opts.join('');
 }
 loadSchoolsForReg();
 
 orgSel.addEventListener('change', () => {
-  document.getElementById('newSchoolFields').style.display = orgSel.value === '__new__' ? 'block' : 'none';
   orgSel.classList.remove('err');
 });
 
