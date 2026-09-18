@@ -7384,6 +7384,14 @@ function showView(name, silent){
   window.scrollTo(0, 0);
   window.dispatchEvent(new CustomEvent('view:shown', { detail: name }));
 }
+/* Global qilib beriladi — boshqa <script> bloklari (masalan apiFetch'ning
+   401/"sessiya tugagan" ishlovchisi) ham shu funksiyani chaqira olishi
+   uchun. Buni qo'shmaslik sabab bo'lgan haqiqiy xato: token eskirganda
+   apiFetch window.showView mavjudligini tekshirar edi, lekin u hech qachon
+   global qilinmagani uchun tekshiruv doim yolg'on chiqib, foydalanuvchi
+   avtomatik chiqarilmay, eski (keshlangan) ma'lumotlar bilan sahifada
+   qolib ketardi. */
+window.showView = showView;
 
 /* Sahifa qayta yuklanganda oxirgi bo'lim ochiladi — LEKIN faqat haqiqatan
    tizimga kirilgan bo'lsa (qp_token mavjud bo'lsa). Aks holda URL'da eski
