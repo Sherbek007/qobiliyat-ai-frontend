@@ -4055,8 +4055,8 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
 
     <div class="welcome">
       <div>
-        <h1>Xush kelibsiz, Abdulaziz! 👋</h1>
-        <p>Bugun 24 may, 2024-yil. O'quvchilaringiz rivojlanishini kuzatib boring.</p>
+        <h1 id="welcomeName">Xush kelibsiz! 👋</h1>
+        <p id="welcomeDate">O'quvchilaringiz rivojlanishini kuzatib boring.</p>
       </div>
       <div class="dropdown" style="position:relative">
         <button class="datepick" id="dashDatePick">
@@ -4100,7 +4100,7 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
         <div>
           <div class="lbl">AI tahlil qilinganlar</div>
           <div class="val" id="kpiAnalyzed">87</div>
-          <div class="note up">+18 bu oyda
+          <div class="note up" id="kpiAnalyzedNote">+18 bu oyda
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
           </div>
         </div>
@@ -4111,7 +4111,7 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
         <div>
           <div class="lbl">Yangi yutuqlar</div>
           <div class="val" id="kpiAch">23</div>
-          <div class="note up">+7 bu oyda
+          <div class="note up" id="kpiAchNote">+7 bu oyda
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
           </div>
         </div>
@@ -4122,7 +4122,7 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
         <div>
           <div class="lbl">O'rtacha qobiliyat indeksi</div>
           <div class="val" id="kpiAvgIdx">78%</div>
-          <div class="note up">
+          <div class="note up" id="kpiAvgIdxNote">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
             +5% o'tgan oyga nisbatan
           </div>
@@ -7995,18 +7995,27 @@ document.querySelectorAll('#appView .sidebar .nav-item:not(#aiToggle)').forEach(
 });
 
 /* ============ Kalendar (davr tanlash) ============ */
-const RANGE_LABELS = {
-  "Joriy oy": "24 may \u2013 24 iyun, 2024",
-  "O'tgan oy": "24 aprel \u2013 24 may, 2024",
-  "Oxirgi 3 oy": "24 fevral \u2013 24 may, 2024",
-  "Joriy yil": "1 yanvar \u2013 24 may, 2024",
-};
+const UZ_MONTHS = ["yanvar","fevral","mart","aprel","may","iyun","iyul","avgust","sentyabr","oktyabr","noyabr","dekabr"];
+function fmtUz(d){ return d.getDate() + ' ' + UZ_MONTHS[d.getMonth()] + ', ' + d.getFullYear(); }
+function rangeLabel(kind){
+  const now = new Date();
+  const end = fmtUz(now);
+  let start;
+  if (kind === "Joriy oy") { start = new Date(now.getFullYear(), now.getMonth(), 1); }
+  else if (kind === "O'tgan oy") { start = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate()); }
+  else if (kind === "Oxirgi 3 oy") { start = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate()); }
+  else if (kind === "Joriy yil") { start = new Date(now.getFullYear(), 0, 1); }
+  else { return kind; }
+  return fmtUz(start) + " \u2013 " + end;
+}
 const dashDatePick = document.getElementById('dashDatePick');
 const dashDateMenu = document.getElementById('dashDateMenu');
+const dashDateLabelEl = document.getElementById('dashDateLabel');
+if (dashDateLabelEl) dashDateLabelEl.textContent = rangeLabel("Joriy oy");
 if (dashDatePick) {
   dashDatePick.onclick = e => { e.stopPropagation(); dashDateMenu.classList.toggle('open'); };
   dashDateMenu.querySelectorAll('[data-range]').forEach(b => b.onclick = () => {
-    document.getElementById('dashDateLabel').textContent = RANGE_LABELS[b.dataset.range] || b.dataset.range;
+    document.getElementById('dashDateLabel').textContent = rangeLabel(b.dataset.range);
     dashDateMenu.classList.remove('open');
   });
 }
@@ -8028,20 +8037,45 @@ async function loadDashboardStats(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
     const s = await apiFetch('/api/students/stats/summary');
-    if (!s || !s.total) return; /* baza bo'sh — demo raqamlar qoladi */
-    document.getElementById('kpiTotal').textContent = s.total;
-    document.getElementById('kpiActive').textContent = s.active;
+    /* MUHIM: avval bu yerda "agar total 0 bo'lsa demo raqamlar qoladi" degan
+       shart bor edi — aynan shu sabab bazadan barcha o'quvchilar o'chirilgach
+       (yoki yangi, hali o'quvchisi yo'q maslahatchi kirganda) real "0" natija
+       hech qachon ko'rsatilmay, eski demo raqamlar (128, 98, 87, 23, 78%)
+       abadiy ko'rinib turardi. Endi faqat so'rov umuman muvaffaqiyatsiz
+       bo'lsa (s aniqlanmagan) demo raqamlar qoladi; real 0 bo'lsa ham 0
+       ko'rsatiladi. */
+    if (!s) return;
+    const total = s.total || 0;
+    const active = s.active || 0;
+    document.getElementById('kpiTotal').textContent = total;
+    document.getElementById('kpiActive').textContent = active;
     document.getElementById('kpiActiveNote').textContent =
-      Math.round(s.active / s.total * 1000) / 10 + "% jami o'quvchilardan";
-    document.getElementById('kpiAnalyzed').textContent = s.analyzed;
-    document.getElementById('kpiAch').textContent = s.achievements_total;
-    document.getElementById('kpiAvgIdx').textContent = s.avg_index + '%';
+      (total ? Math.round(active / total * 1000) / 10 : 0) + "% jami o'quvchilardan";
+    document.getElementById('kpiAnalyzed').textContent = s.analyzed || 0;
+    document.getElementById('kpiAch').textContent = s.achievements_total || 0;
+    document.getElementById('kpiAvgIdx').textContent = (s.avg_index || 0) + '%';
+    /* Backend hozircha oylik o'zgarish (+12 bu oyda va h.k.) statistikasini
+       bermaydi — shuning uchun bu safar chiqarilgan haqiqiy raqamlar bilan
+       mos kelmaydigan, oldindan yozib qo'yilgan "+12 bu oyda" kabi soxta
+       o'sish matnlarini yashiramiz. */
+    ['kpiTotalNote', 'kpiAnalyzedNote', 'kpiAchNote', 'kpiAvgIdxNote'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
   } catch (err) {
     console.warn("Bosh sahifa statistikasini yuklab bo'lmadi:", err.message);
   }
 }
 loadDashboardStats();
 window.addEventListener('view:shown', e => { if (e.detail === 'home') loadDashboardStats(); });
+
+/* ============ Bugungi sanani dinamik ko'rsatish (statik "24 may, 2024" o'rniga) ============ */
+(function initWelcomeDate(){
+  const months = ["yanvar","fevral","mart","aprel","may","iyun","iyul","avgust","sentyabr","oktyabr","noyabr","dekabr"];
+  const d = new Date();
+  const dateEl = document.getElementById('welcomeDate');
+  if (dateEl) dateEl.textContent = "Bugun " + d.getDate() + " " + months[d.getMonth()] + ", " + d.getFullYear() + "-yil. O'quvchilaringiz rivojlanishini kuzatib boring.";
+})();
 
 
 const pBtn  = document.getElementById('profileBtn');
@@ -14915,6 +14949,11 @@ function applyRealUser(){
     document.getElementById('pName').textContent = u.full_name;
     document.getElementById('headerPic').textContent = iniOf(u.full_name);
     document.getElementById('pAva').textContent = iniOf(u.full_name);
+    const welcomeEl = document.getElementById('welcomeName');
+    if (welcomeEl) {
+      const firstName = (u.full_name || '').trim().split(/\s+/)[0] || '';
+      welcomeEl.textContent = (firstName ? ('Xush kelibsiz, ' + firstName + '!') : 'Xush kelibsiz!') + ' 👋';
+    }
   } catch (e) {}
 }
 /* Global qilib beriladi — sahifa qayta yuklanmasdan (SPA ichida) muvaffaqiyatli
