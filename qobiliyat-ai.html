@@ -7385,18 +7385,25 @@ function showView(name, silent){
   window.dispatchEvent(new CustomEvent('view:shown', { detail: name }));
 }
 
-/* Sahifa qayta yuklanganda oxirgi bo'lim ochiladi */
+/* Sahifa qayta yuklanganda oxirgi bo'lim ochiladi — LEKIN faqat haqiqatan
+   tizimga kirilgan bo'lsa (qp_token mavjud bo'lsa). Aks holda URL'da eski
+   #home kabi hash qolib ketgan bo'lsa ham, har doim kirish (login) sahifasi
+   ko'rsatiladi — aks holda boshqa (yoki eski) foydalanuvchining keshlangan
+   ma'lumotlari login qilmasdan turib ko'rinib qolishi mumkin edi. */
 (function restoreView(){
   const h = (location.hash || '').replace('#', '');
-  if (h && VIEWS[h] && h !== 'login') {
+  const loggedIn = !!localStorage.getItem('qp_token');
+  if (h && VIEWS[h] && h !== 'login' && loggedIn) {
     Object.values(VIEWS).forEach(v => v.classList.remove('on'));
     VIEWS[h].classList.add('on');
     syncMenu(h);
+  } else if (h && h !== 'login' && !loggedIn) {
+    history.replaceState(null, '', location.pathname);
   }
 })();
 window.addEventListener('hashchange', () => {
   const h = (location.hash || '').replace('#', '');
-  if (h && VIEWS[h]) showView(h, true);
+  if (h && VIEWS[h] && (h === 'login' || localStorage.getItem('qp_token'))) showView(h, true);
 });
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-go]');
@@ -7912,6 +7919,7 @@ document.getElementById('loginSubmit').onclick = async () => {
 
     localStorage.setItem('qp_token', data.access_token);
     localStorage.setItem('qp_user', JSON.stringify(data.user));
+    if (window.applyRealUser) window.applyRealUser();
     showView('home');
   } catch (err) {
     showLoginError(err.isNetworkError
@@ -14876,7 +14884,7 @@ loadRealNotifs();
 /* ============ Haqiqiy foydalanuvchi va statistikani yuklash ============ */
 function iniOf(name){ return name.split(' ').filter(Boolean).slice(0,2).map(w => w[0]).join('').toUpperCase(); }
 
-(function applyRealUser(){
+function applyRealUser(){
   try {
     const u = JSON.parse(localStorage.getItem('qp_user') || 'null');
     if (!u) return;
@@ -14886,7 +14894,12 @@ function iniOf(name){ return name.split(' ').filter(Boolean).slice(0,2).map(w =>
     document.getElementById('headerPic').textContent = iniOf(u.full_name);
     document.getElementById('pAva').textContent = iniOf(u.full_name);
   } catch (e) {}
-})();
+}
+/* Global qilib beriladi — sahifa qayta yuklanmasdan (SPA ichida) muvaffaqiyatli
+   login qilingandan keyin ham header/profil darhol yangilanishi uchun
+   (boshqa <script> blokidagi loginSubmit shu funksiyani chaqiradi). */
+window.applyRealUser = applyRealUser;
+applyRealUser();
 
 async function loadProfileStats(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
