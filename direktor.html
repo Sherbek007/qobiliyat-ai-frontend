@@ -37,8 +37,6 @@ a{color:inherit;text-decoration:none}
 #loginBox label{font-size:12.5px;font-weight:700;display:block;margin:16px 0 7px;color:#5B5A7A}
 .field-inp{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);background:#fcfcfe;transition:.15s}
 .field-inp:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
-#loginErr{color:var(--red);font-size:12.5px;margin-top:14px;padding:11px 13px;background:var(--red-soft);border-radius:var(--r-sm);display:none}
-#loginErr.show{display:block}
 .phone-wrap{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--r-sm);background:#fcfcfe;overflow:hidden}
 .phone-wrap:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
 .phone-wrap .pfx{padding:11px 0 11px 13px;color:var(--muted);font-size:13.5px;font-weight:600}
@@ -361,19 +359,12 @@ tr:last-child td{border-bottom:none}
 <body>
 
 <div id="loginScreen">
-  <div id="loginBox">
-    <div class="brand">
+  <div id="loginBox" style="text-align:center">
+    <div class="brand" style="justify-content:center">
       <div class="emblem">Q</div>
-      <div><b>Qobiliyat Portfolisi <span style="color:var(--primary)">AI</span></b><small>Direktor paneli</small></div>
+      <div style="text-align:left"><b>Qobiliyat Portfolisi <span style="color:var(--primary)">AI</span></b><small>Direktor paneli</small></div>
     </div>
-    <h1>Xush kelibsiz</h1>
-    <p>Maktabingiz holatini kuzatish uchun kiring</p>
-    <label for="lPhone">Telefon raqam</label>
-    <div class="phone-wrap"><span class="pfx">+998</span><input id="lPhone" inputmode="numeric" maxlength="12" placeholder="90 123 45 67"></div>
-    <label for="lPass">Parol</label>
-    <div class="pass-wrap"><input id="lPass" type="password" placeholder="Parolingiz"><button type="button" class="eye" id="lEye">👁</button></div>
-    <button class="btn btn-primary" id="loginBtn" style="width:100%;margin-top:22px">Kirish</button>
-    <p id="loginErr"></p>
+    <p style="margin-top:18px">Kirish sahifasiga yo'naltirilmoqda...</p>
   </div>
 </div>
 
@@ -984,8 +975,11 @@ async function apiFetch(path, options){
 
 const loginScreen = document.getElementById('loginScreen');
 const appScreen = document.getElementById('appScreen');
-const loginErr = document.getElementById('loginErr');
 
+/* Kirish endi FAQAT umumiy kirish sahifasi (qobiliyat-ai.html) orqali —
+   u login qilib, rolga qarab shu sahifaga localStorage'ga token/user
+   yozib yo'naltiradi. Shu sabab bu yerda alohida login formasi yo'q —
+   token topilmasa umumiy kirish sahifasiga qaytariladi (pastda). */
 function bindPhoneMask(input){
   input.addEventListener('input', function(){
     let v = this.value.replace(/\D/g, '').slice(0, 9);
@@ -996,41 +990,14 @@ function bindPhoneMask(input){
     this.value = out;
   });
 }
-bindPhoneMask(document.getElementById('lPhone'));
 bindPhoneMask(document.getElementById('naPhone'));
 function fullPhone(input){ return '+998' + input.value.replace(/\D/g, ''); }
 function phoneValid(input){ return input.value.replace(/\D/g, '').length === 9; }
-document.getElementById('lEye').onclick = () => {
-  const inp = document.getElementById('lPass');
-  const open = inp.type === 'password';
-  inp.type = open ? 'text' : 'password';
-  document.getElementById('lEye').textContent = open ? '🙈' : '👁';
-};
-
-document.getElementById('loginBtn').onclick = async () => {
-  const phoneInput = document.getElementById('lPhone');
-  const pass = document.getElementById('lPass').value;
-  if (!phoneValid(phoneInput) || !pass) { showLoginErr("Telefon va parolni to'g'ri kiriting."); return; }
-  const btn = document.getElementById('loginBtn');
-  btn.disabled = true; btn.textContent = 'Tekshirilmoqda...';
-  try {
-    const data = await apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ phone: fullPhone(phoneInput), password: pass }) });
-    if (data.user.role !== 'direktor') { showLoginErr("Bu hisob maktab direktori sifatida ro'yxatga olinmagan."); return; }
-    localStorage.setItem('qp_director_token', data.access_token);
-    localStorage.setItem('qp_director_user', JSON.stringify(data.user));
-    startApp();
-  } catch (e) {
-    showLoginErr(e.isNetworkError ? "Serverga ulanib bo'lmadi." : (e.message || "Telefon yoki parol noto'g'ri."));
-  } finally {
-    btn.disabled = false; btn.textContent = 'Kirish';
-  }
-};
-function showLoginErr(msg){ loginErr.textContent = msg; loginErr.classList.add('show'); }
 
 function doLogout(){
   localStorage.removeItem('qp_director_token');
-  appScreen.classList.remove('show');
-  loginScreen.style.display = 'flex';
+  localStorage.removeItem('qp_director_user');
+  window.location.href = 'qobiliyat-ai.html';
 }
 
 const UZ_MONTHS = ['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'];
@@ -1160,7 +1127,11 @@ function initSettingsPage(){
   document.querySelector('.settings-2col .btn-sm[style*="margin-right:5px"]') &&
     (document.querySelector('.settings-2col .btn-sm').onclick = () => showToast("Rasm tanlash oynasi (keyingi bosqichda)."));
 }
-if (localStorage.getItem('qp_director_token')) startApp();
+if (localStorage.getItem('qp_director_token')) {
+  startApp();
+} else {
+  window.location.href = 'qobiliyat-ai.html';
+}
 
 document.querySelectorAll('.nav-item[data-view]').forEach(b => b.onclick = () => switchView(b.dataset.view));
 document.querySelectorAll('[data-view-link]').forEach(b => b.onclick = () => switchView(b.dataset.viewLink));
@@ -2050,9 +2021,6 @@ document.querySelectorAll('.dl-btn').forEach(btn => btn.onclick = e => { e.stopP
 document.querySelectorAll('.quick-rep-card').forEach(card => card.onclick = () => showToast(card.querySelector('b').textContent + ' tayyorlanmoqda...'));
 document.querySelectorAll('[data-view-link]').forEach(b => { if (!b.onclick) b.onclick = () => switchView(b.dataset.viewLink); });
 
-/* --- Enter tugmasi bilan kirish --- */
-document.getElementById('lPass').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginBtn').click(); });
-document.getElementById('lPhone').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('lPass').focus(); });
 </script>
 </body>
 </html>
