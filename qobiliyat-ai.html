@@ -9822,7 +9822,12 @@ async function loadStudentsFromAPI(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
     const rows = await apiFetch('/api/students');
-    if (!rows || !rows.length) return; /* baza bo'sh bo'lsa — demo ro'yxat qoladi */
+    /* MUHIM: avval "ro'yxat bo'sh bo'lsa demo ro'yxat qoladi" degan shart
+       bor edi — shu sabab bazadan o'quvchilar o'chirilgach ham bu yerda
+       15 ta soxta (namunaviy) o'quvchi abadiy ko'rinib turardi. Endi
+       so'rov muvaffaqiyatli bo'lsa (hatto natija bo'sh bo'lsa ham) har
+       doim haqiqiy ro'yxat bilan almashtiramiz. */
+    if (!rows) return;
     STUDENTS = rows.map((r, k) => ({
       apiId: r.id,
       name: r.full_name,
@@ -9999,7 +10004,11 @@ async function loadClassStats(idx){
   if (!c || !c.apiId || !window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
     const s = await apiFetch(`/api/classes/${c.apiId}/stats`);
-    if (!s || !s.student_count) return; /* hali baho kiritilmagan — demo ko'rsatkichlar qoladi */
+    /* MUHIM: avval "o'quvchi/baho yo'q bo'lsa demo ko'rsatkichlar qoladi"
+       degan shart bor edi — endi backend 0 o'quvchi bo'lsa ham to'liq (0
+       qiymatli) natija qaytaradi, shuning uchun har doim shu bilan
+       almashtiramiz. */
+    if (!s) return;
     Object.assign(c, {
       avg: Math.round(s.avg / 2 * 100) / 100, idx: s.idx, ach: s.ach,
       skills: s.skills, q: s.q, subs: s.subs && s.subs.length ? s.subs.map(v => Math.round(v / 2 * 100) / 100) : c.subs,
@@ -10390,22 +10399,27 @@ async function loadClassesFromAPI(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
     const rows = await apiFetch('/api/classes');
+    /* MUHIM: avval faqat NOM bo'yicha moslashtirib "boyitish" qilinardi va
+       hech qachon olib tashlanmasdi — shu sabab nomi mos kelmagan eski
+       demo sinflar ro'yxatda abadiy qolib ketardi. Endi butun ro'yxat
+       faqat HAQIQIY sinflar bilan almashtiriladi; avval shu funksiya
+       orqali yuklangan (apiId bo'yicha) haqiqiy ko'rsatkichlar saqlanadi,
+       aks holda 0 dan boshlanadi (demo son bilan emas). */
     if (!rows) return;
-    rows.forEach(r => {
-      const existing = CLASSES.find(c => c.name === r.name);
-      if (existing) {
-        existing.apiId = r.id;
-        existing.count = r.student_count || existing.count;
-        existing.of = r.student_count || existing.of;
-      } else {
-        CLASSES.push({ apiId: r.id, name: r.name, count: r.student_count || 0, teacher: '',
-          avg:0, idx:0, ach:0, done:0, of: r.student_count || 0, growth:0,
-          skills:[0,0,0,0,0,0], q:[0,0,0,0], subs:SUBJ.map(() => 0), top:[],
-          ai:"Bu sinf bo'yicha AI tahlil hali o'tkazilmagan. O'quvchilar test topshirgach xulosa shakllanadi." });
-      }
+    const prevById = {};
+    CLASSES.forEach(c => { if (c.apiId) prevById[c.apiId] = c; });
+    CLASSES = rows.map(r => {
+      const prev = prevById[r.id];
+      return prev
+        ? { ...prev, name: r.name, count: r.student_count || 0, of: r.student_count || 0 }
+        : { apiId: r.id, name: r.name, count: r.student_count || 0, teacher: '',
+            avg:0, idx:0, ach:0, done:0, of: r.student_count || 0, growth:0,
+            skills:[0,0,0,0,0,0], q:[0,0,0,0], subs:SUBJ.map(() => 0), top:[],
+            ai:"Bu sinf bo'yicha AI tahlil hali o'tkazilmagan. O'quvchilar test topshirgach xulosa shakllanadi." };
     });
+    if (sel >= CLASSES.length) sel = 0;
     renderCards(); renderDetail();
-    loadClassStats(sel);
+    if (CLASSES.length) loadClassStats(sel);
   } catch (err) {
     console.warn("Sinflar ro'yxatini backenddan yuklab bo'lmadi:", err.message);
   }
@@ -10514,9 +10528,12 @@ function fSkills(){
   const cls = fClasses();
   if (!cls.length) return SK.map(s => ({ ...s, v: 0 }));
   const avg = cls.reduce((a, c) => a + c.idx, 0) / cls.length;
-  const base = CLS_DATA.reduce((a, c) => a + c.idx, 0) / CLS_DATA.length;
-  const k = (avg / base) * (RANGES[F.range]?.k || 1);
-  return SK.map(s => ({ ...s, v: Math.max(5, Math.min(99, Math.round(s.v * k))) }));
+  const base = CLS_DATA.length ? CLS_DATA.reduce((a, c) => a + c.idx, 0) / CLS_DATA.length : 0;
+  /* base 0 bo'lsa (masalan hali hech qaysi sinfda tahlil qilingan o'quvchi
+     yo'q) avg/base NaN chiqib, hamma foizni NaN qilib qo'yardi — shu
+     holatda kengaytirish koeffitsientini 1 (o'zgarishsiz) qilib olamiz. */
+  const k = base > 0 ? (avg / base) * (RANGES[F.range]?.k || 1) : 1;
+  return SK.map(s => ({ ...s, v: Math.max(0, Math.min(99, Math.round(s.v * k))) }));
 }
 function fStats(){
   const cls = fClasses();
@@ -10648,11 +10665,11 @@ function render(){
         <div class="kcard"><div class="kico i-vi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2 20c0-3.4 3.1-5.6 7-5.6s7 2.2 7 5.6"/><path d="M17.5 11a3 3 0 100-6M22 20c0-2.6-1.3-4.4-3.2-5.2"/></svg></div>
           <div><small>Jami o'quvchilar</small><b>${ST.total}</b><span class="note">O'tgan oyga nisbatan <span class="up">↑ 12</span></span></div></div>
         <div class="kcard"><div class="kico i-bl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="16" height="14" rx="4"/><path d="M12 2v4"/><circle cx="9" cy="12.5" r="1.3"/><circle cx="15" cy="12.5" r="1.3"/><path d="M9.5 16.5h5"/></svg></div>
-          <div><small>Tahlil qilingan</small><b>${ST.done} <span style="font-size:12px" class="up">↑ ${(ST.done/ST.total*100).toFixed(1)}%</span></b><span class="note">Jami o'quvchilardan</span></div></div>
+          <div><small>Tahlil qilingan</small><b>${ST.done} <span style="font-size:12px" class="up">↑ ${ST.total ? (ST.done/ST.total*100).toFixed(1) : '0'}%</span></b><span class="note">Jami o'quvchilardan</span></div></div>
         <div class="kcard"><div class="kico i-pu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></div>
           <div><small>Aniqlangan qobiliyatlar</small><b>${SKF.filter(x => x.v > 0).length}</b><span class="note">Asosiy yo'nalishlar</span></div></div>
         <div class="kcard"><div class="kico i-am"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.3.9-4.5 4.4 1 6.1L12 17l-5.5 3 1-6.1L3 9.5l6.3-.9z"/></svg></div>
-          <div><small>Eng yuqori ko'rsatkich</small><b class="sm">IT va texnologiya</b><b style="font-size:20px;margin-top:0">82%</b></div></div>
+          <div><small>Eng yuqori ko'rsatkich</small>${(() => { const best = [...SKF].sort((a,b)=>b.v-a.v)[0]; return best && best.v > 0 ? `<b class="sm">${best.n}</b><b style="font-size:20px;margin-top:0">${best.v}%</b>` : `<b class="sm" style="color:var(--muted)">Hali ma'lumot yo'q</b>`; })()}</div></div>
         <div class="kcard"><div class="kico i-gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16"/><path d="M8 16l3.5-5 3 3L20 7"/></svg></div>
           <div><small>O'rtacha qobiliyat indeksi</small><b>${ST.idx}% <span style="font-size:12px" class="up">↑ 6%</span></b></div></div>
       </div>
@@ -11062,13 +11079,17 @@ async function loadSkillsFromAPI(){
   try {
     const data = await apiFetch('/api/students/skills-summary');
     if (!data || !data.skills) return;
-    let changed = false;
+    /* MUHIM: avval "has_data=false bo'lsa demo qiymat qoladi" degan shart
+       bor edi — shu sabab bazadan o'quvchilar o'chirilgach ham bu yerda
+       eski demo foizlar (82%, 79% va h.k.) abadiy qolib ketardi. Endi
+       backend har doim barcha yo'nalishlar uchun qator qaytaradi (hatto
+       ma'lumot yo'q bo'lsa ham value:0 bilan), shuning uchun har doim
+       shu haqiqiy qiymatga almashtiramiz. */
     data.skills.forEach(row => {
-      if (!row.has_data) return; /* bu yo'nalish uchun hali fan bahosi yo'q — demo qiymat qoladi */
       const sk = SK.find(x => x.n === row.name);
-      if (sk) { sk.v = row.value; changed = true; }
+      if (sk) sk.v = row.value;
     });
-    if (changed) render();
+    render();
   } catch (err) {
     console.warn("Qobiliyat statistikasini yuklab bo'lmadi:", err.message);
   }
@@ -11076,46 +11097,57 @@ async function loadSkillsFromAPI(){
 loadSkillsFromAPI();
 window.addEventListener('view:shown', e => { if (e.detail === 'skillmap') { loadSkillsFromAPI(); loadSkillsDetail(); } });
 
-/* ============ Har bir o'quvchi bo'yicha batafsil qobiliyat ma'lumotini yuklash ============ */
+/* ============ Har bir o'quvchi va sinf bo'yicha batafsil qobiliyat ma'lumotini yuklash ============ */
 async function loadSkillsDetail(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
-    const data = await apiFetch('/api/students/skills-detail');
-    const rows = data.students || [];
-    if (!rows.length) return;
+    const [data, classesRows] = await Promise.all([
+      apiFetch('/api/students/skills-detail'),
+      apiFetch('/api/classes').catch(() => []),
+    ]);
+    const rows = (data && data.students) || [];
 
-    /* TOPS — har bir ko'nikma bo'yicha eng yuqori natijali o'quvchilar (faqat ma'lumoti bor bo'lganlar) */
+    /* TOPS — har bir ko'nikma bo'yicha eng yuqori natijali o'quvchilar.
+       MUHIM: avval "ma'lumot yo'q bo'lsa demo TOPS qoladi" degan shart bor
+       edi — endi har doim haqiqiy (kerak bo'lsa bo'sh) ro'yxat bilan
+       almashtiramiz, shunda eski namunaviy ismlar qolib ketmaydi. */
     const newTops = {};
     SK.forEach(sk => {
       const withData = rows.filter(r => r.skills[sk.n] && r.skills[sk.n].has_data);
-      if (!withData.length) return; /* ma'lumot yo'q — demo TOPS shu ko'nikma uchun qoladi */
       newTops[sk.n] = withData
         .map(r => [r.name, r.cls, r.skills[sk.n].value])
         .sort((a, b) => b[2] - a[2])
         .slice(0, 10);
     });
-    Object.assign(TOPS, newTops);
+    TOPS = newTops;
 
-    /* CLS_DATA — haqiqiy sinflar bo'yicha o'rtacha va ustun yo'nalish */
+    /* CLS_DATA — haqiqiy sinflar ro'yxati (/api/classes'dan). Avval faqat
+       "tahlil qilingan o'quvchisi bor" sinflar ko'rsatilardi va agar
+       hech kim tahlil qilinmagan bo'lsa ro'yxat butunlay bo'sh qolib,
+       eski 8 ta demo sinf (186 o'quvchi) ko'rinishda qolaverardi. Endi
+       maktabdagi BARCHA haqiqiy sinflar chiqadi, o'quvchisi/tahlili
+       bo'lmaganlari uchun ko'rsatkichlar 0 bilan. */
     const byClass = {};
     rows.forEach(r => { (byClass[r.cls] ||= []).push(r); });
     window.CLASS_SKILL_MAP = {};
-    const newClsData = Object.entries(byClass).map(([clsName, students]) => {
+    const realClasses = Array.isArray(classesRows) ? classesRows : [];
+    const newClsData = realClasses.map(rc => {
+      const students = byClass[rc.name] || [];
       const skillAvgs = SK.map(sk => {
         const vals = students.map(s => s.skills[sk.n]).filter(x => x && x.has_data).map(x => x.value);
         return { name: sk.n, avg: vals.length ? Math.round(vals.reduce((a,b) => a+b, 0) / vals.length) : null };
       }).filter(x => x.avg !== null);
-      window.CLASS_SKILL_MAP[clsName] = {};
-      skillAvgs.forEach(x => { window.CLASS_SKILL_MAP[clsName][x.name] = x.avg; });
+      window.CLASS_SKILL_MAP[rc.name] = {};
+      skillAvgs.forEach(x => { window.CLASS_SKILL_MAP[rc.name][x.name] = x.avg; });
       const top = skillAvgs.length ? skillAvgs.sort((a,b) => b.avg - a.avg)[0] : null;
       const overallVals = students.flatMap(s => Object.values(s.skills).filter(x => x.has_data).map(x => x.value));
       return {
-        n: clsName, cnt: students.length, an: students.length,
+        n: rc.name, cnt: rc.student_count || 0, an: students.length,
         idx: overallVals.length ? Math.round(overallVals.reduce((a,b) => a+b, 0) / overallVals.length) : 0,
         top: top ? top.name : SK[0].n,
       };
     });
-    if (newClsData.length) CLS_DATA = newClsData;
+    CLS_DATA = newClsData;
 
     render();
   } catch (err) {
@@ -12471,7 +12503,10 @@ async function loadTestsFromAPI(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
     const rows = await apiFetch('/api/tests');
-    if (!rows || !rows.length) return; /* baza bo'sh — demo ro'yxat qoladi */
+    /* MUHIM: avval ro'yxat bo'sh bo'lsa demo testlar abadiy qolib ketardi
+       — endi so'rov muvaffaqiyatli bo'lsa har doim haqiqiy (bo'sh bo'lsa
+       ham) ro'yxat bilan almashtiramiz. */
+    if (!rows) return;
     TESTS = rows.map(r => ({
       apiId: r.id, id: 'T-' + r.id, name: r.name, type: r.type,
       cls: (r.class_ids || []).map(String), q: (r.questions || []).length,
@@ -13079,6 +13114,16 @@ function currentStageOf(p){
 
 /* ============ Render ============ */
 function render(){
+  if (!STUDENTS.length) {
+    document.getElementById('stuHead').innerHTML =
+      `<div><b>Hali o'quvchi yo'q</b><small>Bu maktabda hozircha bazaga qo'shilgan o'quvchi mavjud emas.</small></div>`;
+    document.getElementById('ovBox').innerHTML = '';
+    document.getElementById('roadBox').innerHTML =
+      `<div class="empty" style="padding:30px;text-align:center;color:var(--muted)">
+        O'quvchi qo'shilgach, uning rivojlanish yo'l xaritasi shu yerda ko'rinadi.
+      </div>`;
+    return;
+  }
   const s = STUDENTS[sel];
   const overall = PROFESSIONS.length
     ? Math.round(PROFESSIONS.reduce((a, p) => a + professionPct(p), 0) / PROFESSIONS.length) : 0;
@@ -13324,7 +13369,11 @@ async function loadStudentsFromAPI(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
     const [students, classes] = await Promise.all([apiFetch('/api/students'), apiFetch('/api/classes')]);
-    if (!students || !students.length) return; /* baza bo'sh \u2014 demo ro'yxat qoladi */
+    /* MUHIM: avval ro'yxat bo'sh bo'lsa demo o'quvchilar/tanlov abadiy
+       qolib ketardi \u2014 endi so'rov muvaffaqiyatli bo'lsa har doim haqiqiy
+       (bo'sh bo'lsa ham) ro'yxat bilan almashtiramiz; render() bo'sh
+       holatni alohida ko'rsatadi. */
+    if (!students) return;
     const clsById = {}; (classes || []).forEach(c => { clsById[c.id] = c.name; });
     STUDENTS = students.map(st => ({
       apiId: st.id, name: st.full_name, cls: clsById[st.class_id] || '\u2014',
@@ -13334,11 +13383,16 @@ async function loadStudentsFromAPI(){
       const c = STUDENTS[a].cls.localeCompare(STUDENTS[b].cls);
       return c !== 0 ? c : STUDENTS[a].name.localeCompare(STUDENTS[b].name, 'uz');
     });
-    document.getElementById('rdStuSel').innerHTML = sortedRealIdx.map(i =>
-      `<option value="${i}">${STUDENTS[i].cls} \u2014 ${STUDENTS[i].name}</option>`).join('');
-    sel = sortedRealIdx[0];
-    document.getElementById('rdStuSel').value = sel;
-    await loadRoadmapFor(sel);
+    document.getElementById('rdStuSel').innerHTML = sortedRealIdx.length
+      ? sortedRealIdx.map(i => `<option value="${i}">${STUDENTS[i].cls} \u2014 ${STUDENTS[i].name}</option>`).join('')
+      : '<option value="">O\u2018quvchilar hali yo\u2018q</option>';
+    if (sortedRealIdx.length) {
+      sel = sortedRealIdx[0];
+      document.getElementById('rdStuSel').value = sel;
+      await loadRoadmapFor(sel);
+    } else {
+      PROFESSIONS = [];
+    }
     render();
   } catch (err) {
     console.warn("O'quvchilar ro'yxatini backenddan yuklab bo'lmadi:", err.message);
@@ -14335,14 +14389,15 @@ async function loadNotificationsFromAPI(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
     const rows = await apiFetch('/api/notifications');
+    /* MUHIM: avval faqat ro'yxat bo'sh bo'lmaganda almashtirilardi — endi
+       so'rov muvaffaqiyatli bo'lsa (bo'sh bo'lsa ham) har doim haqiqiy
+       ro'yxat bilan almashtiramiz, eski namunaviy xabarlar qolib ketmasin. */
     if (!rows) return;
-    if (rows.length) {
-      NOTIFS = rows.map(r => ({
-        id: r.id, apiId: r.id, type: r.type, title: r.title, text: r.text,
-        time: timeAgo(r.created_at), unread: !r.is_read,
-        actions: r.link ? [[ACTION_LABEL[r.type] || "Ko'rish", r.link]] : [],
-      }));
-    }
+    NOTIFS = rows.map(r => ({
+      id: r.id, apiId: r.id, type: r.type, title: r.title, text: r.text,
+      time: timeAgo(r.created_at), unread: !r.is_read,
+      actions: r.link ? [[ACTION_LABEL[r.type] || "Ko'rish", r.link]] : [],
+    }));
     render();
   } catch (err) {
     console.warn("Bildirishnomalarni backenddan yuklab bo'lmadi:", err.message);
