@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kelajak Maktab — Direktor paneli</title>
+<title>Kelajak Markazi — Direktor paneli</title>
 <style>
 :root{
   --primary:#4C2CE2; --primary-dark:#1B1440;
@@ -36,8 +36,6 @@ a{color:inherit;text-decoration:none}
 #loginBox label{font-size:12.5px;font-weight:700;display:block;margin:14px 0 6px;color:#5B5A7A}
 .field-inp{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);background:#fcfcfe}
 .field-inp:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
-#loginErr{color:var(--red);font-size:12.5px;margin-top:14px;padding:11px 13px;background:var(--red-soft);border-radius:var(--r-sm);display:none}
-#loginErr.show{display:block}
 .phone-wrap{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--r-sm);background:#fcfcfe;overflow:hidden}
 .phone-wrap:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
 .phone-wrap .pfx{padding:11px 0 11px 13px;color:var(--muted);font-size:13.5px;font-weight:600}
@@ -329,19 +327,12 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
 <body>
 
 <div id="loginScreen">
-  <div id="loginBox">
-    <div class="brand">
+  <div id="loginBox" style="text-align:center">
+    <div class="brand" style="justify-content:center">
       <div class="emblem">K</div>
-      <div><b>Kelajak Maktab</b><small>Yangi avlod — yangi imkoniyatlar</small></div>
+      <div style="text-align:left"><b>Qobiliyat Portfolisi AI</b><small>Kelajak Markazi paneli</small></div>
     </div>
-    <h1>Xush kelibsiz</h1>
-    <p>Hududingizdagi maktablarni kuzatish uchun kiring</p>
-    <label for="lPhone">Telefon raqam</label>
-    <div class="phone-wrap"><span class="pfx">+998</span><input id="lPhone" inputmode="numeric" maxlength="12" placeholder="90 123 45 67"></div>
-    <label for="lPass">Parol</label>
-    <div class="pass-wrap"><input id="lPass" type="password" placeholder="Parolingiz"><button type="button" class="eye" id="lEye">👁</button></div>
-    <button class="btn btn-primary" id="loginBtn" style="width:100%;margin-top:22px">Kirish</button>
-    <p id="loginErr"></p>
+    <p style="margin-top:18px">Kirish sahifasiga yo'naltirilmoqda...</p>
   </div>
 </div>
 
@@ -350,7 +341,7 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
     <div class="header">
       <div class="logo">
         <div class="emblem-sm">🎓</div>
-        <div class="txt"><b>KELAJAK MAKTAB</b><small>Yangi avlod — yangi imkoniyatlar</small></div>
+        <div class="txt"><b id="headerOrgName">KELAJAK MARKAZI</b><small>Yangi avlod — yangi imkoniyatlar</small></div>
       </div>
       <div class="search-box" id="searchBoxWrap">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -371,7 +362,7 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
       <div style="position:relative">
         <div class="hprofile" id="profileBtn">
           <div class="ava" id="avaIni">S</div>
-          <div><b id="hName">Direktor</b><small>Kelajak maktab direktori</small></div>
+          <div><b id="hName">Direktor</b><small id="hRoleLabel">Kelajak Markazi direktori</small></div>
           <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
         <div class="dd-panel profile-panel" id="profilePanel">
@@ -489,10 +480,12 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
             <div>
               <div class="filter-row2">
                 <div class="search-inp2"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="schoolSearchInp" placeholder="Maktab nomi yoki manzil bo'yicha qidirish..."></div>
-                <div class="filter-sel">Barcha viloyatlar <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
-                <div class="filter-sel">Barcha tumanlar <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
-                <div class="filter-sel">Barcha holatlar <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
-                <button class="btn" style="display:flex;align-items:center;gap:7px;color:var(--primary);border-color:var(--primary-soft);background:var(--primary-soft-2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>Filtrlash</button>
+                <select id="schoolStatusFilter" class="field-inp" style="width:auto;padding:8px 12px;font-size:12px;font-weight:600;color:#5B5A7A">
+                  <option value="">Barcha holatlar</option>
+                  <option value="Faol">Faol</option>
+                  <option value="Ehtiyoj">Ehtiyoj talab qiladi</option>
+                </select>
+                <button class="btn" id="schoolFilterResetBtn" style="display:flex;align-items:center;gap:7px;color:var(--primary);border-color:var(--primary-soft);background:var(--primary-soft-2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>Tozalash</button>
               </div>
 
               <div class="card" style="padding:0">
@@ -548,11 +541,13 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
           <div class="content-2col2">
             <div>
               <div class="filter-row2">
-                <div class="search-inp2"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input placeholder="Ism, maktab yoki tuman bo'yicha qidirish..."></div>
-                <div class="filter-sel">Barcha viloyatlar <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
-                <div class="filter-sel">Barcha tumanlar <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
-                <div class="filter-sel">Faoliyat holati <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
-                <button class="btn" style="display:flex;align-items:center;gap:7px;color:var(--primary);border-color:var(--primary-soft);background:var(--primary-soft-2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>Filtrlash</button>
+                <div class="search-inp2"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="advisorSearchInp" placeholder="Ism, maktab yoki tuman bo'yicha qidirish..."></div>
+                <select id="advisorStatusFilter" class="field-inp" style="width:auto;padding:8px 12px;font-size:12px;font-weight:600;color:#5B5A7A">
+                  <option value="">Faoliyat holati: barchasi</option>
+                  <option value="Faol">Faol</option>
+                  <option value="Ehtiyoj">Ehtiyoj talab qiladi</option>
+                </select>
+                <button class="btn" id="advisorFilterResetBtn" style="display:flex;align-items:center;gap:7px;color:var(--primary);border-color:var(--primary-soft);background:var(--primary-soft-2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>Tozalash</button>
               </div>
 
               <div class="card" style="padding:0">
@@ -745,14 +740,6 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
                 <span class="ico3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/></svg></span>
                 <div><b>Ma'lumotlar xavfsizligi</b><span>Parol, kirish va xavfsizlik</span></div>
               </div>
-              <div class="settings-nav-item" data-settings-tab="parametrlar">
-                <span class="ico3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg></span>
-                <div><b>Tizim parametrlari</b><span>Qo'shimcha imkoniyatlar</span></div>
-              </div>
-              <div class="settings-nav-item" data-settings-tab="integratsiya">
-                <span class="ico3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.07 0l1.93-1.93a5 5 0 00-7.07-7.07L10.5 5.5"/><path d="M14 11a5 5 0 00-7.07 0L5 12.93a5 5 0 007.07 7.07L13.5 18.5"/></svg></span>
-                <div><b>Integratsiyalar</b><span>Tashqi xizmatlar bilan ulash</span></div>
-              </div>
               <div class="settings-nav-item" data-settings-tab="haqida">
                 <span class="ico3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
                 <div><b>Tizim haqida</b><span>Versiya va texnik ma'lumotlar</span></div>
@@ -777,7 +764,7 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
                     <div class="form-grid2">
                       <div>
                         <label class="form-label">Tizim nomi</label>
-                        <input class="field-inp" id="setOrgName" value="Kelajak Maktab" style="margin-bottom:14px">
+                        <input class="field-inp" id="setOrgName" value="Kelajak Markazi" style="margin-bottom:14px">
                         <label class="form-label">Tizim tavsifi</label>
                         <textarea class="field-inp" id="setOrgDesc">Yangi avlod — yangi imkoniyatlar</textarea>
                       </div>
@@ -786,8 +773,9 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
                         <div class="logo-box">
                           <div class="logo-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1"/></svg></div>
                           <div>
+                            <input type="file" id="logoFileInput" accept="image/jpeg,image/png,image/webp" hidden>
                             <button class="btn btn-sm" id="setLogoBtn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:4px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>Rasmni o'zgartirish</button>
-                            <small>Tavsiya etilgan o'lcham: 200x200 px. PNG, JPG (maks. 2MB)</small>
+                            <small>Tavsiya etilgan o'lcham: 200x200 px. PNG, JPG (maks. 1.5MB) — shaxsiy profil rasmingiz sifatida saqlanadi</small>
                           </div>
                         </div>
                       </div>
@@ -803,9 +791,40 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
                   </div>
                 </div>
 
-                <!-- Boshqa bo'limlar uchun vaqtinchalik joy -->
-                <div id="settingsPane-other" style="display:none">
-                  <p class="empty" id="settingsOtherTxt">Bu bo'lim tez orada qo'shiladi.</p>
+                <!-- Xavfsizlik: haqiqiy parol almashtirish -->
+                <div id="settingsPane-xavfsizlik" style="display:none">
+                  <div class="settings-sec">
+                    <div class="settings-sec-title">Parolni o'zgartirish</div>
+                    <div class="form-grid2">
+                      <div>
+                        <label class="form-label">Joriy parol</label>
+                        <input class="field-inp" type="password" id="spOldPass" style="width:100%">
+                      </div>
+                      <div></div>
+                      <div>
+                        <label class="form-label">Yangi parol</label>
+                        <input class="field-inp" type="password" id="spNewPass" style="width:100%">
+                      </div>
+                      <div>
+                        <label class="form-label">Yangi parolni tasdiqlang</label>
+                        <input class="field-inp" type="password" id="spNewPass2" style="width:100%">
+                      </div>
+                    </div>
+                    <p id="spErr" style="color:var(--red);font-size:12.5px;margin-top:14px;padding:11px 13px;background:var(--red-soft);border-radius:var(--r-sm);display:none"></p>
+                    <button class="btn btn-primary" id="spSaveBtn" style="margin-top:16px">Parolni yangilash</button>
+                  </div>
+                </div>
+
+                <!-- Tizim haqida -->
+                <div id="settingsPane-haqida" style="display:none">
+                  <div class="settings-sec">
+                    <div class="settings-sec-title">Tizim haqida</div>
+                    <div class="info-row"><div class="txt3"><span class="lbl2">Tizim nomi</span><span class="val2" id="haqidaOrgName">Qobiliyat Portfolisi AI — Kelajak Markazi</span></div></div>
+                    <div class="info-row"><div class="txt3"><span class="lbl2">Versiya</span><span class="val2">1.0 (sinov/pilot bosqichi)</span></div></div>
+                    <div class="info-row"><div class="txt3"><span class="lbl2">Texnologiya</span><span class="val2">FastAPI + PostgreSQL (backend), HTML/JS (frontend)</span></div></div>
+                    <div class="info-row"><div class="txt3"><span class="lbl2">Joylashuv</span><span class="val2">Railway (backend) + GitHub Pages (frontend)</span></div></div>
+                    <div class="info-row"><div class="txt3"><span class="lbl2">Tashabbuskor</span><span class="val2">Pop tuman hokimligi</span></div></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -817,12 +836,12 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
                 <div style="text-align:center;margin-bottom:8px">
                   <div class="profile-card-ava" id="settingsAva">S</div>
                   <b style="font-size:15px;display:block" id="settingsName">Direktor</b>
-                  <span style="font-size:12px;color:var(--muted)">Kelajak maktab direktori</span>
+                  <span style="font-size:12px;color:var(--muted)" id="settingsAvaRole">Kelajak Markazi direktori</span>
                 </div>
                 <div style="margin-top:14px">
                   <div class="info-row"><span class="ico4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z" opacity="0"/><path d="M22 6l-10 7L2 6"/><path d="M2 6h20v12H2z"/></svg></span><div class="txt3"><span class="lbl2">Email</span><span class="val2" id="settingsEmail">&mdash;</span></div></div>
                   <div class="info-row"><span class="ico4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.68 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.32 1.85.55 2.81.68A2 2 0 0122 16.92z"/></svg></span><div class="txt3"><span class="lbl2">Telefon</span><span class="val2" id="settingsPhone">&mdash;</span></div></div>
-                  <div class="info-row"><span class="ico4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg></span><div class="txt3"><span class="lbl2">Tashkilot</span><span class="val2">Kelajak maktab</span></div></div>
+                  <div class="info-row"><span class="ico4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg></span><div class="txt3"><span class="lbl2">Tashkilot</span><span class="val2" id="settingsOrg">Kelajak Markazi</span></div></div>
                   <div class="info-row"><span class="ico4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><div class="txt3"><span class="lbl2">Vazifa</span><span class="val2" id="settingsRole">Direktor</span></div></div>
                   <div class="info-row"><span class="ico4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><div class="txt3"><span class="lbl2">So'nggi kirish</span><span class="val2" id="settingsLastLogin">&mdash;</span></div></div>
                 </div>
@@ -832,8 +851,6 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
                 <div class="card-head"><b>Tezkor amallar</b></div>
                 <div class="qa-row" id="qaChangePass"><span class="ico5 i-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></span><b>Parolni o'zgartirish</b><svg class="chev2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></div>
                 <div class="qa-row" id="qaManageUsers"><span class="ico5 i-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><b>Foydalanuvchilarni boshqarish</b><svg class="chev2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></div>
-                <div class="qa-row" id="qaBackup"><span class="ico5 i-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span><b>Ma'lumotlar zaxirasini yaratish</b><svg class="chev2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></div>
-                <div class="qa-row" id="qaRestore"><span class="ico5 i-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg></span><b>Zaxiradan tiklash</b><svg class="chev2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></div>
               </div>
             </div>
           </div>
@@ -872,6 +889,21 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
   </div>
 </div>
 
+<div class="overlay" id="editProfileModal">
+  <div class="modal">
+    <h3>Profilni tahrirlash</h3>
+    <label for="epFullName">F.I.Sh.</label>
+    <input id="epFullName" class="field-inp" style="width:100%">
+    <label for="epPhone">Telefon raqam</label>
+    <div class="phone-wrap"><span class="pfx">+998</span><input id="epPhone" inputmode="numeric" maxlength="12" placeholder="90 123 45 67"></div>
+    <p id="epErr" style="color:var(--red);font-size:12.5px;margin-top:14px;padding:11px 13px;background:var(--red-soft);border-radius:var(--r-sm);display:none"></p>
+    <div class="foot">
+      <button class="btn" id="epCancelBtn">Bekor qilish</button>
+      <button class="btn btn-primary" id="epSaveBtn">Saqlash</button>
+    </div>
+  </div>
+</div>
+
 <script>
 window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-backend-production.up.railway.app';
 
@@ -898,8 +930,11 @@ async function apiFetch(path, options){
 
 const loginScreen = document.getElementById('loginScreen');
 const appScreen = document.getElementById('appScreen');
-const loginErr = document.getElementById('loginErr');
 
+/* Kirish endi FAQAT umumiy kirish sahifasi (qobiliyat-ai.html) orqali \u2014
+   u login qilib, rolga qarab shu sahifaga localStorage'ga token/user
+   yozib yo'naltiradi. Shu sabab bu yerda alohida login formasi yo'q \u2014
+   token topilmasa umumiy kirish sahifasiga qaytariladi (pastda). */
 function bindPhoneMask(input){
   input.addEventListener('input', function(){
     let v = this.value.replace(/\D/g, '').slice(0, 9);
@@ -910,46 +945,41 @@ function bindPhoneMask(input){
     this.value = out;
   });
 }
-bindPhoneMask(document.getElementById('lPhone'));
 function fullPhone(input){ return '+998' + input.value.replace(/\D/g, ''); }
 function phoneValid(input){ return input.value.replace(/\D/g, '').length === 9; }
-document.getElementById('lEye').onclick = () => {
-  const inp = document.getElementById('lPass');
-  const open = inp.type === 'password';
-  inp.type = open ? 'text' : 'password';
-  document.getElementById('lEye').textContent = open ? '\ud83d\ude48' : '\ud83d\udc41';
-};
-
-document.getElementById('loginBtn').onclick = async () => {
-  const phoneInput = document.getElementById('lPhone');
-  const pass = document.getElementById('lPass').value;
-  if (!phoneValid(phoneInput) || !pass) { showLoginErr("Telefon va parolni to'g'ri kiriting."); return; }
-  const btn = document.getElementById('loginBtn');
-  btn.disabled = true; btn.textContent = 'Tekshirilmoqda...';
-  try {
-    const data = await apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ phone: fullPhone(phoneInput), password: pass }) });
-    if (data.user.role !== 'kelajak_direktor') { showLoginErr("Bu hisob Kelajak Markazi direktori sifatida ro'yxatga olinmagan."); return; }
-    localStorage.setItem('qp_kelajak_token', data.access_token);
-    localStorage.setItem('qp_kelajak_user', JSON.stringify(data.user));
-    startApp();
-  } catch (e) {
-    showLoginErr(e.isNetworkError ? "Serverga ulanib bo'lmadi." : (e.message || "Telefon yoki parol noto'g'ri."));
-  } finally {
-    btn.disabled = false; btn.textContent = 'Kirish';
-  }
-};
-function showLoginErr(msg){ loginErr.textContent = msg; loginErr.classList.add('show'); }
 
 document.getElementById('ddLogoutBtn').onclick = () => {
   localStorage.removeItem('qp_kelajak_token');
-  appScreen.classList.remove('show');
-  loginScreen.style.display = 'flex';
+  localStorage.removeItem('qp_kelajak_user');
+  window.location.href = 'qobiliyat-ai.html';
 };
+
+/* Tuman nomiga qarab tashkilot nomini hosil qiladi — masalan "Pop"
+   tumani uchun "Pop tumani Kelajak markazi" (bo'sh bo'lsa umumiy nom). */
+function districtOrgName(u){
+  return u && u.district ? `${u.district} tumani Kelajak markazi` : 'Kelajak Markazi';
+}
+function districtRoleLabel(u){
+  return u && u.district ? `${u.district} tumani Kelajak markazi direktori` : 'Kelajak Markazi direktori';
+}
+function applyDistrictBranding(u){
+  const org = districtOrgName(u);
+  const role = districtRoleLabel(u);
+  document.title = `${org} — Direktor paneli`;
+  document.getElementById('headerOrgName').textContent = org.toUpperCase();
+  document.getElementById('hRoleLabel').textContent = role;
+  document.getElementById('settingsOrg').textContent = org;
+  document.getElementById('haqidaOrgName').textContent = `Qobiliyat Portfolisi AI — ${org}`;
+  document.getElementById('settingsAvaRole').textContent = role;
+  document.getElementById('setOrgName').value = org;
+}
 
 function startApp(){
   loginScreen.style.display = 'none';
   appScreen.classList.add('show');
   const u = JSON.parse(localStorage.getItem('qp_kelajak_user') || '{}');
+  if (u.role && u.role !== 'kelajak_direktor') { window.location.href = 'qobiliyat-ai.html'; return; }
+  applyDistrictBranding(u);
   if (u.full_name) {
     document.getElementById('hName').textContent = u.full_name;
     document.getElementById('welcomeH1').textContent = 'Xush kelibsiz, ' + u.full_name + '!';
@@ -1063,6 +1093,8 @@ const MAP_DOTS2 = [
   { x: 40, y: 45, c: '#D6473C' }, { x: 60, y: 45, c: '#16A34A' }, { x: 40, y: 70, c: '#E08A15' }, { x: 58, y: 80, c: '#16A34A' },
 ];
 
+let schoolFilterStatus = '';
+let schoolFilterQuery = '';
 function renderSchoolsPage(){
   const myRegion = (JSON.parse(localStorage.getItem('qp_kelajak_user') || '{}').region) || 'Viloyat';
   const all = SCHOOLS.length ? SCHOOLS.map(s => ({
@@ -1080,8 +1112,18 @@ function renderSchoolsPage(){
     kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>', 'Ehtiyoj talab qiladi', needCount, Math.round(needCount/all.length*100) + '%') +
     kpiCard('i-red', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>', 'Faol emas', inactiveCount, Math.round(inactiveCount/all.length*100) + '%');
 
-  document.getElementById('schCountTxt').textContent = `Jami ${all.length} ta maktab`;
-  document.getElementById('schoolsFullBody').innerHTML = all.map((s, i) => {
+  const filtered = all.filter(s => {
+    if (schoolFilterStatus && s.status !== schoolFilterStatus) return false;
+    if (schoolFilterQuery) {
+      const q = schoolFilterQuery.toLowerCase();
+      if (!s.name.toLowerCase().includes(q) && !String(s.district || '').toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('schCountTxt').textContent = filtered.length === all.length
+    ? `Jami ${all.length} ta maktab` : `${filtered.length} ta topildi (jami ${all.length} tadan)`;
+  document.getElementById('schoolsFullBody').innerHTML = filtered.length ? filtered.map((s, i) => {
     const pillClass = s.pct >= 85 ? 'pill-green' : s.pct >= 70 ? 'pill-amber' : 'pill-red';
     const statusColor = s.status === 'Faol' ? '#16A34A' : s.status === 'Ehtiyoj' ? '#E08A15' : '#D6473C';
     return `<tr>
@@ -1092,8 +1134,8 @@ function renderSchoolsPage(){
       <td><span class="status-dot2" style="background:${statusColor}"></span>${s.status}</td>
       <td style="padding-right:20px"><button class="icon-btn" data-view-school="${i}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn dots-btn" data-school-id="${s.id || ''}" data-school-name="${s.name}">\u22ee</button></td>
     </tr>`;
-  }).join('');
-  document.querySelectorAll('[data-view-school]').forEach(b => b.onclick = () => showToast(all[+b.dataset.viewSchool].name + " ma'lumotlari"));
+  }).join('') : `<tr><td colspan="9"><div class="empty">Hech narsa topilmadi</div></td></tr>`;
+  document.querySelectorAll('[data-view-school]').forEach(b => b.onclick = () => showToast(filtered[+b.dataset.viewSchool].name + " ma'lumotlari"));
   document.querySelectorAll('#schoolsFullBody .dots-btn').forEach(b => b.onclick = e => openSchoolDotsMenu(e, b.dataset.schoolId, b.dataset.schoolName));
 
   /* Mini xarita */
@@ -1193,15 +1235,11 @@ const ADVISORS_SAMPLE = [
 
 let REAL_ADVISORS = [];
 let ADV_KPI = { total: 0, active: 0, avg_score: 0 };
-async function renderAdvisorsPage(){
-  try {
-    const res = await apiFetch('/api/kelajak-direktor/advisors');
-    REAL_ADVISORS = res.advisors || [];
-    ADV_KPI = res.kpi || ADV_KPI;
-  } catch (e) { console.warn("Maslahatchilarni yuklab bo'lmadi:", e.message); REAL_ADVISORS = []; }
-
+let advisorFilterStatus = '';
+let advisorFilterQuery = '';
+function renderAdvisorsList(){
   const list = REAL_ADVISORS.length ? REAL_ADVISORS.map(a => ({
-    name: a.full_name, school: a.school_name || '\u2014', district: a.district || '\u2014',
+    name: a.full_name, school: a.school_name || '—', district: a.district || '—',
     students: a.student_count, pct: a.score_percent, status: a.status,
   })) : ADVISORS_SAMPLE;
 
@@ -1209,10 +1247,20 @@ async function renderAdvisorsPage(){
     kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', 'Jami maslahatchilar', REAL_ADVISORS.length ? ADV_KPI.total : 96, REAL_ADVISORS.length ? null : '5') +
     kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>', 'Faol maslahatchilar', REAL_ADVISORS.length ? ADV_KPI.active : 88) +
     kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>', "O'rtacha samaradorlik", (REAL_ADVISORS.length ? ADV_KPI.avg_score : 78) + '%') +
-    kpiCard('i-red', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>', 'Rivojlanish ko\u2018rsatkichi', '+18%');
+    kpiCard('i-red', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>', 'Rivojlanish ko‘rsatkichi', '+18%');
 
-  document.getElementById('advCountTxt').textContent = `Jami ${list.length} ta maslahatchi`;
-  document.getElementById('advisorsFullBody').innerHTML = list.map((a, i) => {
+  const filtered = list.filter(a => {
+    if (advisorFilterStatus && a.status !== advisorFilterStatus) return false;
+    if (advisorFilterQuery) {
+      const q = advisorFilterQuery.toLowerCase();
+      if (!a.name.toLowerCase().includes(q) && !String(a.school || '').toLowerCase().includes(q) && !String(a.district || '').toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('advCountTxt').textContent = filtered.length === list.length
+    ? `Jami ${list.length} ta maslahatchi` : `${filtered.length} ta topildi (jami ${list.length} tadan)`;
+  document.getElementById('advisorsFullBody').innerHTML = filtered.length ? filtered.map((a, i) => {
     const pillClass = a.pct >= 85 ? 'pill-green' : a.pct >= 70 ? 'pill-amber' : 'pill-red';
     const statusColor = a.status === 'Faol' ? '#16A34A' : '#E08A15';
     return `<tr>
@@ -1221,10 +1269,19 @@ async function renderAdvisorsPage(){
       <td>${a.school}</td><td>${a.district}</td><td>${a.students}</td>
       <td><span class="idx-pill ${pillClass}">${a.pct}%</span></td>
       <td><span class="status-dot2" style="background:${statusColor}"></span>${a.status}</td>
-      <td style="padding-right:20px"><button class="icon-btn" data-view-advisor="${i}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn dots-btn">\u22ee</button></td>
+      <td style="padding-right:20px"><button class="icon-btn" data-view-advisor="${i}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn dots-btn">⋮</button></td>
     </tr>`;
-  }).join('');
-  document.querySelectorAll('[data-view-advisor]').forEach(b => b.onclick = () => showToast(list[+b.dataset.viewAdvisor].name + " ma'lumotlari"));
+  }).join('') : `<tr><td colspan="8"><div class="empty">Hech narsa topilmadi</div></td></tr>`;
+  document.querySelectorAll('[data-view-advisor]').forEach(b => b.onclick = () => showToast(filtered[+b.dataset.viewAdvisor].name + " ma'lumotlari"));
+}
+
+async function renderAdvisorsPage(){
+  try {
+    const res = await apiFetch('/api/kelajak-direktor/advisors');
+    REAL_ADVISORS = res.advisors || [];
+    ADV_KPI = res.kpi || ADV_KPI;
+  } catch (e) { console.warn("Maslahatchilarni yuklab bo'lmadi:", e.message); REAL_ADVISORS = []; }
+  renderAdvisorsList();
 
   const months2 = [['Yan',62],['Fev',68],['Mar',71],['Apr',75],['May',77],['Iyn',80],['Iyl',82],['Avg',85]];
   document.getElementById('advBarsBox').innerHTML = months2.map(m => `
@@ -1557,6 +1614,40 @@ document.querySelectorAll('#profilePanel [data-view-link]').forEach(b => b.oncli
 document.getElementById('downloadReportBtn').onclick = () => showToast('Hisobot yuklanmoqda...');
 document.getElementById('addSchoolBtn').onclick = () => showToast("Yangi maktab qo'shish \u2014 bu amal admin panel orqali bajariladi.");
 document.getElementById('downloadReportBtn2').onclick = () => showToast('Hisobot yuklanmoqda...');
+
+/* ===== Maktablar sahifasi: haqiqiy qidiruv/filtr ===== */
+document.getElementById('schoolSearchInp').addEventListener('input', function(){
+  schoolFilterQuery = this.value.trim();
+  renderSchoolsPage();
+});
+document.getElementById('schoolStatusFilter').addEventListener('change', function(){
+  schoolFilterStatus = this.value;
+  renderSchoolsPage();
+});
+document.getElementById('schoolFilterResetBtn').onclick = () => {
+  schoolFilterQuery = ''; schoolFilterStatus = '';
+  document.getElementById('schoolSearchInp').value = '';
+  document.getElementById('schoolStatusFilter').value = '';
+  renderSchoolsPage();
+  showToast('Filtrlar tozalandi');
+};
+
+/* ===== Maslahatchilar sahifasi: haqiqiy qidiruv/filtr ===== */
+document.getElementById('advisorSearchInp').addEventListener('input', function(){
+  advisorFilterQuery = this.value.trim();
+  renderAdvisorsList();
+});
+document.getElementById('advisorStatusFilter').addEventListener('change', function(){
+  advisorFilterStatus = this.value;
+  renderAdvisorsList();
+});
+document.getElementById('advisorFilterResetBtn').onclick = () => {
+  advisorFilterQuery = ''; advisorFilterStatus = '';
+  document.getElementById('advisorSearchInp').value = '';
+  document.getElementById('advisorStatusFilter').value = '';
+  renderAdvisorsList();
+  showToast('Filtrlar tozalandi');
+};
 document.querySelectorAll('.page-nums button').forEach(b => b.onclick = () => {
   if (/^[0-9]+$/.test(b.textContent.trim())) {
     b.parentElement.querySelectorAll('button').forEach(x => x.classList.remove('cur'));
@@ -1580,15 +1671,10 @@ searchInp.addEventListener('input', () => {
   searchDd.querySelectorAll('[data-goto]').forEach(el => el.onclick = () => { switchView(el.dataset.goto); searchInp.value=''; searchDd.classList.remove('open'); });
 });
 
-document.getElementById('lPass').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginBtn').click(); });
-document.getElementById('lPhone').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('lPass').focus(); });
-
 /* ============ SOZLAMALAR ============ */
 const SETTINGS_TABS = {
   umumiy: { title: 'Umumiy sozlamalar', sub: "Tizimning asosiy parametrlari va ko'rsatkichlari." },
   xavfsizlik: { title: "Ma'lumotlar xavfsizligi", sub: 'Parol, kirish va xavfsizlik sozlamalari.' },
-  parametrlar: { title: 'Tizim parametrlari', sub: "Qo'shimcha imkoniyatlar." },
-  integratsiya: { title: 'Integratsiyalar', sub: 'Tashqi xizmatlar bilan ulash.' },
   haqida: { title: 'Tizim haqida', sub: 'Versiya va texnik ma\u2019lumotlar.' },
 };
 document.querySelectorAll('.settings-nav-item[data-settings-tab]').forEach(item => item.onclick = () => {
@@ -1597,30 +1683,123 @@ document.querySelectorAll('.settings-nav-item[data-settings-tab]').forEach(item 
   const info = SETTINGS_TABS[tab] || { title: '', sub: '' };
   document.getElementById('settingsMainTitle').textContent = info.title;
   document.getElementById('settingsMainSub').textContent = info.sub;
-  const isUmumiy = tab === 'umumiy';
-  document.getElementById('settingsPane-umumiy').style.display = isUmumiy ? 'block' : 'none';
-  document.getElementById('settingsPane-other').style.display = isUmumiy ? 'none' : 'block';
-  document.getElementById('settingsMainActions').style.display = isUmumiy ? 'flex' : 'none';
-  if (!isUmumiy) document.getElementById('settingsOtherTxt').textContent = `"${info.title}" bo'limi tez orada qo'shiladi.`;
+  document.getElementById('settingsPane-umumiy').style.display = tab === 'umumiy' ? 'block' : 'none';
+  document.getElementById('settingsPane-xavfsizlik').style.display = tab === 'xavfsizlik' ? 'block' : 'none';
+  document.getElementById('settingsPane-haqida').style.display = tab === 'haqida' ? 'block' : 'none';
+  document.getElementById('settingsMainActions').style.display = tab === 'umumiy' ? 'flex' : 'none';
+  if (tab === 'xavfsizlik') {
+    document.getElementById('spOldPass').value = '';
+    document.getElementById('spNewPass').value = '';
+    document.getElementById('spNewPass2').value = '';
+    document.getElementById('spErr').style.display = 'none';
+  }
 });
 
 document.getElementById('settingsSaveBtn').onclick = () => showToast('Sozlamalar saqlandi \u2713');
 document.getElementById('settingsResetBtn').onclick = () => showToast("O'zgarishlar bekor qilindi");
-document.getElementById('setLogoBtn').onclick = () => showToast('Logotipni yuklash tez orada qo\u2018shiladi');
-document.getElementById('settingsEditProfileBtn').onclick = () => showToast('Profilni tahrirlash tez orada qo\u2018shiladi');
-document.getElementById('qaChangePass').onclick = () => showToast('Parolni o\u2018zgartirish tez orada qo\u2018shiladi');
 document.getElementById('qaManageUsers').onclick = () => showToast('Foydalanuvchilarni boshqarish \u2014 admin panel orqali bajariladi.');
-document.getElementById('qaBackup').onclick = () => showToast('Zaxira nusxa yaratilmoqda...');
-document.getElementById('qaRestore').onclick = () => showToast('Zaxiradan tiklash tez orada qo\u2018shiladi');
+
+/* ===== Parolni o'zgartirish (haqiqiy, POST /api/auth/change-password) ===== */
+document.getElementById('qaChangePass').onclick = () => {
+  switchView('settings');
+  document.querySelector('.settings-nav-item[data-settings-tab="xavfsizlik"]').click();
+};
+function showSpErr(msg){ const el = document.getElementById('spErr'); el.textContent = msg; el.style.display = 'block'; }
+document.getElementById('spSaveBtn').onclick = async () => {
+  document.getElementById('spErr').style.display = 'none';
+  const oldPass = document.getElementById('spOldPass').value;
+  const newPass = document.getElementById('spNewPass').value;
+  const newPass2 = document.getElementById('spNewPass2').value;
+  if (!oldPass) return showSpErr('Joriy parolni kiriting');
+  if (newPass.length < 6 || newPass.length > 12) return showSpErr('Yangi parol 6 dan 12 belgigacha bo\u2018lishi kerak');
+  if (newPass !== newPass2) return showSpErr('Yangi parollar bir xil emas');
+  const btn = document.getElementById('spSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saqlanmoqda...';
+  try {
+    await apiFetch('/api/auth/change-password', {
+      method: 'POST', body: JSON.stringify({ old_password: oldPass, new_password: newPass }),
+    });
+    document.getElementById('spOldPass').value = '';
+    document.getElementById('spNewPass').value = '';
+    document.getElementById('spNewPass2').value = '';
+    showToast('Parol muvaffaqiyatli yangilandi \u2713');
+  } catch (e) {
+    showSpErr(e.message || 'Xatolik yuz berdi');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Parolni yangilash';
+  }
+};
+
+/* ===== Profilni tahrirlash (haqiqiy, PATCH /api/auth/me) ===== */
+const editProfileModal = document.getElementById('editProfileModal');
+const epPhoneInput = document.getElementById('epPhone');
+bindPhoneMask(epPhoneInput);
+document.getElementById('settingsEditProfileBtn').onclick = () => {
+  const u = JSON.parse(localStorage.getItem('qp_kelajak_user') || '{}');
+  document.getElementById('epFullName').value = u.full_name || '';
+  epPhoneInput.value = (u.phone || '').replace('+998', '').replace(/\D/g, '').replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4').trim();
+  document.getElementById('epErr').style.display = 'none';
+  editProfileModal.classList.add('open');
+};
+document.getElementById('epCancelBtn').onclick = () => editProfileModal.classList.remove('open');
+document.getElementById('epSaveBtn').onclick = async () => {
+  document.getElementById('epErr').style.display = 'none';
+  const fullName = document.getElementById('epFullName').value.trim();
+  if (!fullName) { document.getElementById('epErr').textContent = "F.I.Sh.ni kiriting"; document.getElementById('epErr').style.display = 'block'; return; }
+  if (!phoneValid(epPhoneInput)) { document.getElementById('epErr').textContent = "Telefon raqamni to'g'ri kiriting"; document.getElementById('epErr').style.display = 'block'; return; }
+  const btn = document.getElementById('epSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saqlanmoqda...';
+  try {
+    const updated = await apiFetch('/api/auth/me', {
+      method: 'PATCH', body: JSON.stringify({ full_name: fullName, phone: fullPhone(epPhoneInput) }),
+    });
+    localStorage.setItem('qp_kelajak_user', JSON.stringify(updated));
+    fillSettingsProfile(updated);
+    document.getElementById('hName').textContent = updated.full_name;
+    document.getElementById('avaIni').textContent = updated.full_name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    editProfileModal.classList.remove('open');
+    showToast('Profil yangilandi \u2713');
+  } catch (e) {
+    document.getElementById('epErr').textContent = e.message || 'Xatolik yuz berdi';
+    document.getElementById('epErr').style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Saqlash';
+  }
+};
+
+/* ===== Profil rasmi (haqiqiy, PATCH /api/auth/me/photo) ===== */
+document.getElementById('setLogoBtn').onclick = () => document.getElementById('logoFileInput').click();
+document.getElementById('logoFileInput').addEventListener('change', function(){
+  const file = this.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { showToast('Faqat rasm fayli tanlang'); this.value = ''; return; }
+  if (file.size > 1.5 * 1024 * 1024) { showToast('Rasm hajmi 1.5 MB dan oshmasin'); this.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = async e => {
+    const dataUrl = e.target.result;
+    try {
+      const updated = await apiFetch('/api/auth/me/photo', { method: 'PATCH', body: JSON.stringify({ photo: dataUrl }) });
+      localStorage.setItem('qp_kelajak_user', JSON.stringify(updated));
+      fillSettingsProfile(updated);
+      showToast('Rasm yangilandi \u2713');
+    } catch (err) {
+      showToast(err.message || 'Rasmni saqlashda xatolik');
+    }
+  };
+  reader.readAsDataURL(file);
+  this.value = '';
+});
 
 function fillSettingsProfile(u){
   u = u || {};
   const name = u.full_name || 'Direktor';
   document.getElementById('settingsName').textContent = name;
-  document.getElementById('settingsAva').textContent = name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  document.getElementById('settingsAva').innerHTML = u.photo
+    ? `<img src="${u.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`
+    : name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
   document.getElementById('settingsEmail').textContent = u.email || '\u2014';
   document.getElementById('settingsPhone').textContent = u.phone || '\u2014';
-  document.getElementById('settingsRole').textContent = 'Kelajak Markazi direktori';
+  document.getElementById('settingsRole').textContent = districtRoleLabel(u);
   document.getElementById('settingsLastLogin').textContent = new Date().toLocaleString('uz-UZ', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
@@ -1630,7 +1809,11 @@ function fillSettingsProfile(u){
    tushmasdan turib murojaat qilib, "before initialization" xatosini
    berardi va shu sabab sidebar menyu tugmalariga onclick bog'lovchi kod
    hech qachon ishga tushmasdi. */
-if (localStorage.getItem('qp_kelajak_token')) startApp();
+if (localStorage.getItem('qp_kelajak_token')) {
+  startApp();
+} else {
+  window.location.href = 'qobiliyat-ai.html';
+}
 </script>
 </body>
 </html>
