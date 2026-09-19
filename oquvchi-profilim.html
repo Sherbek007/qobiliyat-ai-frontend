@@ -106,6 +106,31 @@ a{color:inherit;text-decoration:none}
   #loginView .feats{grid-template-columns:1fr}
 }
 
+/* --- Maslahatchiga murojaat oynasi (login sahifasida, tokensiz) --- */
+.helpm-overlay{display:none;position:fixed;inset:0;background:rgba(23,21,67,.45);z-index:200;
+  align-items:center;justify-content:center;padding:24px}
+.helpm-overlay.on{display:flex}
+.helpm-box{background:#fff;border-radius:20px;padding:28px 30px;max-width:440px;width:100%;
+  box-shadow:0 24px 64px rgba(23,21,67,.25);position:relative}
+.helpm-box .x{position:absolute;top:18px;right:18px;color:#9997B6;padding:7px;border-radius:9px;transition:.15s}
+.helpm-box .x:hover{background:var(--primary-soft-2);color:var(--primary)}
+.helpm-box .x svg{width:17px;height:17px}
+.helpm-box h3{font-size:18px;font-weight:800;margin-bottom:6px}
+.helpm-box p.sub{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.5}
+.helpm-box .field{margin-bottom:14px}
+.helpm-box .field label{display:block;font-size:12.5px;font-weight:600;color:#5B5A7A;margin-bottom:6px}
+.helpm-box .field input,.helpm-box .field textarea{width:100%;border:1.6px solid var(--line);border-radius:11px;
+  padding:11px 13px;font-size:13.5px;outline:none;transition:.15s;font-family:inherit;resize:vertical}
+.helpm-box .field input:focus,.helpm-box .field textarea:focus{border-color:var(--primary)}
+.helpm-box .submit{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;
+  background:var(--primary);color:#fff;padding:13px;border-radius:11px;font-size:13.5px;font-weight:700;
+  transition:.15s}
+.helpm-box .submit:hover{background:var(--primary-dark)}
+.helpm-box .submit:disabled{opacity:.6;pointer-events:none}
+.helpm-box .msg{font-size:12.5px;font-weight:600;margin-top:12px;text-align:center;display:none}
+.helpm-box .msg.err{color:var(--red);display:block}
+.helpm-box .msg.ok{color:var(--green);display:block}
+
 /* ============================================================
    2. O'QUVCHI KABINETI (APP SHELL)
    ============================================================ */
@@ -680,10 +705,38 @@ a{color:inherit;text-decoration:none}
       <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </button>
     <div id="loginError" style="display:none;color:var(--red);font-size:12.5px;font-weight:600;text-align:center;margin-top:12px"></div>
-    <div class="divider">Login ma'lumotlaringiz yo'qmi? <a href="#">Maslahatchingizga murojaat qiling</a></div>
+    <div class="divider">Login ma'lumotlaringiz yo'qmi? <a href="#" id="helpmOpen">Maslahatchingizga murojaat qiling</a></div>
   </section>
 </div>
 <footer>© 2026 Qobiliyat Portfolisi AI. Barcha huquqlar himoyalangan.</footer>
+</div>
+
+<!-- ============ Maslahatchiga murojaat oynasi ============ -->
+<div class="helpm-overlay" id="helpmOverlay">
+  <div class="helpm-box">
+    <button type="button" class="x" id="helpmClose" aria-label="Yopish">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <h3>Maslahatchingizga murojaat</h3>
+    <p class="sub">Login yoki parolingiz ishlamayotgan bo'lsa, quyidagi formani to'ldiring — so'rovingiz to'g'ridan-to'g'ri maktabingiz maslahatchisiga yuboriladi.</p>
+    <div class="field">
+      <label for="helpmName">Ismingiz (F.I.Sh.)</label>
+      <input type="text" id="helpmName" placeholder="Masalan: Aliyev Vali">
+    </div>
+    <div class="field">
+      <label for="helpmPhone">Telefon raqamingiz (ixtiyoriy)</label>
+      <input type="text" id="helpmPhone" placeholder="+998 90 123 45 67">
+    </div>
+    <div class="field">
+      <label for="helpmMsg">Xabar</label>
+      <textarea id="helpmMsg" rows="3" placeholder="Muammoingizni qisqacha yozing..."></textarea>
+    </div>
+    <button type="button" class="submit" id="helpmSend">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
+      Yuborish
+    </button>
+    <div class="msg" id="helpmMsgStatus"></div>
+  </div>
 </div>
 
 <!-- ============================================================
@@ -2335,6 +2388,64 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
     const pw = document.getElementById('pw');
     pw.type = pw.type === 'password' ? 'text' : 'password';
   });
+
+  /* ============ Maslahatchiga murojaat (login ishlamasa) ============ */
+  (function(){
+    var overlay = document.getElementById('helpmOverlay');
+    var openLink = document.getElementById('helpmOpen');
+    var closeBtn = document.getElementById('helpmClose');
+    var sendBtn = document.getElementById('helpmSend');
+    var statusEl = document.getElementById('helpmMsgStatus');
+
+    function openHelpm(){
+      statusEl.className = 'msg';
+      statusEl.textContent = '';
+      document.getElementById('helpmMsg').value = '';
+      overlay.classList.add('on');
+    }
+    function closeHelpm(){ overlay.classList.remove('on'); }
+
+    openLink.addEventListener('click', function(e){ e.preventDefault(); openHelpm(); });
+    closeBtn.addEventListener('click', closeHelpm);
+    overlay.addEventListener('click', function(e){ if (e.target === overlay) closeHelpm(); });
+
+    sendBtn.addEventListener('click', async function(){
+      var login = (document.getElementById('loginInput').value || '').trim();
+      var fullName = (document.getElementById('helpmName').value || '').trim();
+      var phone = (document.getElementById('helpmPhone').value || '').trim();
+      var message = (document.getElementById('helpmMsg').value || '').trim();
+
+      if (!message) {
+        statusEl.className = 'msg err';
+        statusEl.textContent = 'Iltimos, xabaringizni yozing.';
+        return;
+      }
+
+      sendBtn.disabled = true;
+      var oldLabel = sendBtn.innerHTML;
+      sendBtn.textContent = 'Yuborilmoqda...';
+      statusEl.className = 'msg';
+      statusEl.textContent = '';
+
+      try {
+        await apiFetch('/api/student/help-request', {
+          method: 'POST',
+          body: JSON.stringify({ login: login || null, full_name: fullName || null, phone: phone || null, message: message })
+        });
+        statusEl.className = 'msg ok';
+        statusEl.textContent = "So'rovingiz maslahatchingizga yuborildi. Tez orada siz bilan bog'lanishadi.";
+        setTimeout(closeHelpm, 2200);
+      } catch (e) {
+        statusEl.className = 'msg err';
+        statusEl.textContent = e.isNetworkError
+          ? errMsg(e)
+          : (errMsg(e) || "So'rovni yuborib bo'lmadi. Login maydoniga to'g'ri login kiriting yoki keyinroq qayta urinib ko'ring.");
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = oldLabel;
+      }
+    });
+  })();
   document.getElementById('burgerBtn').addEventListener('click', function(){
     appView.classList.toggle('nav-collapsed');
   });
