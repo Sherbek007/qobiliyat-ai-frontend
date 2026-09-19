@@ -4944,7 +4944,7 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
     <!-- JADVAL -->
     <div class="card">
       <div class="toolbar">
-        <span class="total">Jami o'quvchilar: <b id="listCount">15</b> nafar</span>
+        <span class="total">Jami o'quvchilar: <b id="listCount">0</b> nafar</span>
         <div class="tools">
           <button class="tool" id="expBtn">
             <span class="xls">X</span>
@@ -7073,13 +7073,13 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
 
     <div class="kpi">
       <div class="kcard"><div class="kico i-vi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2 20c0-3.4 3.1-5.6 7-5.6s7 2.2 7 5.6"/><path d="M17.5 11a3 3 0 100-6M22 20c0-2.6-1.3-4.4-3.2-5.2"/></svg></div>
-        <div><small>Kuratsiya qilinayotgan o'quvchilar</small><b id="pStuCount">\u2014</b></div></div>
+        <div><small>Kuratsiya qilinayotgan o'quvchilar</small><b id="pStuCount">—</b></div></div>
       <div class="kcard"><div class="kico i-bl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21v-5h4v5"/></svg></div>
-        <div><small>Biriktirilgan sinflar</small><b id="pClsCount">\u2014</b></div></div>
+        <div><small>Biriktirilgan sinflar</small><b id="pClsCount">—</b></div></div>
       <div class="kcard"><div class="kico i-gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3"/><rect x="9" y="2" width="6" height="4" rx="1"/></svg></div>
-        <div><small>Yaratilgan testlar</small><b id="pTestCount">\u2014</b></div></div>
+        <div><small>Yaratilgan testlar</small><b id="pTestCount">—</b></div></div>
       <div class="kcard"><div class="kico i-am"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.2"/><circle cx="15" cy="13" r="1.2"/></svg></div>
-        <div><small>Ishga tushirilgan AI tahlillar</small><b id="pAiCount">47</b></div></div>
+        <div><small>Ishga tushirilgan AI tahlillar</small><b id="pAiCount">—</b></div></div>
     </div>
 
     <div class="grid2">
@@ -8757,23 +8757,8 @@ const aiL = document.getElementById('aiToggleL');
 aiL.onclick = () => { aiL.classList.toggle('open'); document.getElementById('aiSubL').classList.toggle('closed'); };
 
 /* ============ Ma'lumotlar ============ */
-let STUDENTS = [
-  { name:'Abdulaziz Karimov',  id:'2024-00128', cls:'9-A',  idx:87, strength:'IT va texnologiya', status:'Tahlil qilingan',   ach:8,  last:'Bugun, 10:30', order:1,  phone:'90 123 45 67', bd:'12.03.2010', gender:"O'g'il bola", parent:'Karimov Bahodir' },
-  { name:'Dilshodbek Rasulov', id:'2024-00127', cls:'9-B',  idx:92, strength:'Matematika',        status:'Tahlil qilingan',   ach:12, last:'Bugun, 09:15', order:2,  phone:'91 234 56 78', bd:'04.07.2010', gender:"O'g'il bola", parent:"Rasulov Ulug'bek" },
-  { name:'Madina Ismoilova',   id:'2024-00126', cls:'9-A',  idx:89, strength:'Ijodkorlik',        status:'Tahlil qilingan',   ach:6,  last:'Kecha, 16:40', order:3,  phone:'94 456 78 90', bd:'23.01.2010', gender:'Qiz bola',    parent:'Ismoilova Dilbar' },
-  { name:'Sardorbek Mirzayev', id:'2024-00125', cls:'9-A',  idx:82, strength:'Sport',             status:'Tahlil qilinmoqda', ach:5,  last:'Kecha, 15:20', order:4,  phone:'93 345 67 89', bd:'19.11.2009', gender:"O'g'il bola", parent:'Mirzayev Anvar' },
-  { name:"Zarina Abdug'anieva",id:'2024-00124', cls:'9-B',  idx:78, strength:'Til va muloqot',    status:'Tahlil qilingan',   ach:4,  last:'2 kun oldin',  order:5,  phone:'95 567 89 01', bd:'08.05.2010', gender:'Qiz bola',    parent:"Abdug'aniev Sanjar" },
-  { name:'Asadbek Karimov',    id:'2024-00123', cls:'8-A',  idx:75, strength:'Tadbirkorlik',      status:'Tahlil qilinmagan', ach:2,  last:'3 kun oldin',  order:6,  phone:'97 678 90 12', bd:'30.09.2011', gender:"O'g'il bola", parent:'Karimov Rustam' },
-  { name:'Sevinch Nurmatova',  id:'2024-00122', cls:'8-B',  idx:90, strength:'Biologiya',         status:'Tahlil qilingan',   ach:7,  last:'3 kun oldin',  order:7,  phone:'99 789 01 23', bd:'17.02.2011', gender:'Qiz bola',    parent:'Nurmatov Zafar' },
-  { name:'Jasurbek Xolmirzayev',id:'2024-00121',cls:'9-A',  idx:69, strength:'Texnik qobiliyat',  status:'Tahlil qilinmoqda', ach:3,  last:'4 kun oldin',  order:8,  phone:'90 890 12 34', bd:'05.06.2010', gender:"O'g'il bola", parent:'Xolmirzayev Otabek' },
-  { name:'Nilufar Toshmatova', id:'2024-00120', cls:'11-A', idx:74, strength:'Ijodkorlik',        status:'Tahlil qilinmoqda', ach:4,  last:'5 kun oldin',  order:9,  phone:'91 901 23 45', bd:'21.12.2008', gender:'Qiz bola',    parent:'Toshmatov Shuhrat' },
-  { name:'Bekzod Nazarov',     id:'2024-00119', cls:'8-B',  idx:66, strength:'Sport',             status:'Tahlil qilinmagan', ach:1,  last:'6 kun oldin',  order:10, phone:'93 012 34 56', bd:'14.04.2011', gender:"O'g'il bola", parent:'Nazarov Farhod' },
-  { name:'Zilola Yusupova',    id:'2024-00118', cls:'11-B', idx:94, strength:'Matematika',        status:'Tahlil qilingan',   ach:11, last:'7 kun oldin',  order:11, phone:'94 123 45 67', bd:'27.08.2008', gender:'Qiz bola',    parent:'Yusupov Aziz' },
-  { name:'Otabek Sultonov',    id:'2024-00117', cls:'9-B',  idx:48, strength:'Texnik qobiliyat',  status:'Tahlil qilinmagan', ach:0,  last:'8 kun oldin',  order:12, phone:'95 234 56 78', bd:'02.10.2010', gender:"O'g'il bola", parent:'Sultonov Doniyor' },
-  { name:'Gulnoza Rashidova',  id:'2024-00116', cls:'10-B', idx:83, strength:'Til va muloqot',    status:'Tahlil qilingan',   ach:6,  last:'9 kun oldin',  order:13, phone:'97 345 67 89', bd:'11.01.2009', gender:'Qiz bola',    parent:'Rashidov Jamshid' },
-  { name:'Islombek Qodirov',   id:'2024-00115', cls:'10-A', idx:71, strength:'IT va texnologiya', status:'Tahlil qilinmoqda', ach:3,  last:'10 kun oldin', order:14, phone:'99 456 78 90', bd:'25.03.2009', gender:"O'g'il bola", parent:'Qodirov Ilhom' },
-  { name:'Malika Sobirova',    id:'2024-00114', cls:'11-A', idx:91, strength:'Biologiya',         status:'Tahlil qilingan',   ach:9,  last:'12 kun oldin', order:15, phone:'90 567 89 01', bd:'09.05.2008', gender:'Qiz bola',    parent:'Sobirov Nodir' },
-];
+let STUDENTS = [];
+let STUDENTS_LOAD_FAILED = false;
 
 const GRADS = ['', 'g2', 'g3', 'g4'];
 const STATUS_TAG = { 'Tahlil qilingan':'t-green', 'Tahlil qilinmoqda':'t-amber', 'Tahlil qilinmagan':'t-gray' };
@@ -8854,6 +8839,9 @@ function render(){
 
   document.getElementById('listCount').textContent = rows.length;
   document.getElementById('listEmpty').classList.toggle('hidden', rows.length > 0);
+  document.querySelector('#listEmpty p').textContent = STUDENTS_LOAD_FAILED
+    ? "O'quvchilar ro'yxatini yuklab bo'lmadi. Internetni tekshirib, sahifani yangilang."
+    : "Filtr bo'yicha o'quvchi topilmadi.";
   document.querySelector('#listView .pager .info').textContent = rows.length
     ? (from + 1) + '–' + (from + slice.length) + ' / ' + rows.length
     : "Natija yo'q";
@@ -9793,6 +9781,7 @@ async function loadStudentsFromAPI(){
        so'rov muvaffaqiyatli bo'lsa (hatto natija bo'sh bo'lsa ham) har
        doim haqiqiy ro'yxat bilan almashtiramiz. */
     if (!rows) return;
+    STUDENTS_LOAD_FAILED = false;
     STUDENTS = rows.map((r, k) => ({
       apiId: r.id,
       name: r.full_name,
@@ -9816,6 +9805,8 @@ async function loadStudentsFromAPI(){
     render();
   } catch (err) {
     console.warn("O'quvchilar ro'yxatini backenddan yuklab bo'lmadi:", err.message);
+    STUDENTS_LOAD_FAILED = true;
+    render();
   }
 }
 loadStudentsFromAPI();
@@ -9833,33 +9824,8 @@ aiC.onclick = () => { aiC.classList.toggle('open'); document.getElementById('aiS
 const SUBJ = ['Matematika','Fizika','Ingliz tili','Ona tili','Kimyo','Biologiya','Tarix'];
 const SKILLS = ['IT va texnologiya','Matematika','Tabiiy fanlar','Ijodkorlik','Muloqot','Liderlik'];
 
-let CLASSES = [
-  { name:'9-A',  count:28, teacher:'Saidova Dilnoza', avg:4.32, idx:78, ach:12, done:28, of:28, growth:12,
-    skills:[82,79,76,66,74,72], q:[62,66,72,78],
-    subs:[4.45,4.38,4.31,4.28,4.22,4.19,4.15],
-    top:[['Ismoilov Behruz',4.82,92],['Karimova Dilnoza',4.76,90],['Xudoyberdiyev Asilbek',4.71,89],['Tursunova Madina',4.69,88],['Abdurahmonov Muhammad',4.65,86]],
-    ai:"9-A sinfida IT va matematika yo'nalishlariga qiziqish yuqori. 7 nafar o'quvchida dasturlashga yuqori moyillik aniqlandi. 4 nafar o'quvchiga qo'shimcha matematika mashg'ulotlari tavsiya qilindi. Sinfda ijodkorlik ko'nikmalarini rivojlantirish bo'yicha loyihaviy ishlarga ko'proq e'tibor qaratish tavsiya etiladi." },
-  { name:'9-B',  count:26, teacher:'Xolmatov Nodir', avg:4.15, idx:72, ach:9, done:25, of:26, growth:8,
-    skills:[70,74,72,78,69,64], q:[58,61,67,72],
-    subs:[4.20,4.05,4.35,4.30,4.02,4.18,4.10],
-    top:[['Rasulov Dilshodbek',4.79,92],['Yusupova Zilola',4.62,87],['Nazarov Bekzod',4.55,84],['Sobirova Malika',4.50,83],['Alimov Shohruh',4.44,80]],
-    ai:"9-B sinfida til va muloqot yo'nalishi ustunlik qiladi. Ijodiy loyihalarda faollik yuqori. Aniq fanlar bo'yicha 5 nafar o'quvchiga qo'shimcha mashg'ulot kerak." },
-  { name:'10-A', count:24, teacher:'Usmonov Sardor', avg:4.48, idx:81, ach:15, done:24, of:24, growth:15,
-    skills:[85,83,74,70,72,76], q:[66,71,76,81],
-    subs:[4.62,4.55,4.40,4.35,4.30,4.28,4.20],
-    top:[['Karimova Dilnoza',4.90,95],['Qodirov Islombek',4.81,91],['Mirzayev Sardorbek',4.75,89],['Ismoilova Madina',4.70,88],['Nurmatova Sevinch',4.66,87]],
-    ai:"10-A sinfi maktabdagi eng barqaror natijaga ega. IT yo'nalishida 9 nafar o'quvchi yuqori ko'rsatkich qayd etdi. Olimpiadaga tayyorgarlik guruhini shakllantirish tavsiya etiladi." },
-  { name:'10-B', count:27, teacher:'Saidova Dilnoza', avg:4.21, idx:76, ach:11, done:26, of:27, growth:18,
-    skills:[74,71,79,75,70,68], q:[55,62,70,76],
-    subs:[4.30,4.18,4.25,4.40,4.15,4.35,4.08],
-    top:[['Rashidova Gulnoza',4.72,88],['Xolmirzayev Jasurbek',4.60,85],['Abdug\u2018aniyeva Zarina',4.58,84],['Toshmatova Nilufar',4.52,82],['Sultonov Otabek',4.46,79]],
-    ai:"10-B sinfida tabiiy fanlarga moyillik kuchli. Oxirgi choraklarda o'sish sur'ati eng yuqori (+18%). Biologiya va kimyo bo'yicha to'garak ochish tavsiya etiladi." },
-  { name:'11-A', count:22, teacher:'Usmonov Sardor', avg:4.56, idx:84, ach:18, done:22, of:22, growth:18,
-    skills:[88,86,78,72,76,80], q:[70,74,79,84],
-    subs:[4.70,4.65,4.52,4.48,4.42,4.38,4.30],
-    top:[['Sobirova Malika',4.92,96],['Yusupova Zilola',4.85,94],['Ismoilov Behruz',4.80,92],['Karimov Abdulaziz',4.74,90],['Ergashev Jasurbek',4.68,88]],
-    ai:"11-A bitiruvchi sinfi. Kasbga yo'naltirish bo'yicha 18 nafar o'quvchi aniq qaror qabul qilgan. Liderlik ko'rsatkichi maktab bo'yicha eng yuqori. Universitetga tayyorgarlik mashg'ulotlarini kuchaytirish tavsiya etiladi." },
-];
+let CLASSES = [];
+let CLASSES_LOAD_FAILED = false;
 
 let sel = 0, tab = 0, achPage = 1;
 
@@ -9924,7 +9890,9 @@ function renderCards(){
       <span class="enter">Sinfga kirish
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </span>
-    </button>`).join('');
+    </button>`).join('') || (CLASSES_LOAD_FAILED
+      ? `<p style="grid-column:1/-1;font-size:13px;color:var(--red);padding:24px 4px">Sinflar ro'yxatini yuklab bo'lmadi. Internetni tekshirib, sahifani yangilang.</p>`
+      : `<p style="grid-column:1/-1;font-size:13px;color:var(--muted);padding:24px 4px">Hozircha sinflar mavjud emas. Yangi sinf qo'shing.</p>`);
 
   /* sahifalash */
   const box = document.getElementById('cardsPager');
@@ -10036,6 +10004,14 @@ function lineChart(q){
 /* ============ Tafsilot ============ */
 function renderDetail(){
   const c = CLASSES[sel];
+  if (!c) {
+    document.getElementById('dName').innerHTML = "— <small>sinf tanlanmagan</small>";
+    document.getElementById('dCount').innerHTML = '';
+    document.getElementById('tabBody').innerHTML = CLASSES_LOAD_FAILED
+      ? `<div class="box"><p style="font-size:13px;color:var(--red);padding:24px 0">Sinflar ro'yxatini yuklab bo'lmadi. Internetni tekshirib, sahifani yangilang.</p></div>`
+      : `<div class="box"><p style="font-size:13px;color:var(--muted);padding:24px 0">Hozircha sinflar mavjud emas.</p></div>`;
+    return;
+  }
   document.getElementById('dName').innerHTML = c.name + ' <small>sinfi</small>';
   document.getElementById('dCount').innerHTML =
     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2 20c0-3.4 3.1-5.6 7-5.6s7 2.2 7 5.6"/><path d="M17.5 11a3 3 0 100-6M22 20c0-2.6-1.3-4.4-3.2-5.2"/></svg> ${c.count} nafar o'quvchi`;
@@ -10058,6 +10034,12 @@ async function loadAllAchievements(){
 function renderTab(){
   const c = CLASSES[sel];
   const body = document.getElementById('tabBody');
+  if (!c) {
+    body.innerHTML = CLASSES_LOAD_FAILED
+      ? `<div class="box"><p style="font-size:13px;color:var(--red);padding:24px 0">Sinflar ro'yxatini yuklab bo'lmadi. Internetni tekshirib, sahifani yangilang.</p></div>`
+      : `<div class="box"><p style="font-size:13px;color:var(--muted);padding:24px 0">Hozircha sinflar mavjud emas.</p></div>`;
+    return;
+  }
   const barColor = v => v >= 4.4 ? '#16A34A' : v >= 4.2 ? '#3BA7F0' : v >= 4.0 ? '#F59E0B' : '#EF6B39';
 
   if (tab === 0) {
@@ -10237,6 +10219,7 @@ document.addEventListener('click', () => document.getElementById('actMenu').clas
 document.getElementById('repCls').onclick = () => {
   document.getElementById('actMenu').classList.remove('open');
   const c = CLASSES[sel];
+  if (!c) return;
   const rows = [
     ['Sinf', c.name], ['Sinf rahbari', c.teacher], ["O'quvchilar soni", c.count],
     ["O'rtacha baho", c.avg], ['Qobiliyat indeksi', c.idx + '%'], ['Yutuqlar', c.ach],
@@ -10253,6 +10236,7 @@ document.getElementById('repCls').onclick = () => {
 document.getElementById('delCls').onclick = () => {
   document.getElementById('actMenu').classList.remove('open');
   const c = CLASSES[sel];
+  if (!c) return;
   if (!confirm(c.name + " sinfini o'chirasizmi? Sinfdagi o'quvchilar ro'yxatda qoladi.")) return;
   if (c.apiId && window.apiFetch) {
     apiFetch(`/api/classes/${c.apiId}`, { method: 'DELETE' }).catch(err =>
@@ -10265,6 +10249,7 @@ document.getElementById('delCls').onclick = () => {
 
 document.getElementById('aiSummaryBtn').onclick = async function(){
   const b = this, c = CLASSES[sel];
+  if (!c) return;
   b.disabled = true;
   const old = b.innerHTML;
   b.innerHTML = 'AI tahlil qilmoqda…';
@@ -10310,6 +10295,7 @@ document.getElementById('editCls').onclick = () => {
   document.getElementById('actMenu').classList.remove('open');
   editIdx = sel;
   const c = CLASSES[sel];
+  if (!c) return;
   document.getElementById('clsModalTitle').textContent = c.name + " sinfini tahrirlash";
   document.getElementById('cName').value = c.name;
   document.getElementById('cCount').value = c.count;
@@ -10354,6 +10340,7 @@ async function loadClassesFromAPI(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
     const rows = await apiFetch('/api/classes');
+    CLASSES_LOAD_FAILED = false;
     /* MUHIM: avval faqat NOM bo'yicha moslashtirib "boyitish" qilinardi va
        hech qachon olib tashlanmasdi — shu sabab nomi mos kelmagan eski
        demo sinflar ro'yxatda abadiy qolib ketardi. Endi butun ro'yxat
@@ -10377,6 +10364,8 @@ async function loadClassesFromAPI(){
     if (CLASSES.length) loadClassStats(sel);
   } catch (err) {
     console.warn("Sinflar ro'yxatini backenddan yuklab bo'lmadi:", err.message);
+    CLASSES_LOAD_FAILED = true;
+    renderCards(); renderDetail();
   }
 }
 loadClassesFromAPI();
@@ -10415,28 +10404,15 @@ const SK = [
     p:'<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.2"/><circle cx="15" cy="10" r="1.2"/><path d="M12 21a3 3 0 003-3c0-1.5-3-1-3-3"/>' },
 ];
 
-let TOPS = {
-  'IT va texnologiya': [['Ismoilov Behruz','11-A',98],['Karimova Dilnoza','10-A',95],['Xudoyberdiyev Asilbek','11-B',94],['Tursunova Madina','10-B',93],['Abdurahmonov Muhammad','9-A',92]],
-  'Matematika': [['Rasulov Dilshodbek','9-B',96],['Sobirova Malika','11-A',94],['Qodirov Islombek','10-A',91],['Yusupova Zilola','11-B',90],['Mirzayev Sardorbek','10-A',88]],
-  'Ijodkorlik': [['Ismoilova Madina','9-A',93],['Nurmatova Sevinch','8-B',90],['Rashidova Gulnoza','10-B',88],['Toshmatova Nilufar','11-A',85],['Abdug\u2018aniyeva Zarina','9-B',83]],
-  'Muloqot': [['Abdug\u2018aniyeva Zarina','9-B',91],['Sobirova Malika','11-A',89],['Karimova Dilnoza','10-A',86],['Ergashev Jasurbek','9-A',84],['Nazarov Bekzod','8-B',80]],
-  'Liderlik': [['Sobirova Malika','11-A',94],['Ismoilov Behruz','11-A',90],['Mirzayev Sardorbek','10-A',87],['Yusupova Zilola','11-B',85],['Karimov Abdulaziz','9-A',82]],
-  'Tabiiy fanlar': [['Nurmatova Sevinch','8-B',92],['Rashidova Gulnoza','10-B',88],['Sultonov Otabek','9-B',84],['Alimov Shohruh','9-A',80],['Nazarov Bekzod','8-B',78]],
-  'Tadbirkorlik': [['Karimov Asadbek','8-A',89],['Qodirov Islombek','10-A',85],['Ergashev Jasurbek','9-A',82],['Xolmirzayev Jasurbek','9-A',79],['Toshmatova Nilufar','11-A',77]],
-  'Sport': [['Mirzayev Sardorbek','10-A',95],['Nazarov Bekzod','8-B',90],['Alimov Shohruh','9-A',86],['Karimov Abdulaziz','9-A',83],['Xolmirzayev Jasurbek','9-A',80]],
-  "San'at": [['Ismoilova Madina','9-A',88],['Rashidova Gulnoza','10-B',84],['Nurmatova Sevinch','8-B',81],['Abdug\u2018aniyeva Zarina','9-B',78],['Toshmatova Nilufar','11-A',75]],
-};
+/* Haqiqiy sinf/qobiliyat ma'lumotlari backenddan loadSkillsDetail() orqali
+   yuklanadi — demo/namunaviy massivlar bilan boshlanmaydi, aks holda
+   tarmoq muammosida eski soxta sinflar (masalan 28 o'quvchi, 78% indeks)
+   abadiy ko'rinib qolardi. */
+let TOPS = {};
+let CLS_DATA = [];
+let SKILLMAP_LOAD_FAILED = false;
 
-let CLS_DATA = [
-  { n:'9-A', cnt:28, an:28, idx:78, top:'IT va texnologiya' },
-  { n:'9-B', cnt:26, an:25, idx:72, top:'Muloqot' },
-  { n:'10-A', cnt:24, an:24, idx:81, top:'Matematika' },
-  { n:'10-B', cnt:27, an:26, idx:76, top:'Tabiiy fanlar' },
-  { n:'11-A', cnt:22, an:22, idx:84, top:'Liderlik' },
-  { n:'11-B', cnt:25, an:23, idx:79, top:'Matematika' },
-  { n:'8-A', cnt:18, an:16, idx:70, top:'Tadbirkorlik' },
-  { n:'8-B', cnt:16, an:12, idx:68, top:'Sport' },
-];
+
 
 /* ============ Filtr holati ============ */
 const iso = d => d.toISOString().slice(0, 10);
@@ -10608,8 +10584,12 @@ function render(){
   const chips = filterChips();
 
   if (!ST.cls.length) {
-    box.innerHTML = chips + `<div class="card"><div class="empty-note">
-      Tanlangan filtrga mos sinf topilmadi. Filtrni o'zgartiring yoki tozalang.</div></div>`;
+    const noteText = !CLS_DATA.length
+      ? (SKILLMAP_LOAD_FAILED
+          ? "Ma'lumotlarni backenddan yuklab bo'lmadi. Internet aloqasini tekshirib, sahifani yangilang."
+          : "Hozircha tizimda tahlil qilingan sinf yo'q.")
+      : "Tanlangan filtrga mos sinf topilmadi. Filtrni o'zgartiring yoki tozalang.";
+    box.innerHTML = chips + `<div class="card"><div class="empty-note">${noteText}</div></div>`;
     bindChips();
     return;
   }
@@ -11049,6 +11029,7 @@ async function loadSkillsFromAPI(){
     console.warn("Qobiliyat statistikasini yuklab bo'lmadi:", err.message);
   }
 }
+
 loadSkillsFromAPI();
 window.addEventListener('view:shown', e => { if (e.detail === 'skillmap') { loadSkillsFromAPI(); loadSkillsDetail(); } });
 
@@ -11103,10 +11084,13 @@ async function loadSkillsDetail(){
       };
     });
     CLS_DATA = newClsData;
+    SKILLMAP_LOAD_FAILED = false;
 
     render();
   } catch (err) {
     console.warn("Qobiliyat batafsil ma'lumotini yuklab bo'lmadi:", err.message);
+    SKILLMAP_LOAD_FAILED = true;
+    render();
   }
 }
 loadSkillsDetail();
@@ -11187,6 +11171,7 @@ const CASES = [
 let REAL_INSIGHTS = null;
 let REAL_STATS = null;
 let REAL_SKILLS = null;
+let SUMMARY_STATS_LOAD_FAILED = false;
 async function loadInsights(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
@@ -11200,9 +11185,12 @@ async function loadSummaryStats(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
     REAL_STATS = await apiFetch('/api/students/stats/summary');
+    SUMMARY_STATS_LOAD_FAILED = false;
     render();
   } catch (err) {
     console.warn("Umumiy ko'rsatkichlarni yuklab bo'lmadi:", err.message);
+    SUMMARY_STATS_LOAD_FAILED = true;
+    render();
   }
 }
 async function loadSkillsSummary(){
@@ -11225,21 +11213,21 @@ function stats(){
     const high = (REAL_INSIGHTS && REAL_INSIGHTS.high && REAL_INSIGHTS.high.has_data) ? REAL_INSIGHTS.high.count : 0;
     return { total: REAL_STATS.total, done: REAL_STATS.analyzed, idx: REAL_STATS.avg_index, high, hasReal: true };
   }
-  const k = RANGES[P.range]?.k || 1;
-  const done = Math.min(BASE.total, Math.round(BASE.done * (k > 1 ? 1 : k)));
-  return {
-    total: BASE.total,
-    done,
-    idx: Math.max(40, Math.min(99, Math.round(BASE.idx * (k > 1 ? 1 + (k - 1) * .12 : k)))),
-    high: Math.round(BASE.high * k),
-  };
+  /* MUHIM: avval bu yerda BASE (186 o'quvchi, 78% indeks va h.k.) asosida
+     "o'sib boruvchi" soxta ko'rsatkichlar chiqardik — backend so'rovi
+     muvaffaqiyatsiz bo'lsa ham ular abadiy ko'rinib qolardi. Endi haqiqiy
+     ma'lumot bo'lmaguncha halol nol/ko'rsatilmagan holat qaytariladi. */
+  return { total: 0, done: 0, idx: 0, high: 0, hasReal: false, loadFailed: SUMMARY_STATS_LOAD_FAILED };
 }
 function skillsNow(){
   if (REAL_SKILLS) {
     return REAL_SKILLS.map((s, i) => ({ n: s.name, v: s.value, c: (SKILLS[i] || SKILLS[0]).c }));
   }
-  const k = RANGES[P.range]?.k || 1;
-  return SKILLS.map(s => ({ ...s, v: Math.max(20, Math.min(99, Math.round(s.v * (k > 1 ? 1 + (k-1)*.08 : k)))) }));
+  /* MUHIM: avval bu yerda SKILLS namunaviy massividan (IT 82%, Matematika 79%, ...)
+     "davrga qarab o'zgaruvchi" soxta foizlar chiqardik — real ma'lumot hali
+     yuklanmagan yoki so'rov muvaffaqiyatsiz bo'lsa ham. Endi haqiqiy
+     ma'lumot kelmaguncha bo'sh ro'yxat qaytariladi. */
+  return [];
 }
 function casesNow(){
   return CASES.map(c => {
@@ -11254,42 +11242,46 @@ function render(){
   const S = stats(), SK = skillsNow(), CS = casesNow();
   const box = document.getElementById('sumBody');
 
+  const kpiNote = S.hasReal ? '' : (S.loadFailed
+    ? '<span class="note" style="color:var(--red)">Yuklab bo\'lmadi</span>'
+    : '<span class="note">Yuklanmoqda…</span>');
   box.innerHTML = `
     <div class="kpi">
       <div class="kcard"><div class="kico i-vi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2 20c0-3.4 3.1-5.6 7-5.6s7 2.2 7 5.6"/><path d="M17.5 11a3 3 0 100-6M22 20c0-2.6-1.3-4.4-3.2-5.2"/></svg></div>
-        <div><small>Jami o'quvchilar</small><b>${S.total}</b>${S.hasReal ? '' : '<span class="note">O\'tgan oyga nisbatan <span class="up">↑ 12</span></span>'}</div></div>
+        <div><small>Jami o'quvchilar</small><b>${S.hasReal ? S.total : '—'}</b>${kpiNote}</div></div>
       <div class="kcard"><div class="kico i-bl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="16" height="14" rx="4"/><path d="M12 2v4"/><circle cx="9" cy="12.5" r="1.3"/><circle cx="15" cy="12.5" r="1.3"/><path d="M9.5 16.5h5"/></svg></div>
-        <div><small>AI tahlil qilingan</small><b>${S.done}</b><span class="note">${S.hasReal ? (S.total ? (S.done/S.total*100).toFixed(1) + '%' : "Hali o'quvchi yo'q") : `O'tgan oyga nisbatan <span class="up">↑ 18 (${(S.done/S.total*100).toFixed(1)}%)</span>`}</span></div></div>
+        <div><small>AI tahlil qilingan</small><b>${S.hasReal ? S.done : '—'}</b><span class="note">${S.hasReal ? (S.total ? (S.done/S.total*100).toFixed(1) + '%' : "Hali o'quvchi yo'q") : (S.loadFailed ? "Yuklab bo'lmadi" : 'Yuklanmoqda…')}</span></div></div>
       <div class="kcard"><div class="kico i-gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16"/><path d="M8 16l3.5-5 3 3L20 7"/></svg></div>
-        <div><small>O'rtacha qobiliyat indeksi</small><b>${S.idx}%</b>${S.hasReal ? '' : '<span class="note">O\'tgan oyga nisbatan <span class="up">↑ 6%</span></span>'}</div></div>
+        <div><small>O'rtacha qobiliyat indeksi</small><b>${S.hasReal ? S.idx + '%' : '—'}</b>${kpiNote}</div></div>
       <div class="kcard"><div class="kico i-am"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.3.9-4.5 4.4 1 6.1L12 17l-5.5 3 1-6.1L3 9.5l6.3-.9z"/></svg></div>
-        <div><small>Yuqori salohiyatli o'quvchilar</small><b>${S.high}</b>${S.hasReal ? '' : '<span class="note">O\'tgan oyga nisbatan <span class="up">↑ 5</span></span>'}</div></div>
+        <div><small>Yuqori salohiyatli o'quvchilar</small><b>${S.hasReal ? S.high : '—'}</b>${kpiNote}</div></div>
     </div>
 
     <div class="card" style="margin-bottom:20px">
       <div class="card-h"><b><span class="hic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.3"/><circle cx="15" cy="13" r="1.3"/></svg></span>AI umumiy xulosasi</b></div>
       <div class="card-b">
         ${(() => {
-          const skSorted = [...SK].sort((a, b) => b.v - a.v);
-          const topSk = skSorted[0], botSk = skSorted[skSorted.length - 1];
-          if (S.hasReal && S.total === 0) {
+          if (!S.hasReal) {
+            return `<p class="sum-p" id="aiXulosaP1">${S.loadFailed
+              ? "Ma'lumotlarni backenddan yuklab bo'lmadi. Internet aloqasini tekshirib, sahifani yangilang."
+              : "Ma'lumotlar yuklanmoqda…"}</p>`;
+          }
+          if (S.total === 0) {
             return `<p class="sum-p" id="aiXulosaP1">Hozircha tizimda tahlil qilingan o'quvchi yo'q. O'quvchilar qo'shilib,
               test natijalari kiritilgandan so'ng AI xulosasi shu yerda avtomatik shakllanadi.</p>`;
           }
-          if (S.hasReal) {
-            return `<p class="sum-p" id="aiXulosaP1">Tahlil natijasiga ko'ra, maktabimiz o'quvchilarida <b>${topSk.n}</b> yo'nalishiga moyillik yuqori —
+          if (!SK.length) {
+            return `<p class="sum-p" id="aiXulosaP1">Umumiy ko'rsatkichlar tayyor, ammo qobiliyat yo'nalishlari bo'yicha
+              batafsil ma'lumot hali yuklanmoqda yoki mavjud emas.</p>`;
+          }
+          const skSorted = [...SK].sort((a, b) => b.v - a.v);
+          const topSk = skSorted[0], botSk = skSorted[skSorted.length - 1];
+          return `<p class="sum-p" id="aiXulosaP1">Tahlil natijasiga ko'ra, maktabimiz o'quvchilarida <b>${topSk.n}</b> yo'nalishiga moyillik yuqori —
                 bu yo'nalish maktab bo'yicha eng kuchli ko'rsatkichni bermoqda (${topSk.v}%). Yuqori salohiyatli <b>${S.high} nafar</b> o'quvchi
                 aniqlandi; ular uchun chuqurlashtirilgan dastur va olimpiadaga tayyorgarlik guruhini shakllantirish maqsadga muvofiq.</p>
               <p class="sum-p" id="aiXulosaP2" style="margin-bottom:0"><b>${botSk.n}</b> yo'nalishi hozircha eng past ko'rsatkichda
                 qolmoqda (${botSk.v}%) — bu bo'yicha amaliy loyihalar va to'garaklar ochish tavsiya etiladi. Quyida AI e'tibor
                 qaratishni so'ragan holatlar keltirilgan.</p>`;
-          }
-          return `<p class="sum-p" id="aiXulosaP1">Tahlil natijasiga ko'ra, maktabimiz o'quvchilarida <b>IT va matematika</b> yo'nalishlariga moyillik yuqori —
-              bu ikki yo'nalish maktab bo'yicha eng kuchli ko'rsatkichni bermoqda. Yuqori salohiyatli <b>${S.high} nafar</b> o'quvchi
-              aniqlandi; ular uchun chuqurlashtirilgan dastur va olimpiadaga tayyorgarlik guruhini shakllantirish maqsadga muvofiq.</p>
-            <p class="sum-p" id="aiXulosaP2" style="margin-bottom:0">Ijodkorlik va liderlik ko'nikmalari yaxshi rivojlangan o'quvchilar soni ortib
-              bormoqda, ammo <b>tadqiqot va tahlil</b> yo'nalishi eng past ko'rsatkichda qolmoqda — bu bo'yicha amaliy loyihalar
-              va to'garaklar ochish tavsiya etiladi. Quyida AI e'tibor qaratishni so'ragan holatlar keltirilgan.</p>`;
         })()}
         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">
           <button class="out-btn" style="margin-top:0" id="fullRep">To'liq AI hisobotini ko'rish
@@ -11404,15 +11396,16 @@ function openReport(){
   document.getElementById('repBody').innerHTML = `
     <div class="rep-sect">Umumiy ko'rsatkichlar</div>
     <table class="mtab"><tbody>
-      <tr><td>Jami o'quvchilar</td><td style="text-align:right;font-weight:700">${S.total}</td></tr>
-      <tr><td>AI tahlil qilingan</td><td style="text-align:right;font-weight:700">${S.done} (${S.total ? (S.done/S.total*100).toFixed(1) : '0'}%)</td></tr>
-      <tr><td>O'rtacha qobiliyat indeksi</td><td style="text-align:right;font-weight:700">${S.idx}%</td></tr>
-      <tr><td>Yuqori salohiyatli o'quvchilar</td><td style="text-align:right;font-weight:700">${S.high}</td></tr>
+      <tr><td>Jami o'quvchilar</td><td style="text-align:right;font-weight:700">${S.hasReal ? S.total : '—'}</td></tr>
+      <tr><td>AI tahlil qilingan</td><td style="text-align:right;font-weight:700">${S.hasReal ? (S.done + ' (' + (S.total ? (S.done/S.total*100).toFixed(1) : '0') + '%)') : '—'}</td></tr>
+      <tr><td>O'rtacha qobiliyat indeksi</td><td style="text-align:right;font-weight:700">${S.hasReal ? S.idx + '%' : '—'}</td></tr>
+      <tr><td>Yuqori salohiyatli o'quvchilar</td><td style="text-align:right;font-weight:700">${S.hasReal ? S.high : '—'}</td></tr>
     </tbody></table>
 
     <div class="rep-sect">Qobiliyat yo'nalishlari</div>
     <table class="mtab"><tbody>
-      ${SK.map(s => `<tr><td>${s.n}</td><td style="text-align:right;font-weight:700;color:${s.c}">${s.v}%</td></tr>`).join('')}
+      ${SK.length ? SK.map(s => `<tr><td>${s.n}</td><td style="text-align:right;font-weight:700;color:${s.c}">${s.v}%</td></tr>`).join('')
+        : `<tr><td colspan="2" style="color:var(--muted)">Ma'lumot yo'q</td></tr>`}
     </tbody></table>
 
     <div class="rep-sect">Aniqlangan holatlar</div>
@@ -11422,7 +11415,10 @@ function openReport(){
 
     <div class="rep-sect">AI xulosasi</div>
     <p class="rep-p">Tahlil qilingan davr: <b>${fmt(P.from)} – ${fmt(P.to)}</b>.<br><br>
-      ${S.total === 0 ? "Hozircha tizimda tahlil qilingan o'quvchi yo'q." : `Maktab bo'yicha eng kuchli yo'nalish — <b>${topSk.n} (${topSk.v}%)</b>. Eng past ko'rsatkich —
+      ${!S.hasReal ? (S.loadFailed ? "Ma'lumotlarni backenddan yuklab bo'lmadi." : "Ma'lumotlar yuklanmoqda…")
+        : S.total === 0 ? "Hozircha tizimda tahlil qilingan o'quvchi yo'q."
+        : !SK.length ? "Qobiliyat yo'nalishlari bo'yicha batafsil ma'lumot hozircha mavjud emas."
+        : `Maktab bo'yicha eng kuchli yo'nalish — <b>${topSk.n} (${topSk.v}%)</b>. Eng past ko'rsatkich —
       <b>${botSk.n} (${botSk.v}%)</b>, bu yo'nalishda to'garak va amaliy mashg'ulotlar ochish tavsiya etiladi.<br><br>
       ${S.high} nafar o'quvchi yuqori salohiyat guruhiga kiritildi — ular uchun chuqurlashtirilgan dastur va olimpiadaga
       tayyorgarlik guruhini shakllantirish maqsadga muvofiq.<br><br>
@@ -11437,9 +11433,9 @@ document.getElementById('repDl').onclick = () => {
   const rows = [
     ['AI XULOSA HISOBOTI'], ['Davr', fmt(P.from) + ' – ' + fmt(P.to)], [],
     ['Ko‘rsatkich','Qiymat'],
-    ["Jami o'quvchilar", S.total], ['AI tahlil qilingan', S.done],
-    ["O'rtacha qobiliyat indeksi", S.idx + '%'], ['Yuqori salohiyatli', S.high], [],
-    ["Qobiliyat yo'nalishi",'Ko‘rsatkich'], ...SK.map(s => [s.n, s.v + '%']), [],
+    ["Jami o'quvchilar", S.hasReal ? S.total : "Ma'lumot yo'q"], ['AI tahlil qilingan', S.hasReal ? S.done : "Ma'lumot yo'q"],
+    ["O'rtacha qobiliyat indeksi", S.hasReal ? S.idx + '%' : "Ma'lumot yo'q"], ['Yuqori salohiyatli', S.hasReal ? S.high : "Ma'lumot yo'q"], [],
+    ["Qobiliyat yo'nalishi",'Ko‘rsatkich'], ...(SK.length ? SK.map(s => [s.n, s.v + '%']) : [["Ma'lumot yo'q", '']]), [],
     ['Aniqlangan holat','Soni'], ...CS.map(c => [c.t, c.noData ? "Ma'lumot yo'q" : c.n + ' nafar']),
   ];
   dl(rows, 'ai_xulosa_hisobot.csv');
@@ -12189,20 +12185,8 @@ const TYPE_META = {
   "Kasbga yo'nalish testi":['#F59E0B','<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2"/>'],
 };
 
-let TESTS = [
-  { id:'T-1041', name:'Matematika bilim testi', type:'Fan testi', cls:['9-A','9-B'], q:12, target:58, done:54, avg:76, status:'Faol', dur:30, created:'12.08.2026' },
-  { id:'T-1040', name:'Kasbiy qiziqish so\u2018rovnomasi', type:'Qiziqish testi', cls:['10-A','10-B','11-A'], q:24, target:73, done:73, avg:88, status:'Yakunlangan', dur:20, created:'05.08.2026' },
-  { id:'T-1039', name:'IT qobiliyat testi', type:'Qobiliyat testi', cls:['9-A','10-A'], q:18, target:52, done:41, avg:71, status:'Faol', dur:45, created:'01.08.2026' },
-  { id:'T-1038', name:'Kasbga yo\u2018naltirish testi', type:"Kasbga yo'nalish testi", cls:['11-A','11-B'], q:30, target:47, done:47, avg:82, status:'Yakunlangan', dur:40, created:'22.07.2026' },
-  { id:'T-1037', name:'Informatika chorak nazorati', type:'Fan testi', cls:['9-B'], q:15, target:26, done:0, avg:0, status:'Qoralama', dur:30, created:'20.07.2026' },
-  { id:'T-1036', name:'Ingliz tili darajasini aniqlash', type:'Fan testi', cls:['8-A','8-B','9-A'], q:20, target:74, done:66, avg:69, status:'Faol', dur:35, created:'15.07.2026' },
-  { id:'T-1035', name:'Mantiqiy fikrlash testi', type:'Qobiliyat testi', cls:['9-A','9-B','10-A'], q:16, target:78, done:78, avg:74, status:'Yakunlangan', dur:25, created:'10.07.2026' },
-  { id:'T-1034', name:'Fizika bo\u2018yicha bilim darajasi', type:'Fan testi', cls:['10-A','10-B'], q:14, target:51, done:38, avg:64, status:'Faol', dur:30, created:'05.07.2026' },
-  { id:'T-1033', name:'Ijodkorlik so\u2018rovnomasi', type:'Qiziqish testi', cls:['8-A','8-B'], q:15, target:34, done:0, avg:0, status:'Qoralama', dur:15, created:'28.06.2026' },
-  { id:'T-1032', name:'Liderlik ko\u2018nikmalari testi', type:'Qobiliyat testi', cls:['10-B','11-A'], q:22, target:49, done:44, avg:79, status:'Faol', dur:30, created:'20.06.2026' },
-  { id:'T-1031', name:'Biologiya nazorat ishi', type:'Fan testi', cls:['9-A'], q:12, target:28, done:28, avg:85, status:'Yakunlangan', dur:25, created:'12.06.2026' },
-  { id:'T-1030', name:'Kelajak kasbi so\u2018rovnomasi', type:"Kasbga yo'nalish testi", cls:['9-A','9-B','10-A','10-B'], q:26, target:105, done:91, avg:77, status:'Faol', dur:30, created:'02.06.2026' },
-];
+let TESTS = [];
+let TESTS_LOAD_FAILED = false;
 
 const NAMES = ['Ismoilov Behruz','Karimova Dilnoza','Xudoyberdiyev Asilbek','Tursunova Madina','Abdurahmonov Muhammad',
   'Rasulov Dilshodbek','Sobirova Malika','Qodirov Islombek','Yusupova Zilola','Mirzayev Sardorbek',
@@ -12282,6 +12266,9 @@ function render(){
 
   document.getElementById('tCount').textContent = rows.length;
   document.getElementById('tEmpty').classList.toggle('hidden', rows.length > 0);
+  document.querySelector('#tEmpty p').textContent = TESTS_LOAD_FAILED
+    ? "Testlar ro'yxatini yuklab bo'lmadi. Internetni tekshirib, sahifani yangilang."
+    : "Filtr bo'yicha test topilmadi.";
 
   /* sahifalash */
   const box = document.getElementById('tPager');
@@ -12426,21 +12413,48 @@ testModal.querySelectorAll('[data-close]').forEach(b => b.onclick = () => closeM
 testModal.onclick = e => { if (e.target === testModal) closeM(testModal); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeM(testModal); });
 
-let TM = { rows: [], page: 1, t: null };
+let TM = { rows: [], page: 1, t: null, loading: false, loadFailed: false };
 
-function openTest(id){
+async function openTest(id){
   const t = TESTS.find(x => x.id === id);
   TM.t = t;
-  TM.rows = Array.from({ length: t.done }, (_, i) => ({
-    name: NAMES[i % NAMES.length],
-    cls: t.cls[i % t.cls.length],
-    score: Math.max(35, Math.min(100, t.avg + ((i * 7) % 31) - 15)),
-  })).sort((a, b) => b.score - a.score);
+  TM.rows = [];
   TM.page = 1;
+  TM.loading = true;
+  TM.loadFailed = false;
   document.getElementById('tmTitle').textContent = t.name;
   document.getElementById('tmSub').textContent = t.type + ' · ' + t.q + ' savol · ' + t.dur + ' daqiqa';
   drawTest();
   openM(testModal);
+
+  /* Haqiqiy o'quvchi natijalari backenddan olinadi — avval bu yerda
+     har bir test uchun soxta ism va soxta ball (NAMES ro'yxatidan, t.avg
+     atrofida hisoblab chiqarilgan) ko'rsatilardi, hatto haqiqiy testlar
+     uchun ham. */
+  if (!t.apiId || !window.apiFetch || !localStorage.getItem('qp_token')) {
+    TM.loading = false;
+    drawTest();
+    return;
+  }
+  try {
+    const [results, students, classes] = await Promise.all([
+      apiFetch(`/api/tests/${t.apiId}/results`),
+      apiFetch('/api/students'),
+      apiFetch('/api/classes').catch(() => []),
+    ]);
+    const clsById = {}; (classes || []).forEach(c => { clsById[c.id] = c.name; });
+    const byId = {}; (students || []).forEach(s => { byId[s.id] = s; });
+    TM.rows = (results || []).map(r => {
+      const s = byId[r.student_id];
+      return { name: s ? s.full_name : `O'quvchi #${r.student_id}`, cls: s ? (clsById[s.class_id] || '—') : '—', score: r.score_percent };
+    }).sort((a, b) => b.score - a.score);
+    TM.loading = false;
+  } catch (err) {
+    console.warn("Test natijalarini yuklab bo'lmadi:", err.message);
+    TM.loading = false;
+    TM.loadFailed = true;
+  }
+  if (TM.t === t) drawTest();
 }
 
 function drawTest(){
@@ -12474,7 +12488,9 @@ function drawTest(){
     <div class="v-row"><span>Yaratilgan</span><b>${t.created}</b></div>
 
     <div class="v-sect">O'quvchilar natijalari</div>
-    ${TM.rows.length ? `
+    ${TM.loading ? '<p style="font-size:13px;color:var(--muted);padding:10px 0">Yuklanmoqda…</p>'
+    : TM.loadFailed ? '<p style="font-size:13px;color:var(--red);padding:10px 0">Natijalarni yuklab bo\'lmadi. Sahifani yangilab qayta urinib ko\'ring.</p>'
+    : TM.rows.length ? `
       <table class="mtab">
         <thead><tr><th style="width:36px">#</th><th>O'quvchi</th><th>Sinf</th><th style="text-align:right">Natija</th></tr></thead>
         <tbody>${slice.map((r, i) => `
@@ -12536,6 +12552,7 @@ async function loadTestsFromAPI(){
        — endi so'rov muvaffaqiyatli bo'lsa har doim haqiqiy (bo'sh bo'lsa
        ham) ro'yxat bilan almashtiramiz. */
     if (!rows) return;
+    TESTS_LOAD_FAILED = false;
     TESTS = rows.map(r => ({
       apiId: r.id, id: 'T-' + r.id, name: r.name, type: r.type,
       cls: (r.class_ids || []).map(String), q: (r.questions || []).length,
@@ -12547,6 +12564,8 @@ async function loadTestsFromAPI(){
     render();
   } catch (err) {
     console.warn("Testlar ro'yxatini backenddan yuklab bo'lmadi:", err.message);
+    TESTS_LOAD_FAILED = true;
+    render();
   }
 }
 loadTestsFromAPI();
@@ -13102,17 +13121,16 @@ const aiRd = document.getElementById('aiToggleRd');
 aiRd.onclick = () => { aiRd.classList.toggle('open'); document.getElementById('aiSubRd').classList.toggle('closed'); };
 
 /* ============ Ma'lumotlar ============ */
-const NAMES = ['Ismoilov Behruz','Karimova Dilnoza','Xudoyberdiyev Asilbek','Tursunova Madina','Abdurahmonov Muhammad',
-  'Rasulov Dilshodbek','Sobirova Malika','Qodirov Islombek','Yusupova Zilola','Mirzayev Sardorbek'];
-const CLSL = ['9-A','9-B','10-A','10-B','11-A'];
 const ini = n => n.split(' ').filter(Boolean).slice(0,2).map(w => w[0]).join('').toUpperCase();
 
 /* har bir o'quvchi uchun AI/maslahatchi tuzgan kasb yo'nalishlari (backenddan yuklanadi) */
 let PROFESSIONS = [];  // tanlangan o'quvchining joriy ro'yxati
 
-let STUDENTS = NAMES.map((n, i) => ({
-  name: n, cls: CLSL[i % CLSL.length], focus: ['IT va texnologiya','Matematika','Ijodkorlik','Muloqot','Liderlik'][i % 5],
-}));
+/* Haqiqiy o'quvchilar ro'yxati backenddan loadStudentsFromAPI() orqali yuklanadi —
+   demo/namunaviy ro'yxat bilan boshlanmaydi, aks holda tarmoq muammosida eski soxta
+   o'quvchilar abadiy ko'rinib qolardi. */
+let STUDENTS = [];
+let RD_STUDENTS_LOAD_FAILED = false;
 
 let sel = 0;
 const CLS_ORDER = ['8-A','8-B','9-A','9-B','10-A','10-B','11-A','11-B'];
@@ -13144,13 +13162,17 @@ function currentStageOf(p){
 /* ============ Render ============ */
 function render(){
   if (!STUDENTS.length) {
-    document.getElementById('stuHead').innerHTML =
-      `<div><b>Hali o'quvchi yo'q</b><small>Bu maktabda hozircha bazaga qo'shilgan o'quvchi mavjud emas.</small></div>`;
+    document.getElementById('stuHead').innerHTML = RD_STUDENTS_LOAD_FAILED
+      ? `<div><b>Ma'lumotlarni yuklab bo'lmadi</b><small>Backend bilan bog'lanishda xatolik yuz berdi. Sahifani yangilab ko'ring.</small></div>`
+      : `<div><b>Hali o'quvchi yo'q</b><small>Bu maktabda hozircha bazaga qo'shilgan o'quvchi mavjud emas.</small></div>`;
     document.getElementById('ovBox').innerHTML = '';
-    document.getElementById('roadBox').innerHTML =
-      `<div class="empty" style="padding:30px;text-align:center;color:var(--muted)">
-        O'quvchi qo'shilgach, uning rivojlanish yo'l xaritasi shu yerda ko'rinadi.
-      </div>`;
+    document.getElementById('roadBox').innerHTML = RD_STUDENTS_LOAD_FAILED
+      ? `<div class="empty" style="padding:30px;text-align:center;color:var(--muted)">
+          O'quvchilar ro'yxatini yuklab bo'lmadi. Internet aloqasini tekshirib, sahifani yangilang.
+        </div>`
+      : `<div class="empty" style="padding:30px;text-align:center;color:var(--muted)">
+          O'quvchi qo'shilgach, uning rivojlanish yo'l xaritasi shu yerda ko'rinadi.
+        </div>`;
     return;
   }
   const s = STUDENTS[sel];
@@ -13403,6 +13425,7 @@ async function loadStudentsFromAPI(){
        (bo'sh bo'lsa ham) ro'yxat bilan almashtiramiz; render() bo'sh
        holatni alohida ko'rsatadi. */
     if (!students) return;
+    RD_STUDENTS_LOAD_FAILED = false;
     const clsById = {}; (classes || []).forEach(c => { clsById[c.id] = c.name; });
     STUDENTS = students.map(st => ({
       apiId: st.id, name: st.full_name, cls: clsById[st.class_id] || '\u2014',
@@ -13425,6 +13448,8 @@ async function loadStudentsFromAPI(){
     render();
   } catch (err) {
     console.warn("O'quvchilar ro'yxatini backenddan yuklab bo'lmadi:", err.message);
+    RD_STUDENTS_LOAD_FAILED = true;
+    render();
   }
 }
 loadStudentsFromAPI();
@@ -13465,18 +13490,6 @@ const LVL_CLASS = { 'Oltin':'b-oltin','Kumush':'b-kumush','Bronza':'b-bronza','S
 let AW = [];
 let nextId = 1;
 
-/* portfolio ishlari (statik namuna) */
-const WORKS = [
-  { title:"To'do ilova loyihasi", who:'Ismoilov Behruz', type:'Kod loyihasi' },
-  { title:'Shahar arxitekturasi rasmi', who:'Ismoilova Madina', type:'Rasm' },
-  { title:'"Kelajak maktabi" insho', who:'Karimova Dilnoza', type:'Matn' },
-  { title:'Robot-qo\u2018l prototipi', who:'Xudoyberdiyev Asilbek', type:'Loyiha hujjati' },
-  { title:'Fortepiano ijrosi (video)', who:'Nurmatova Sevinch', type:'Video' },
-  { title:'Biznes-reja: "EcoBottle"', who:'Mirzayev Sardorbek', type:'Taqdimot' },
-  { title:'Veb-sayt maketi', who:'Tursunova Madina', type:'Dizayn' },
-  { title:'Fizika loyihasi hisoboti', who:'Qodirov Islombek', type:'Hisobot' },
-];
-
 let view = 'grid', page = 1, per = 9;
 
 /* ============ Filtr ============ */
@@ -13492,12 +13505,12 @@ function filtered(){
   }).sort((a, b) => b.date.localeCompare(a.date));
 }
 
-const CLS_ORDER = ['8-A','8-B','9-A','9-B','10-A','10-B','11-A','11-B'];
-const sortedStuIdx = NAMES.map((n, i) => i).sort((a, b) => {
-  const c = CLS_ORDER.indexOf(CLSL[a % CLSL.length]) - CLS_ORDER.indexOf(CLSL[b % CLSL.length]);
-  return c !== 0 ? c : NAMES[a].localeCompare(NAMES[b], 'uz');
-});
-document.getElementById('fStu').innerHTML = sortedStuIdx.map(i => `<option value="${i}">${CLSL[i % CLSL.length]} — ${NAMES[i]}</option>`).join('');
+/* MUHIM: avval bu yerda "yutuq qo'shish" formasidagi o'quvchi tanlash
+   ro'yxati (NAMES asosida) 15 ta soxta ism bilan to'ldirilardi va
+   haqiqiy ro'yxat yuklanmaguncha (yoki so'rov muvaffaqiyatsiz bo'lsa —
+   abadiy) shu soxta ismlar tanlash uchun turardi. Endi real ro'yxat
+   kelmaguncha halol "Yuklanmoqda..." holati ko'rsatiladi. */
+document.getElementById('fStu').innerHTML = '<option value="">Yuklanmoqda…</option>';
 
 function refreshStuSelect(){
   if (REAL_STUDENTS) {
@@ -13602,12 +13615,18 @@ document.querySelectorAll('#portfolioView .vtoggle button').forEach(b => b.oncli
   render();
 });
 
-/* Portfolio ishlari */
-document.getElementById('pfWorks').innerHTML = WORKS.map(w => `
-  <div class="pf-card">
-    <div class="pf-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-5 4 4 5-6 4 5"/></svg></div>
-    <div class="b"><b>${w.title}</b><small>${w.who} · ${w.type}</small></div>
-  </div>`).join('');
+/* Portfolio ishlari — tasdiqlangan "Kichik yakuniy loyihalar" asosida (haqiqiy backend),
+   loadPendingProjects() ichida renderPortfolioWorks() orqali to'ldiriladi. */
+function renderPortfolioWorks(allProjects){
+  const box = document.getElementById('pfWorks');
+  const approved = (allProjects || []).filter(p => p.status === 'tasdiqlangan');
+  box.innerHTML = approved.length ? approved.map(p => `
+    <div class="pf-card">
+      <div class="pf-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-5 4 4 5-6 4 5"/></svg></div>
+      <div class="b"><b>${p.title}</b><small>${p.owner_name || '—'}${p.subject ? ' · ' + p.subject : ''}</small></div>
+    </div>`).join('') : `<p style="font-size:13px;color:var(--muted);padding:20px 4px">Hozircha tasdiqlangan portfolio ishlari yo'q.</p>`;
+}
+renderPortfolioWorks([]);
 
 /* ============ Ko'rish modali ============ */
 const viewModal = document.getElementById('pfViewModal');
@@ -13781,6 +13800,7 @@ async function loadPendingProjects(){
   try {
     const res = await apiFetch('/api/students/projects/all');
     const list = res.projects || [];
+    renderPortfolioWorks(list);
     const card = document.getElementById('pendingProjectsCard');
     card.style.display = list.length ? 'block' : 'none';
     document.getElementById('pendingProjectsCount').textContent = list.length;
@@ -13915,12 +13935,11 @@ const TODAY = new Date(), TODAY_ISO = iso(TODAY);
 const fmt = d => { const [y,m,dd] = d.split('-'); return dd + '.' + m + '.' + y; };
 
 let tplId = null, genResult = null;
-let RECENT = [
-  { name:'Umumiy tahlil hisoboti — May 2026', tpl:'umumiy', date:'2026-05-30', size:'842 KB', fmt:'Excel' },
-  { name:'9-A sinf hisoboti', tpl:'sinf', date:'2026-05-22', size:'318 KB', fmt:'PDF' },
-  { name:'Ismoilov Behruz — to\u2018liq profil', tpl:'stu', date:'2026-05-14', size:'196 KB', fmt:'PDF' },
-  { name:'Matematika bilim testi — natijalar', tpl:'test', date:'2026-05-10', size:'124 KB', fmt:'Excel' },
-];
+/* Haqiqiy tizimda hisobotlar serverda saqlanmaydi (har bir hisobot shu yerda,
+   brauzerda generatsiya qilinadi) — shuning uchun "so'nggi hisobotlar"
+   ro'yxati soxta namuna bilan emas, bo'sh holatdan boshlanadi va faqat shu
+   seansda yaratilgan hisobotlarni ko'rsatadi. */
+let RECENT = [];
 
 /* ============ Umumiy render ============ */
 let tab = 0;
@@ -14069,13 +14088,14 @@ async function showResult(){
   const selectedTestId = tplId === 'test' ? document.getElementById('testSel')?.value : null;
   genResult = { name: label, tpl: tplId, date: TODAY_ISO, size: (80 + Math.round(Math.random()*700)) + ' KB', fmt: fmtSel, clsId: selectedClsId, stuId: selectedStuId, testId: selectedTestId };
   RECENT.unshift(genResult);
-
-  /* Backend ulanган bo'lsa — haqiqiy sonlarni olamiz */
-  let totalStudents = 186, avgIdx = 78, skillCount = 9;
+/* Backend ulangan bo'lsa — haqiqiy sonlarni olamiz; aks holda yoki
+   so'rov muvaffaqiyatsiz bo'lsa, soxta raqam o'rniga "—" chiqaramiz. */
+  let totalStudents = null, avgIdx = null;
+  const skillCount = 9; /* tizimda belgilangan qobiliyat yo'nalishlari soni — sobit taksonomiya, ma'lumot emas */
   if (window.apiFetch && localStorage.getItem('qp_token')) {
     try {
       const students = await apiFetch('/api/students');
-      totalStudents = students.length || totalStudents;
+      totalStudents = students.length;
       const allGrades = [];
       for (const s of students) {
         try { const g = await apiFetch(`/api/students/${s.id}/grades`); g.forEach(x => allGrades.push(x.score)); }
@@ -14100,8 +14120,8 @@ async function showResult(){
       </div>
       <div class="result-b">
         <div class="rstat">
-          <div><b>${totalStudents}</b><small>Jami o'quvchilar</small></div>
-          <div><b>${avgIdx}%</b><small>O'rtacha indeks</small></div>
+          <div><b>${totalStudents != null ? totalStudents : '—'}</b><small>Jami o'quvchilar</small></div>
+          <div><b>${avgIdx != null ? avgIdx + '%' : '—'}</b><small>O'rtacha indeks</small></div>
           <div><b>${skillCount}</b><small>Qobiliyat yo'nalishi</small></div>
           <div><b>${sectionsFor(tplId).filter((_,i) => document.querySelectorAll('#reportsView #sectBox .chk')[i]?.classList.contains('on')).length}</b><small>Bo'lim kiritildi</small></div>
         </div>
@@ -14293,20 +14313,12 @@ const TYPE_META = {
   xabar:  { label:'Xabar',            tag:'t-pk',  ic:'<path d="M21 12a8 8 0 01-8 8H5l-2 2V12a8 8 0 018-8h1a8 8 0 018 8z"/>' },
 };
 
-let NOTIFS = [
-  { id:1, type:'ai', title:'AI yangi holat aniqladi', text:"14 nafar o'quvchida faollik ko'rsatkichlari pasaygan. Ularni ko'rib chiqishni tavsiya qilamiz.", time:'10 daqiqa oldin', unread:true, actions:[['Ro\u2018yxatni ko\u2018rish','advice']] },
-  { id:2, type:'test', title:'Test yakunlandi', text:'"Kasbiy qiziqish so\u2018rovnomasi" testi barcha o\u2018quvchilar tomonidan topshirildi. O\u2018rtacha natija: 88%.', time:'1 soat oldin', unread:true, actions:[['Natijalarni ko\u2018rish','tests']] },
-  { id:3, type:'yutuq', title:'Yangi yutuq qo\u2018shildi', text:'Ismoilov Behruz — Respublika informatika olimpiadasida oltin medal qo\u2018lga kiritdi.', time:'3 soat oldin', unread:true, actions:[['Profilni ko\u2018rish','portfolio']] },
-  { id:4, type:'ogohl', title:"E'tibor talab qiladi", text:'Rasulov Dilshodbek — so\u2018nggi 2 haftada 3 ta darsga qatnashmadi. Ota-ona bilan bog\u2018lanish tavsiya etiladi.', time:'5 soat oldin', unread:true, actions:[['O\u2018quvchini ko\u2018rish','list']] },
-  { id:5, type:'tizim', title:"Ma'lumotlar yangilandi", text:'186 nafar o\u2018quvchi bo\u2018yicha AI tahlil qayta hisoblandi. Qobiliyat xaritasi yangilandi.', time:'8 soat oldin', unread:true, actions:[['Xaritani ko\u2018rish','skillmap']] },
-  { id:6, type:'xabar', title:'Maktab direktoridan xabar', text:'"Iltimos, may oyi bo\u2018yicha umumiy hisobotni ertaga soat 12:00 gacha tayyorlab bering."', time:'Kecha, 16:40', unread:false, actions:[['Hisobot yaratish','reports']] },
-  { id:7, type:'test', title:'Yangi test faollashtirildi', text:'"Informatika chorak nazorati" testi 9-B sinf uchun faol holatga o\u2018tkazildi.', time:'Kecha, 11:20', unread:false, actions:[] },
-  { id:8, type:'ai', title:'Oylik AI xulosasi tayyor', text:'May oyi uchun AI umumiy xulosasi shakllantirildi. O\u2018rtacha qobiliyat indeksi 78% ni tashkil etdi.', time:'2 kun oldin', unread:false, actions:[['Xulosani ko\u2018rish','summary']] },
-  { id:9, type:'yutuq', title:'Sertifikat qo\u2018shildi', text:'Sobirova Malika — "Python asoslari" onlayn kursini muvaffaqiyatli yakunladi.', time:'3 kun oldin', unread:false, actions:[] },
-  { id:10, type:'tizim', title:'Yangi o\u2018quvchilar qo\u2018shildi', text:"9-A sinfiga 3 nafar yangi o'quvchi qo'shildi va ularning profillari yaratildi.", time:'4 kun oldin', unread:false, actions:[['Ro\u2018yxatni ko\u2018rish','list']] },
-  { id:11, type:'ogohl', title:'Test muddati yaqinlashmoqda', text:'"IT qobiliyat testi" ning yakuniy muddatiga 2 kun qoldi. 41/52 o\u2018quvchi topshirgan.', time:'4 kun oldin', unread:false, actions:[['Testni ko\u2018rish','tests']] },
-  { id:12, type:'xabar', title:'Ota-onadan so\u2018rov', text:'Karimova Dilnozaning ota-onasi farzandining rivojlanish yo\u2018l xaritasi haqida ma\u2019lumot so\u2018radi.', time:'5 kun oldin', unread:false, actions:[] },
-];
+/* Haqiqiy bildirishnomalar backenddan loadNotificationsFromAPI() orqali yuklanadi —
+   demo/namunaviy ro'yxat bilan boshlanmaydi, aks holda tarmoq muammosida eski soxta
+   xabarlar (soxta o'quvchi ismlari bilan) abadiy ko'rinib qolardi. */
+let NOTIFS = [];
+let NOTIFS_LOAD_FAILED = false;
+
 
 /* ============ Holat ============ */
 let activeTab = 'all';
@@ -14346,7 +14358,7 @@ function render(){
   if (!rows.length) {
     box.innerHTML = `<div class="empty">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
-      <p>Bu bo'limda xabar yo'q.</p></div>`;
+      <p>${NOTIFS_LOAD_FAILED ? "Bildirishnomalarni yuklab bo'lmadi. Sahifani yangilang." : "Bu bo'limda xabar yo'q."}</p></div>`;
     return;
   }
 
@@ -14422,6 +14434,7 @@ async function loadNotificationsFromAPI(){
        so'rov muvaffaqiyatli bo'lsa (bo'sh bo'lsa ham) har doim haqiqiy
        ro'yxat bilan almashtiramiz, eski namunaviy xabarlar qolib ketmasin. */
     if (!rows) return;
+    NOTIFS_LOAD_FAILED = false;
     NOTIFS = rows.map(r => ({
       id: r.id, apiId: r.id, type: r.type, title: r.title, text: r.text,
       time: timeAgo(r.created_at), unread: !r.is_read,
@@ -14430,6 +14443,8 @@ async function loadNotificationsFromAPI(){
     render();
   } catch (err) {
     console.warn("Bildirishnomalarni backenddan yuklab bo'lmadi:", err.message);
+    NOTIFS_LOAD_FAILED = true;
+    render();
   }
 }
 loadNotificationsFromAPI();
@@ -14910,21 +14925,12 @@ const aiProf = document.getElementById('aiToggleProf');
 aiProf.onclick = () => { aiProf.classList.toggle('open'); document.getElementById('aiSubProf').classList.toggle('closed'); };
 
 /* ============ Faoliyat tarixi ============ */
-const ACTS = [
-  { ic:'t-vi', p:'<rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.2"/><circle cx="15" cy="13" r="1.2"/>',
-    text:'<b>AI tahlilini</b> ishga tushirdingiz — 186 nafar o\u2018quvchi qayta baholandi', time:'Bugun, 09:40' },
-  { ic:'t-bl', p:'<path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3"/><rect x="9" y="2" width="6" height="4" rx="1"/>',
-    text:'<b>"Matematika bilim testi"</b> ni faol holatga o\u2018tkazdingiz', time:'Kecha, 15:12' },
-  { ic:'t-gr', p:'<path d="M3 7a2 2 0 012-2h4l2 3h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>',
-    text:'<b>Ismoilov Behruz</b> uchun yangi yutuq qo\u2018shdingiz — Respublika olimpiadasi, oltin', time:'2 kun oldin' },
-  { ic:'t-am', p:'<path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21v-5h4v5"/>',
-    text:'<b>9-A</b> sinfiga yangi o\u2018quvchi qo\u2018shdingiz', time:'3 kun oldin' },
-  { ic:'t-rd', p:'<path d="M3 21h18"/><rect x="5" y="11" width="3.5" height="7" rx="1"/><rect x="10.2" y="6" width="3.5" height="12" rx="1"/><rect x="15.5" y="9" width="3.5" height="9" rx="1"/>',
-    text:'<b>"May oyi umumiy tahlil"</b> hisobotini yukladingiz', time:'5 kun oldin' },
-];
-document.getElementById('actList').innerHTML = ACTS.map(a => `
-  <div class="act"><span class="act-ic ${a.ic}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${a.p}</svg></span>
-    <div class="act-mid"><p>${a.text}</p><small>${a.time}</small></div></div>`).join('');
+/* Tizimda foydalanuvchi amallari hali alohida jurnalda (audit log) saqlanmaydi —
+   shuning uchun soxta "so'nggi amallar" ro'yxati o'rniga halol bo'sh holat ko'rsatiladi. */
+document.getElementById('actList').innerHTML =
+  `<div style="padding:24px 4px;text-align:center;color:var(--muted);font-size:13px">
+    Bu bo'lim hozircha ishlab chiqilmoqda — tizimda bajarilgan amallar tarixi tez orada shu yerda ko'rinadi.
+  </div>`;
 
 /* ============ Tezkor havolalar ============ */
 const QLINKS = [
@@ -14945,13 +14951,11 @@ const TYPE_META = {
   ogohl: { tag:'t-rd', ic:'<path d="M12 3l9 17H3z"/><path d="M12 10v4M12 17h.01"/>' },
   tizim: { tag:'t-gr', ic:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' },
 };
-let NOTIFS = [
-  { id:1, type:'ai', title:'AI yangi holat aniqladi', text:"14 nafar o'quvchida faollik ko'rsatkichlari pasaygan.", time:'10 daqiqa oldin', unread:true },
-  { id:2, type:'test', title:'Test yakunlandi', text:'"Kasbiy qiziqish so\u2018rovnomasi" testi to\u2018liq topshirildi.', time:'1 soat oldin', unread:true },
-  { id:3, type:'yutuq', title:'Yangi yutuq qo\u2018shildi', text:'Ismoilov Behruz — Respublika olimpiadasida oltin medal.', time:'3 soat oldin', unread:true },
-  { id:4, type:'ogohl', title:"E'tibor talab qiladi", text:'Rasulov Dilshodbek 3 ta darsga qatnashmadi.', time:'5 soat oldin', unread:true },
-  { id:5, type:'tizim', title:"Ma'lumotlar yangilandi", text:'186 nafar o\u2018quvchi bo\u2018yicha AI tahlil qayta hisoblandi.', time:'8 soat oldin', unread:true },
-];
+/* Sarlavhadagi qo'ng'iroq (bell) ro'yxati ham backenddan loadRealNotifs()
+   orqali yuklanadi — demo ro'yxat bilan boshlanmaydi, aks holda tarmoq
+   muammosida eski soxta xabarlar har bir sahifada ko'rinib qolardi. */
+let NOTIFS = [];
+
 
 function renderBell(){
   const box = document.getElementById('bellList');
