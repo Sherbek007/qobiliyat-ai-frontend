@@ -680,7 +680,7 @@ a{color:inherit;text-decoration:none}
     <div class="field">
       <label for="loginInput">Login</label>
       <div class="phone">
-        <input id="loginInput" type="text" inputmode="numeric" maxlength="20" placeholder="Masalan: 12000047" autocomplete="username">
+        <input id="loginInput" type="text" inputmode="numeric" maxlength="20" placeholder="Masalan: 120000047" autocomplete="username">
       </div>
     </div>
     <div class="field">
@@ -718,7 +718,11 @@ a{color:inherit;text-decoration:none}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
     <h3>Maslahatchingizga murojaat</h3>
-    <p class="sub">Login yoki parolingiz ishlamayotgan bo'lsa, quyidagi formani to'ldiring — so'rovingiz to'g'ridan-to'g'ri maktabingiz maslahatchisiga yuboriladi.</p>
+    <p class="sub">Login yoki parolingiz ishlamayotgan bo'lsa, quyidagi formani to'ldiring — so'rovingiz sizning loginingiz asosida aniqlangan maktab maslahatchisiga yuboriladi.</p>
+    <div class="field">
+      <label for="helpmLogin">Sizga berilgan login</label>
+      <input type="text" id="helpmLogin" placeholder="Masalan: 002000054">
+    </div>
     <div class="field">
       <label for="helpmName">Ismingiz (F.I.Sh.)</label>
       <input type="text" id="helpmName" placeholder="Masalan: Aliyev Vali">
@@ -2401,6 +2405,10 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
       statusEl.className = 'msg';
       statusEl.textContent = '';
       document.getElementById('helpmMsg').value = '';
+      // Agar kirish sahifasidagi Login maydoniga allaqachon nimadir yozilgan bo'lsa,
+      // shuni bu yerga ham avtomatik ko'chiramiz — lekin o'quvchi kerak bo'lsa o'zgartirishi mumkin.
+      var pageLogin = (document.getElementById('loginInput').value || '').trim();
+      document.getElementById('helpmLogin').value = pageLogin;
       overlay.classList.add('on');
     }
     function closeHelpm(){ overlay.classList.remove('on'); }
@@ -2410,11 +2418,16 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
     overlay.addEventListener('click', function(e){ if (e.target === overlay) closeHelpm(); });
 
     sendBtn.addEventListener('click', async function(){
-      var login = (document.getElementById('loginInput').value || '').trim();
+      var login = (document.getElementById('helpmLogin').value || '').trim();
       var fullName = (document.getElementById('helpmName').value || '').trim();
       var phone = (document.getElementById('helpmPhone').value || '').trim();
       var message = (document.getElementById('helpmMsg').value || '').trim();
 
+      if (!login) {
+        statusEl.className = 'msg err';
+        statusEl.textContent = "Iltimos, sizga maslahatchi bergan loginni kiriting — so'rov qaysi maktabga tegishli ekanini shu login orqali aniqlaymiz.";
+        return;
+      }
       if (!message) {
         statusEl.className = 'msg err';
         statusEl.textContent = 'Iltimos, xabaringizni yozing.';
