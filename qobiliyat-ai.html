@@ -4143,36 +4143,25 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
             </h2>
           </div>
           <div class="card-body">
-            <div class="donut-wrap">
+            <div class="donut-wrap" id="idxDonutWrap">
               <div class="donut">
                 <svg width="182" height="182" viewBox="0 0 182 182">
                   <g transform="rotate(-90 91 91)" fill="none" stroke-width="26">
-                    <!-- 17% A'lo -->
-                    <circle cx="91" cy="91" r="66" stroke="#4C2CE2"
-                            stroke-dasharray="70.5 344.1" stroke-dashoffset="0"/>
-                    <!-- 37% Yaxshi -->
-                    <circle cx="91" cy="91" r="66" stroke="#3BA7F0"
-                            stroke-dasharray="153.4 261.2" stroke-dashoffset="-70.5"/>
-                    <!-- 30% O'rta -->
-                    <circle cx="91" cy="91" r="66" stroke="#F7A93B"
-                            stroke-dasharray="124.4 290.2" stroke-dashoffset="-223.9"/>
-                    <!-- 16% Kam -->
-                    <circle cx="91" cy="91" r="66" stroke="#E4453A"
-                            stroke-dasharray="66.4 348.2" stroke-dashoffset="-348.3"/>
+                    <circle cx="91" cy="91" r="66" stroke="#D9D7EC" stroke-dasharray="414.6 0"/>
                   </g>
                 </svg>
-                <div class="center"><div><b>128</b><small>jami</small></div></div>
+                <div class="center"><div><b id="idxDonutTotal">0</b><small>jami</small></div></div>
               </div>
 
-              <div class="legend">
+              <div class="legend" id="idxDonutLegend">
                 <div class="leg"><i style="background:#4C2CE2"></i>
-                  <div><b>90% dan yuqori (A'lo)</b><small>22 nafar (17%)</small></div></div>
+                  <div><b>90% dan yuqori (A'lo)</b><small>0 nafar (0%)</small></div></div>
                 <div class="leg"><i style="background:#3BA7F0"></i>
-                  <div><b>70% – 89% (Yaxshi)</b><small>48 nafar (37%)</small></div></div>
+                  <div><b>70% – 89% (Yaxshi)</b><small>0 nafar (0%)</small></div></div>
                 <div class="leg"><i style="background:#F7A93B"></i>
-                  <div><b>50% – 69% (O'rta)</b><small>38 nafar (30%)</small></div></div>
+                  <div><b>50% – 69% (O'rta)</b><small>0 nafar (0%)</small></div></div>
                 <div class="leg"><i style="background:#E4453A"></i>
-                  <div><b>50% dan past (Kam)</b><small>20 nafar (16%)</small></div></div>
+                  <div><b>50% dan past (Kam)</b><small>0 nafar (0%)</small></div></div>
               </div>
             </div>
           </div>
@@ -4186,54 +4175,8 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
         <!-- QOBILIYATLAR RADAR -->
         <section class="card">
           <div class="card-head"><h2>Qobiliyatlar bo'yicha o'rtacha ko'rsatkich</h2></div>
-          <div class="card-body">
-            <svg class="radar" viewBox="-26 -22 352 344">
-              <!-- setka -->
-              <g fill="none" stroke="#EDECF6" stroke-width="1.2">
-                <polygon points="150,50 236.6,100 236.6,200 150,250 63.4,200 63.4,100"/>
-                <polygon points="150,75 215,112.5 215,187.5 150,225 85,187.5 85,112.5"/>
-                <polygon points="150,100 193.3,125 193.3,175 150,200 106.7,175 106.7,125"/>
-                <polygon points="150,125 171.7,137.5 171.7,162.5 150,175 128.3,162.5 128.3,137.5"/>
-              </g>
-              <g stroke="#EDECF6" stroke-width="1.2">
-                <line x1="150" y1="150" x2="150" y2="50"/>
-                <line x1="150" y1="150" x2="236.6" y2="100"/>
-                <line x1="150" y1="150" x2="236.6" y2="200"/>
-                <line x1="150" y1="150" x2="150" y2="250"/>
-                <line x1="150" y1="150" x2="63.4" y2="200"/>
-                <line x1="150" y1="150" x2="63.4" y2="100"/>
-              </g>
-
-              <!-- qiymatlar: 82 / 76 / 74 / 71 / 85 / 69 -->
-              <polygon points="150,68 215.8,112 214.1,187 150,221 76.4,192.5 90.2,115.5"
-                fill="rgba(76,44,226,.14)" stroke="#4C2CE2" stroke-width="2.4" stroke-linejoin="round"/>
-              <g fill="#4C2CE2">
-                <circle cx="150" cy="68" r="4"/><circle cx="215.8" cy="112" r="4"/>
-                <circle cx="214.1" cy="187" r="4"/><circle cx="150" cy="221" r="4"/>
-                <circle cx="76.4" cy="192.5" r="4"/><circle cx="90.2" cy="115.5" r="4"/>
-              </g>
-
-              <!-- yorliqlar -->
-              <g font-family="Inter" text-anchor="middle">
-                <text x="150" y="24" font-size="12" font-weight="600" fill="#171543">Analitik fikrlash</text>
-                <text x="150" y="41" font-size="13" font-weight="800" fill="#4C2CE2">82%</text>
-
-                <text x="272" y="76" font-size="12" font-weight="600" fill="#171543">Ijodkorlik</text>
-                <text x="272" y="93" font-size="13" font-weight="800" fill="#4C2CE2">76%</text>
-
-                <text x="272" y="212" font-size="12" font-weight="600" fill="#171543">Muloqot</text>
-                <text x="272" y="229" font-size="13" font-weight="800" fill="#4C2CE2">74%</text>
-
-                <text x="150" y="281" font-size="13" font-weight="800" fill="#4C2CE2">71%</text>
-                <text x="150" y="298" font-size="12" font-weight="600" fill="#171543">Liderlik</text>
-
-                <text x="28" y="212" font-size="12" font-weight="600" fill="#171543">IT va texnologiya</text>
-                <text x="28" y="229" font-size="13" font-weight="800" fill="#4C2CE2">85%</text>
-
-                <text x="28" y="76" font-size="12" font-weight="600" fill="#171543">Tadbirkorlik</text>
-                <text x="28" y="93" font-size="13" font-weight="800" fill="#4C2CE2">69%</text>
-              </g>
-            </svg>
+          <div class="card-body" id="homeRadarBody">
+            <div style="padding:30px;text-align:center;color:var(--muted)">Yuklanmoqda...</div>
           </div>
           <div class="card-foot">
             <a href="#" class="more" data-go="skillmap">Batafsil tahlil
@@ -4251,71 +4194,8 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
             </a>
           </div>
           <div class="card-body">
-            <div class="tops">
-              <div class="top-card">
-                <span class="rank r1">1</span>
-                <div class="ava">SM</div>
-                <div class="nm">Sardorbek<br>Mirzayev</div>
-                <div class="cls">10-"A"</div>
-                <div class="idx">95%</div>
-                <div class="idx-lbl">Indeks</div>
-                <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">
-                  <polyline points="0,24 12,20 24,22 36,15 48,17 60,10 72,12 84,6 100,3"
-                    fill="none" stroke="#16A34A" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-                </svg>
-              </div>
-
-              <div class="top-card">
-                <span class="rank r2">2</span>
-                <div class="ava">DR</div>
-                <div class="nm">Dilshodbek<br>Rasulov</div>
-                <div class="cls">9-"B"</div>
-                <div class="idx">92%</div>
-                <div class="idx-lbl">Indeks</div>
-                <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">
-                  <polyline points="0,26 12,22 24,24 36,18 48,14 60,17 72,10 84,8 100,5"
-                    fill="none" stroke="#16A34A" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-                </svg>
-              </div>
-
-              <div class="top-card">
-                <span class="rank r3">3</span>
-                <div class="ava">MI</div>
-                <div class="nm">Mohirbek<br>Ibragimov</div>
-                <div class="cls">10-"B"</div>
-                <div class="idx">90%</div>
-                <div class="idx-lbl">Indeks</div>
-                <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">
-                  <polyline points="0,25 12,26 24,20 36,22 48,16 60,13 72,15 84,9 100,7"
-                    fill="none" stroke="#16A34A" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-                </svg>
-              </div>
-
-              <div class="top-card">
-                <span class="rank r4">4</span>
-                <div class="ava">MI</div>
-                <div class="nm">Madina<br>Ismoilova</div>
-                <div class="cls">9-"A"</div>
-                <div class="idx">89%</div>
-                <div class="idx-lbl">Indeks</div>
-                <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">
-                  <polyline points="0,27 12,23 24,25 36,19 48,21 60,14 72,16 84,11 100,8"
-                    fill="none" stroke="#16A34A" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-                </svg>
-              </div>
-
-              <div class="top-card">
-                <span class="rank r5">5</span>
-                <div class="ava">AK</div>
-                <div class="nm">Asadbek<br>Karimov</div>
-                <div class="cls">8-"A"</div>
-                <div class="idx">88%</div>
-                <div class="idx-lbl">Indeks</div>
-                <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none">
-                  <polyline points="0,26 12,24 24,19 36,21 48,15 60,18 72,12 84,13 100,9"
-                    fill="none" stroke="#16A34A" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-                </svg>
-              </div>
+            <div class="tops" id="topStudentsBox">
+              <div style="padding:20px;color:var(--muted)">Yuklanmoqda...</div>
             </div>
           </div>
         </section>
@@ -4361,36 +4241,8 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
           </div>
-          <div class="card-body">
-            <div class="act">
-              <div class="ico i-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="16" height="14" rx="4"/><path d="M12 2v4"/><circle cx="9" cy="12.5" r="1.2"/><circle cx="15" cy="12.5" r="1.2"/></svg></div>
-              <div class="body"><b>AI tahlili yakunlandi</b><small>9-"A" sinf – 5 nafar o'quvchi</small></div>
-              <span class="time">10:30</span>
-            </div>
-
-            <div class="act">
-              <div class="ico i-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5"/><path d="M8.5 13.5L7 22l5-3 5 3-1.5-8.5"/></svg></div>
-              <div class="body"><b>Yangi yutuq qo'shildi</b><small>Dilshodbek R. – Informatika olimpiadasi</small></div>
-              <span class="time">Kecha</span>
-            </div>
-
-            <div class="act">
-              <div class="ico i-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3"/><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 13l2 2 4-4"/></svg></div>
-              <div class="body"><b>So'rovnoma yakunlandi</b><small>Kasbiy qiziqish testi – 9-"B" sinf</small></div>
-              <span class="time">Kecha</span>
-            </div>
-
-            <div class="act">
-              <div class="ico i-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h4l2 3h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
-              <div class="body"><b>Portfolio yangilandi</b><small>Sardorbek M. yangi sertifikat qo'shdi</small></div>
-              <span class="time">2 kun oldin</span>
-            </div>
-
-            <div class="act">
-              <div class="ico i-indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2 20c0-3.4 3.1-5.6 7-5.6s7 2.2 7 5.6"/><path d="M19 8v6M22 11h-6"/></svg></div>
-              <div class="body"><b>Yangi o'quvchi qo'shildi</b><small>Asadbek Karimov – 8-"A" sinf</small></div>
-              <span class="time">3 kun oldin</span>
-            </div>
+          <div class="card-body" id="activityBox">
+            <div style="padding:20px;color:var(--muted)">Yuklanmoqda...</div>
           </div>
         </section>
 
@@ -4402,32 +4254,9 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
           </div>
-          <div class="card-body">
-            <div class="ev">
-              <div class="date"><b>27</b><small>MAY</small></div>
-              <div class="body">
-                <b class="t">AI tahlil natijalari muhokamasi</b>
-                <small>9-"A" sinf ota-onalari bilan uchrashuv</small>
-              </div>
-              <span class="hh">14:00</span>
-            </div>
-
-            <div class="ev v2">
-              <div class="date"><b>30</b><small>MAY</small></div>
-              <div class="body">
-                <b class="t">Kasbiy yo'naltirish seminari</b>
-                <small>10–11-sinf o'quvchilari uchun</small>
-              </div>
-              <span class="hh">10:00</span>
-            </div>
-
-            <div class="ev v3">
-              <div class="date"><b>05</b><small>IYUN</small></div>
-              <div class="body">
-                <b class="t">Liderlar klubi yig'ilishi</b>
-                <small>Faol o'quvchilar bilan uchrashuv</small>
-              </div>
-              <span class="hh">15:00</span>
+          <div class="card-body" id="eventsBox">
+            <div style="padding:20px;text-align:center;color:var(--muted)">
+              Hozircha rejalashtirilgan tadbirlar yo'q.
             </div>
           </div>
         </section>
@@ -8069,6 +7898,142 @@ async function loadDashboardStats(){
 loadDashboardStats();
 window.addEventListener('view:shown', e => { if (e.detail === 'home') loadDashboardStats(); });
 
+/* ============ Bosh sahifaning qolgan bo'limlari: bular avval BUTUNLAY
+   qattiq yozilgan (statik) HTML edi — hech qanday JS ularni yangilamas
+   edi, shuning uchun bazani tozalagandan keyin ham "186 talaba",
+   "Sardorbek Mirzayev" kabi soxta ma'lumotlar abadiy ko'rinib turardi.
+   Endi hammasi backenddan haqiqiy ma'lumot bilan to'ldiriladi. ============ */
+function homeTimeAgo(iso){
+  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (diff < 3600) return Math.max(1, Math.round(diff / 60)) + " daqiqa oldin";
+  if (diff < 86400) return Math.round(diff / 3600) + " soat oldin";
+  const days = Math.round(diff / 86400);
+  return days === 1 ? "Kecha" : days + " kun oldin";
+}
+const HOME_RADAR_SKILLS = ['Analitik fikrlash', 'Ijodkorlik', 'Muloqot', 'Liderlik', 'IT va texnologiya', 'Tadbirkorlik'];
+function homeRadarSVG(items){
+  const N = items.length, cx = 150, cy = 150, R = 100;
+  const pt = (i, r) => {
+    const a = (2 * Math.PI / N) * i - Math.PI / 2;
+    return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
+  };
+  const ring = r => Array.from({length:N}, (_, i) => pt(i, r).map(n => n.toFixed(1)).join(',')).join(' ');
+  const poly = items.map((s, i) => pt(i, R * Math.max(0, s.v) / 100).map(n => n.toFixed(1)).join(',')).join(' ');
+  const dots = items.map((s, i) => { const [x,y] = pt(i, R * Math.max(0, s.v) / 100);
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4"/>`; }).join('');
+  const axes = Array.from({length:N}, (_, i) => { const [x,y] = pt(i, R);
+    return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`; }).join('');
+  const labels = items.map((s, i) => {
+    const [x, y] = pt(i, R + 40);
+    return `<text x="${x.toFixed(0)}" y="${(y-5).toFixed(0)}" font-size="12" font-weight="600" fill="#171543" text-anchor="middle">${s.n}</text>
+            <text x="${x.toFixed(0)}" y="${(y+11).toFixed(0)}" font-size="13" font-weight="800" fill="#4C2CE2" text-anchor="middle">${s.v}%</text>`;
+  }).join('');
+  return `<svg class="radar" viewBox="-26 -22 352 344">
+    <g fill="none" stroke="#EDECF6" stroke-width="1.2">
+      <polygon points="${ring(R)}"/><polygon points="${ring(R*.75)}"/>
+      <polygon points="${ring(R*.5)}"/><polygon points="${ring(R*.25)}"/>
+    </g>
+    <g stroke="#EDECF6" stroke-width="1.2">${axes}</g>
+    <polygon points="${poly}" fill="rgba(76,44,226,.14)" stroke="#4C2CE2" stroke-width="2.4" stroke-linejoin="round"/>
+    <g fill="#4C2CE2">${dots}</g>
+    <g font-family="Inter" text-anchor="middle">${labels}</g>
+  </svg>`;
+}
+function idxDonutSVG(counts, total){
+  const C = 2 * Math.PI * 66;
+  if (!total) return `<g transform="rotate(-90 91 91)" fill="none" stroke-width="26"><circle cx="91" cy="91" r="66" stroke="#E7E6F2" stroke-dasharray="${C.toFixed(1)} 0"/></g>`;
+  const segs = [ { key:'top', c:'#4C2CE2' }, { key:'good', c:'#3BA7F0' }, { key:'mid', c:'#F7A93B' }, { key:'low', c:'#E4453A' } ];
+  let off = 0;
+  const g = segs.map(s => {
+    const len = C * (counts[s.key] / total);
+    const el = `<circle cx="91" cy="91" r="66" stroke="${s.c}" stroke-dasharray="${len.toFixed(1)} ${(C-len).toFixed(1)}" stroke-dashoffset="${(-off).toFixed(1)}"/>`;
+    off += len;
+    return el;
+  }).join('');
+  return `<g transform="rotate(-90 91 91)" fill="none" stroke-width="26">${g}</g>`;
+}
+async function loadHomeExtras(){
+  if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
+  try {
+    const [skillsRes, detailRes, notifRes] = await Promise.all([
+      apiFetch('/api/students/skills-summary').catch(() => null),
+      apiFetch('/api/students/skills-detail').catch(() => null),
+      apiFetch('/api/notifications').catch(() => null),
+    ]);
+
+    /* ---- Radar: 6 ta asosiy yo'nalish bo'yicha maktab o'rtachasi ---- */
+    if (skillsRes && skillsRes.skills) {
+      const bySkill = {}; skillsRes.skills.forEach(s => { bySkill[s.name] = s.value; });
+      const items = HOME_RADAR_SKILLS.map(n => ({ n, v: bySkill[n] || 0 }));
+      const box = document.getElementById('homeRadarBody');
+      if (box) box.innerHTML = homeRadarSVG(items);
+    }
+
+    const rows = (detailRes && detailRes.students) || [];
+    const withData = rows.filter(r => r.overall > 0 || Object.values(r.skills || {}).some(x => x.has_data));
+
+    /* ---- Qobiliyat indeksi taqsimoti (donut) — har bir o'quvchining umumiy indeksidan ---- */
+    const counts = { top:0, good:0, mid:0, low:0 };
+    withData.forEach(r => {
+      if (r.overall >= 90) counts.top++;
+      else if (r.overall >= 70) counts.good++;
+      else if (r.overall >= 50) counts.mid++;
+      else counts.low++;
+    });
+    const totalWithData = withData.length;
+    const donutWrap = document.getElementById('idxDonutWrap');
+    if (donutWrap) {
+      const svgG = donutWrap.querySelector('svg g');
+      if (svgG) svgG.outerHTML = idxDonutSVG(counts, totalWithData);
+      const totalEl = document.getElementById('idxDonutTotal');
+      if (totalEl) totalEl.textContent = totalWithData;
+      const legend = document.getElementById('idxDonutLegend');
+      if (legend) {
+        const pct = n => totalWithData ? Math.round(n / totalWithData * 100) : 0;
+        const order = [counts.top, counts.good, counts.mid, counts.low];
+        legend.querySelectorAll('.leg').forEach((el, i) => {
+          const small = el.querySelector('small');
+          if (small) small.textContent = `${order[i]} nafar (${pct(order[i])}%)`;
+        });
+      }
+    }
+
+    /* ---- TOP 5 o'quvchi (umumiy qobiliyat indeksi bo'yicha) ---- */
+    const topBox = document.getElementById('topStudentsBox');
+    if (topBox) {
+      const top5 = [...withData].sort((a, b) => b.overall - a.overall).slice(0, 5);
+      topBox.innerHTML = top5.length ? top5.map((r, i) => {
+        const parts = r.name.split(' ').filter(Boolean);
+        const ini = parts.slice(0, 2).map(w => w[0]).join('').toUpperCase();
+        return `<div class="top-card">
+          <span class="rank r${i+1}">${i+1}</span>
+          <div class="ava">${ini}</div>
+          <div class="nm">${parts.join('<br>')}</div>
+          <div class="cls">${r.cls}</div>
+          <div class="idx">${r.overall}%</div>
+          <div class="idx-lbl">Indeks</div>
+        </div>`;
+      }).join('') : `<div style="padding:20px;color:var(--muted)">Hali AI tahlil qilingan o'quvchi yo'q.</div>`;
+    }
+
+    /* ---- Faoliyatlar — haqiqiy bildirishnomalardan ---- */
+    const actBox = document.getElementById('activityBox');
+    if (actBox) {
+      const items2 = (notifRes || []).slice(0, 5);
+      actBox.innerHTML = items2.length ? items2.map(n => `
+        <div class="act">
+          <div class="ico i-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg></div>
+          <div class="body"><b>${n.title || ''}</b><small>${n.text || ''}</small></div>
+          <span class="time">${homeTimeAgo(n.created_at)}</span>
+        </div>`).join('') : `<div style="padding:20px;color:var(--muted)">Hozircha faoliyat tarixi yo'q.</div>`;
+    }
+  } catch (err) {
+    console.warn("Bosh sahifaning qo'shimcha bo'limlarini yuklab bo'lmadi:", err.message);
+  }
+}
+loadHomeExtras();
+window.addEventListener('view:shown', e => { if (e.detail === 'home') loadHomeExtras(); });
+
 /* ============ Bugungi sanani dinamik ko'rsatish (statik "24 may, 2024" o'rniga) ============ */
 (function initWelcomeDate(){
   const months = ["yanvar","fevral","mart","aprel","may","iyun","iyul","avgust","sentyabr","oktyabr","noyabr","dekabr"];
@@ -10077,6 +10042,19 @@ function renderDetail(){
   renderTab();
 }
 
+let ALL_ACHIEVEMENTS = null; // null = hali yuklanmagan; massiv = yuklangan (bo'sh bo'lishi ham mumkin)
+async function loadAllAchievements(){
+  if (!window.apiFetch || !localStorage.getItem('qp_token')) { ALL_ACHIEVEMENTS = []; return ALL_ACHIEVEMENTS; }
+  try {
+    const rows = await apiFetch('/api/achievements');
+    ALL_ACHIEVEMENTS = rows || [];
+  } catch (err) {
+    console.warn('Yutuqlarni yuklashda xatolik:', err);
+    ALL_ACHIEVEMENTS = [];
+  }
+  return ALL_ACHIEVEMENTS;
+}
+
 function renderTab(){
   const c = CLASSES[sel];
   const body = document.getElementById('tabBody');
@@ -10192,52 +10170,29 @@ function renderTab(){
   }
 
   if (tab === 4) {
-    const POOL = [
-      ['Viloyat informatika olimpiadasi','2-o\u2018rin','i-am'],
-      ['Matematika fan oyligi','1-o\u2018rin','i-vi'],
-      ['Maktab robototexnika loyihasi','Jamoa g\u2018olibi','i-bl'],
-      ['Ingliz tili sertifikati','B1 daraja','i-gr'],
-      ['Tuman fizika olimpiadasi','3-o\u2018rin','i-am'],
-      ['Yosh tadqiqotchilar tanlovi','Ishtirokchi','i-vi'],
-      ['Respublika ona tili tanlovi','2-o\u2018rin','i-bl'],
-      ['Kimyo fan haftaligi','1-o\u2018rin','i-gr'],
-      ['Sport musobaqasi (futbol)','1-o\u2018rin','i-am'],
-      ['Python asoslari kursi','Sertifikat','i-vi'],
-      ['Maktab munozara klubi','Finalchi','i-bl'],
-      ['Biologiya bo\u2018yicha loyiha','2-o\u2018rin','i-gr'],
-      ['Rasm chizish tanlovi','3-o\u2018rin','i-vi'],
-      ['Tarix bo\u2018yicha viktorina','1-o\u2018rin','i-am'],
-      ['Matematik savodxonlik testi','Yuqori natija','i-bl'],
-      ['Ekologiya loyihasi','Ishtirokchi','i-gr'],
-      ['Shaxmat turniri','2-o\u2018rin','i-am'],
-      ['Volontyorlik dasturi','Faol ishtirokchi','i-vi'],
-    ];
-    const MONTHS = ['Yanvar','Fevral','Mart','Aprel','May','Sentabr','Oktabr','Noyabr','Dekabr'];
-    const names = c.top.length ? c.top.map(t => t[0]) : ["O'quvchi"];
-
-    const items = Array.from({ length: c.ach }, (_, i) => {
-      const [t, place, ic] = POOL[i % POOL.length];
-      const who = names[i % names.length];
-      const m = MONTHS[(i * 3) % MONTHS.length];
-      const y = i < c.ach / 2 ? 2026 : 2025;
-      return { t, place, ic, who, when: m + ' ' + y };
-    });
+    if (ALL_ACHIEVEMENTS === null) {
+      body.innerHTML = `<div class="box"><p style="font-size:13px;color:var(--muted);padding:14px 0">Yuklanmoqda\u2026</p></div>`;
+      loadAllAchievements().then(() => { if (tab === 4) renderTab(); });
+      return;
+    }
+    const ICONS = ['i-am','i-vi','i-bl','i-gr'];
+    const classAch = ALL_ACHIEVEMENTS.filter(a => c.apiId != null && String(a.student_class) === String(c.apiId));
 
     body.innerHTML = `
       <div class="box">
-        <div class="box-h"><b>${c.name} sinfi yutuqlari</b><span class="pill">${c.ach} ta</span></div>
-        ${c.ach === 0 ? '<p style="font-size:13px;color:var(--muted);padding:14px 0">Bu sinfda hali yutuq qayd etilmagan.</p>' :
-        items.slice((achPage - 1) * 10, achPage * 10).map(it => `
+        <div class="box-h"><b>${c.name} sinfi yutuqlari</b><span class="pill">${classAch.length} ta</span></div>
+        ${classAch.length === 0 ? '<p style="font-size:13px;color:var(--muted);padding:14px 0">Bu sinfda hali yutuq qayd etilmagan.</p>' :
+        classAch.slice((achPage - 1) * 10, achPage * 10).map((it, i) => `
           <div class="mrow" style="padding:13px 0;border-bottom:1px solid var(--line-2)">
-            <span class="ic ${it.ic}" style="width:36px;height:36px;border-radius:11px">
+            <span class="ic ${ICONS[i % ICONS.length]}" style="width:36px;height:36px;border-radius:11px">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><path d="M8 4h8v5a4 4 0 01-8 0z"/><path d="M8 5H5v2a3 3 0 003 3M16 5h3v2a3 3 0 01-3 3"/><path d="M10 20h4M12 13v7"/></svg>
             </span>
-            <span style="flex:1"><b style="display:block;font-size:13.5px">${it.t}</b>
-              <small style="color:var(--muted);font-size:12px">${it.who} · ${it.place} · ${it.when}</small></span>
+            <span style="flex:1"><b style="display:block;font-size:13.5px">${it.name}</b>
+              <small style="color:var(--muted);font-size:12px">${it.student_name}${it.level ? ' \u00b7 ' + it.level : ''}${it.date ? ' \u00b7 ' + it.date : ''}</small></span>
           </div>`).join('')}
-        ${achPager(c.ach)}
+        ${achPager(classAch.length)}
       </div>`;
-    bindAchPager(c.ach);
+    bindAchPager(classAch.length);
   }
 
   if (tab === 5) {
@@ -11287,12 +11242,10 @@ function skillsNow(){
   return SKILLS.map(s => ({ ...s, v: Math.max(20, Math.min(99, Math.round(s.v * (k > 1 ? 1 + (k-1)*.08 : k)))) }));
 }
 function casesNow(){
-  const k = RANGES[P.range]?.k || 1;
   return CASES.map(c => {
-    if (REAL_INSIGHTS && REAL_INSIGHTS[c.key] && REAL_INSIGHTS[c.key].has_data) {
-      return { ...c, n: REAL_INSIGHTS[c.key].count };
-    }
-    return { ...c, n: Math.max(1, Math.round(c.n * k)) };
+    const r = REAL_INSIGHTS && REAL_INSIGHTS[c.key];
+    if (r && r.has_data) return { ...c, n: r.count, noData: false };
+    return { ...c, n: 0, noData: true };
   });
 }
 
@@ -11316,12 +11269,28 @@ function render(){
     <div class="card" style="margin-bottom:20px">
       <div class="card-h"><b><span class="hic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.3"/><circle cx="15" cy="13" r="1.3"/></svg></span>AI umumiy xulosasi</b></div>
       <div class="card-b">
-        <p class="sum-p" id="aiXulosaP1">Tahlil natijasiga ko'ra, maktabimiz o'quvchilarida <b>IT va matematika</b> yo'nalishlariga moyillik yuqori —
-          bu ikki yo'nalish maktab bo'yicha eng kuchli ko'rsatkichni bermoqda. Yuqori salohiyatli <b>${S.high} nafar</b> o'quvchi
-          aniqlandi; ular uchun chuqurlashtirilgan dastur va olimpiadaga tayyorgarlik guruhini shakllantirish maqsadga muvofiq.</p>
-        <p class="sum-p" id="aiXulosaP2" style="margin-bottom:0">Ijodkorlik va liderlik ko'nikmalari yaxshi rivojlangan o'quvchilar soni ortib
-          bormoqda, ammo <b>tadqiqot va tahlil</b> yo'nalishi eng past ko'rsatkichda qolmoqda — bu bo'yicha amaliy loyihalar
-          va to'garaklar ochish tavsiya etiladi. Quyida AI e'tibor qaratishni so'ragan holatlar keltirilgan.</p>
+        ${(() => {
+          const skSorted = [...SK].sort((a, b) => b.v - a.v);
+          const topSk = skSorted[0], botSk = skSorted[skSorted.length - 1];
+          if (S.hasReal && S.total === 0) {
+            return `<p class="sum-p" id="aiXulosaP1">Hozircha tizimda tahlil qilingan o'quvchi yo'q. O'quvchilar qo'shilib,
+              test natijalari kiritilgandan so'ng AI xulosasi shu yerda avtomatik shakllanadi.</p>`;
+          }
+          if (S.hasReal) {
+            return `<p class="sum-p" id="aiXulosaP1">Tahlil natijasiga ko'ra, maktabimiz o'quvchilarida <b>${topSk.n}</b> yo'nalishiga moyillik yuqori —
+                bu yo'nalish maktab bo'yicha eng kuchli ko'rsatkichni bermoqda (${topSk.v}%). Yuqori salohiyatli <b>${S.high} nafar</b> o'quvchi
+                aniqlandi; ular uchun chuqurlashtirilgan dastur va olimpiadaga tayyorgarlik guruhini shakllantirish maqsadga muvofiq.</p>
+              <p class="sum-p" id="aiXulosaP2" style="margin-bottom:0"><b>${botSk.n}</b> yo'nalishi hozircha eng past ko'rsatkichda
+                qolmoqda (${botSk.v}%) — bu bo'yicha amaliy loyihalar va to'garaklar ochish tavsiya etiladi. Quyida AI e'tibor
+                qaratishni so'ragan holatlar keltirilgan.</p>`;
+          }
+          return `<p class="sum-p" id="aiXulosaP1">Tahlil natijasiga ko'ra, maktabimiz o'quvchilarida <b>IT va matematika</b> yo'nalishlariga moyillik yuqori —
+              bu ikki yo'nalish maktab bo'yicha eng kuchli ko'rsatkichni bermoqda. Yuqori salohiyatli <b>${S.high} nafar</b> o'quvchi
+              aniqlandi; ular uchun chuqurlashtirilgan dastur va olimpiadaga tayyorgarlik guruhini shakllantirish maqsadga muvofiq.</p>
+            <p class="sum-p" id="aiXulosaP2" style="margin-bottom:0">Ijodkorlik va liderlik ko'nikmalari yaxshi rivojlangan o'quvchilar soni ortib
+              bormoqda, ammo <b>tadqiqot va tahlil</b> yo'nalishi eng past ko'rsatkichda qolmoqda — bu bo'yicha amaliy loyihalar
+              va to'garaklar ochish tavsiya etiladi. Quyida AI e'tibor qaratishni so'ragan holatlar keltirilgan.</p>`;
+        })()}
         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">
           <button class="out-btn" style="margin-top:0" id="fullRep">To'liq AI hisobotini ko'rish
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -11338,15 +11307,14 @@ function render(){
       <div class="card-b">
         <div class="cases">
           ${CS.map(c => {
-            const noHist = (c.key === 'grade_drop' || c.key === 'activity_drop');
             return `
             <div class="ccard">
               <div class="top">
                 <span class="cic ${c.g}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${c.ic}</svg></span>
-                <span><small>${c.t}${noHist ? ' <i style="font-style:normal;color:var(--muted);font-weight:400">(taxminiy)</i>' : ''}</small><span class="num">${c.n} <i>nafar</i></span></span>
+                <span><small>${c.t}</small><span class="num">${c.noData ? '—' : c.n + ' <i>nafar</i>'}</span></span>
               </div>
-              <p>${c.n} ${c.d}${noHist ? " Bu ko'rsatkich uchun hali tarixiy taqqoslash mavjud emas." : ''}</p>
-              <button class="go" data-case="${c.key}">Ro'yxatni ko'rish
+              <p>${c.noData ? "Bu ko'rsatkich uchun hozircha ma'lumot yo'q." : c.n + ' ' + c.d}</p>
+              <button class="go" data-case="${c.key}"${c.noData ? ' disabled style="opacity:.5;cursor:not-allowed"' : ''}>Ro'yxatni ko'rish
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </button>
             </div>`;}).join('')}
@@ -11378,7 +11346,7 @@ function openCase(key){
   if (REAL_INSIGHTS && REAL_INSIGHTS[key] && REAL_INSIGHTS[key].has_data) {
     LM.rows = REAL_INSIGHTS[key].students.map(s => ({ name: s.name, cls: '\u2014', idx: Math.round(s.avg * 10), apiId: s.id }));
   } else {
-    LM.rows = makeList(c.n, key.charCodeAt(0), c.kind);
+    LM.rows = [];
   }
   LM.page = 1;
   LM.title = c.t;
@@ -11429,12 +11397,15 @@ document.getElementById('lmExport').onclick = () => {
 /* ============ To'liq hisobot ============ */
 function openReport(){
   const S = stats(), SK = skillsNow(), CS = casesNow();
+  const skSorted = [...SK].sort((a, b) => b.v - a.v);
+  const topSk = skSorted[0], botSk = skSorted[skSorted.length - 1];
+  const gradeDrop = CS.find(c => c.key === 'grade_drop'), activityDrop = CS.find(c => c.key === 'activity_drop');
   document.getElementById('repSub').textContent = fmt(P.from) + ' – ' + fmt(P.to);
   document.getElementById('repBody').innerHTML = `
     <div class="rep-sect">Umumiy ko'rsatkichlar</div>
     <table class="mtab"><tbody>
       <tr><td>Jami o'quvchilar</td><td style="text-align:right;font-weight:700">${S.total}</td></tr>
-      <tr><td>AI tahlil qilingan</td><td style="text-align:right;font-weight:700">${S.done} (${(S.done/S.total*100).toFixed(1)}%)</td></tr>
+      <tr><td>AI tahlil qilingan</td><td style="text-align:right;font-weight:700">${S.done} (${S.total ? (S.done/S.total*100).toFixed(1) : '0'}%)</td></tr>
       <tr><td>O'rtacha qobiliyat indeksi</td><td style="text-align:right;font-weight:700">${S.idx}%</td></tr>
       <tr><td>Yuqori salohiyatli o'quvchilar</td><td style="text-align:right;font-weight:700">${S.high}</td></tr>
     </tbody></table>
@@ -11446,29 +11417,30 @@ function openReport(){
 
     <div class="rep-sect">Aniqlangan holatlar</div>
     <table class="mtab"><tbody>
-      ${CS.map(c => `<tr><td>${c.t}</td><td style="text-align:right;font-weight:700">${c.n} nafar</td></tr>`).join('')}
+      ${CS.map(c => `<tr><td>${c.t}</td><td style="text-align:right;font-weight:700">${c.noData ? "Ma'lumot yo'q" : c.n + ' nafar'}</td></tr>`).join('')}
     </tbody></table>
 
     <div class="rep-sect">AI xulosasi</div>
     <p class="rep-p">Tahlil qilingan davr: <b>${fmt(P.from)} – ${fmt(P.to)}</b>.<br><br>
-      Maktab bo'yicha eng kuchli yo'nalish — <b>${SK[0].n} (${SK[0].v}%)</b>. Eng past ko'rsatkich —
-      <b>${SK[SK.length-1].n} (${SK[SK.length-1].v}%)</b>, bu yo'nalishda to'garak va amaliy mashg'ulotlar ochish tavsiya etiladi.<br><br>
+      ${S.total === 0 ? "Hozircha tizimda tahlil qilingan o'quvchi yo'q." : `Maktab bo'yicha eng kuchli yo'nalish — <b>${topSk.n} (${topSk.v}%)</b>. Eng past ko'rsatkich —
+      <b>${botSk.n} (${botSk.v}%)</b>, bu yo'nalishda to'garak va amaliy mashg'ulotlar ochish tavsiya etiladi.<br><br>
       ${S.high} nafar o'quvchi yuqori salohiyat guruhiga kiritildi — ular uchun chuqurlashtirilgan dastur va olimpiadaga
       tayyorgarlik guruhini shakllantirish maqsadga muvofiq.<br><br>
-      ${CS[1].n} nafar o'quvchining baholari pasaygan va ${CS[2].n} nafarida faollik kamaygan. Ular bilan individual
-      suhbat o'tkazish, ota-onalar bilan bog'lanish tavsiya etiladi.<br><br>
-      Umumiy qobiliyat indeksi ${S.idx}% ni tashkil etdi va o'tgan davrga nisbatan o'sish kuzatilmoqda.</p>`;
+      ${(gradeDrop && !gradeDrop.noData) || (activityDrop && !activityDrop.noData)
+        ? `${gradeDrop.noData ? '' : gradeDrop.n + " nafar o'quvchining baholari pasaygan"}${(!gradeDrop.noData && !activityDrop.noData) ? ' va ' : ''}${activityDrop.noData ? '' : activityDrop.n + ' nafarida faollik kamaygan'}. Ular bilan individual suhbat o‘tkazish, ota-onalar bilan bog‘lanish tavsiya etiladi.<br><br>`
+        : "Baholari yoki faolligi pasaygan o'quvchilar bo'yicha hozircha tarixiy taqqoslash mavjud emas.<br><br>"}
+      Umumiy qobiliyat indeksi ${S.idx}% ni tashkil etdi.`}</p>`;
   openM(repModal);
 }
 document.getElementById('repDl').onclick = () => {
   const S = stats(), SK = skillsNow(), CS = casesNow();
   const rows = [
     ['AI XULOSA HISOBOTI'], ['Davr', fmt(P.from) + ' – ' + fmt(P.to)], [],
-    ['Ko\u2018rsatkich','Qiymat'],
+    ['Ko‘rsatkich','Qiymat'],
     ["Jami o'quvchilar", S.total], ['AI tahlil qilingan', S.done],
     ["O'rtacha qobiliyat indeksi", S.idx + '%'], ['Yuqori salohiyatli', S.high], [],
-    ["Qobiliyat yo'nalishi",'Ko\u2018rsatkich'], ...SK.map(s => [s.n, s.v + '%']), [],
-    ['Aniqlangan holat','Soni'], ...CS.map(c => [c.t, c.n + ' nafar']),
+    ["Qobiliyat yo'nalishi",'Ko‘rsatkich'], ...SK.map(s => [s.n, s.v + '%']), [],
+    ['Aniqlangan holat','Soni'], ...CS.map(c => [c.t, c.noData ? "Ma'lumot yo'q" : c.n + ' nafar']),
   ];
   dl(rows, 'ai_xulosa_hisobot.csv');
 };
@@ -11684,21 +11656,71 @@ const ROAD = [
     res:"Kasbga yo'naltirish" },
 ];
 
-const NAMES = ['Ismoilov Behruz','Karimova Dilnoza','Xudoyberdiyev Asilbek','Tursunova Madina','Abdurahmonov Muhammad',
-  'Rasulov Dilshodbek','Sobirova Malika','Qodirov Islombek','Yusupova Zilola','Mirzayev Sardorbek',
-  'Ismoilova Madina','Nurmatova Sevinch','Rashidova Gulnoza','Toshmatova Nilufar','Ergashev Jasurbek'];
-const CLSL = ['9-A','9-B','10-A','10-B','11-A','11-B','8-A','8-B'];
-const STUDENTS = NAMES.map((n, i) => ({
-  name:n, cls:CLSL[i % CLSL.length], idx: 96 - i * 2,
-  top: ['IT va texnologiya','Matematika','Ijodkorlik','Muloqot','Liderlik'][i % 5],
-}));
+let STUDENTS = [];
+let CLASS_REC = [];
+let ADVICE_KPI = null;
+let ADVICE_LOADED = false;
 
-const CLASS_REC = CLSL.map((c, i) => ({
-  n:c, cnt: 22 + (i * 3) % 8, idx: 84 - i * 2,
-  focus: ['IT va texnologiya','Matematika','Tabiiy fanlar','Muloqot','Liderlik','Ijodkorlik','Tadbirkorlik','Sport'][i],
-  need: ["Algoritmlar to'garagi","Matematika intensivi","Laboratoriya mashg'ulotlari","Munozara klubi",
-         "Liderlik trening","Ijodiy loyihalar","Biznes o'yin","Sport seksiyasi"][i],
-}));
+async function loadAdviceData(){
+  if (!window.apiFetch || !localStorage.getItem('qp_token')) { ADVICE_LOADED = true; return; }
+  try {
+    const [detail, stats, insightsData, skillsSum] = await Promise.all([
+      apiFetch('/api/students/skills-detail'),
+      apiFetch('/api/students/stats/summary'),
+      apiFetch('/api/students/insights'),
+      apiFetch('/api/students/skills-summary'),
+    ]);
+    const rows = (detail && detail.students) || [];
+
+    STUDENTS = rows.map(s => {
+      let topName = '\u2014', topVal = -1;
+      Object.entries(s.skills || {}).forEach(([name, v]) => { if (v.has_data && v.value > topVal) { topVal = v.value; topName = name; } });
+      return { id: s.id, name: s.name, cls: s.cls, idx: Math.round(s.overall || 0), top: topName };
+    });
+
+    const byCls = {};
+    rows.forEach(s => {
+      if (!byCls[s.cls]) byCls[s.cls] = { n: s.cls, cnt: 0, idxSum: 0, skillSums: {}, skillCounts: {} };
+      const b = byCls[s.cls];
+      b.cnt++; b.idxSum += (s.overall || 0);
+      Object.entries(s.skills || {}).forEach(([name, v]) => {
+        if (!v.has_data) return;
+        b.skillSums[name] = (b.skillSums[name] || 0) + v.value;
+        b.skillCounts[name] = (b.skillCounts[name] || 0) + 1;
+      });
+    });
+    CLASS_REC = Object.values(byCls).map(b => {
+      let focus = '\u2014', focusVal = -1;
+      Object.keys(b.skillSums).forEach(name => {
+        const avg = b.skillSums[name] / b.skillCounts[name];
+        if (avg > focusVal) { focusVal = avg; focus = name; }
+      });
+      return {
+        n: b.n, cnt: b.cnt, idx: b.cnt ? Math.round(b.idxSum / b.cnt) : 0, focus: focusVal >= 0 ? focus : '\u2014',
+        need: focusVal >= 0 ? (focus + " yo'nalishida chuqurlashtirish tavsiya etiladi") : "Hali yetarli ma'lumot yo'q",
+      };
+    }).sort((a, b) => a.n.localeCompare(b.n));
+
+    const skills = (skillsSum && skillsSum.skills) || [];
+    const withData = skills.filter(s => s.has_data);
+    let topSkillName = '\u2014', topSkillVal = 0;
+    withData.forEach(s => { if (s.value > topSkillVal) { topSkillVal = s.value; topSkillName = s.name; } });
+    ADVICE_KPI = {
+      total: (stats && stats.total) || 0,
+      high: (insightsData && insightsData.high && insightsData.high.has_data) ? insightsData.high.count : 0,
+      need: (insightsData && insightsData.help && insightsData.help.has_data) ? insightsData.help.count : 0,
+      topSkillName, topSkillVal,
+      strongCount: withData.filter(s => s.value >= 80).length,
+    };
+  } catch (err) {
+    console.warn("Tavsiyalar uchun ma'lumot yuklanmadi:", err.message);
+  }
+  ADVICE_LOADED = true;
+}
+
+function kpiNow(){
+  return ADVICE_KPI || { total: 0, high: 0, need: 0, topSkillName: '\u2014', topSkillVal: 0, strongCount: 0 };
+}
 
 const ini = n => n.split(' ').filter(Boolean).slice(0,2).map(w => w[0]).join('').toUpperCase();
 const G = ['','g2','g3','g4'];
@@ -11709,8 +11731,12 @@ let tab = 0, selStu = 0;
 
 function render(){
   const box = document.getElementById('recBody');
-  const k = K();
-  const high = Math.round(32 * k), need = Math.round(17 * k);
+  if (!ADVICE_LOADED) {
+    box.innerHTML = `<div class="card"><div class="card-b" style="padding:48px;text-align:center;color:var(--muted)">Yuklanmoqda…</div></div>`;
+    loadAdviceData().then(render);
+    return;
+  }
+  const KPI = kpiNow();
 
   if (tab === 0) {
     box.innerHTML = `
@@ -11718,15 +11744,15 @@ function render(){
         <h3>Umumiy holat (AI xulosa asosida)</h3>
         <div class="state-row">
           <div class="st"><span class="ic i-vi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2 20c0-3.4 3.1-5.6 7-5.6s7 2.2 7 5.6"/><path d="M17.5 11a3 3 0 100-6"/></svg></span>
-            <span><small>Jami o'quvchilar</small><b>186</b></span></div>
+            <span><small>Jami o'quvchilar</small><b>${KPI.total}</b></span></div>
           <div class="st"><span class="ic i-gr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.3.9-4.5 4.4 1 6.1L12 17l-5.5 3 1-6.1L3 9.5l6.3-.9z"/></svg></span>
-            <span><small>Yuqori salohiyatli</small><b>${high} <i>nafar (${Math.round(high/186*100)}%)</i></b></span></div>
+            <span><small>Yuqori salohiyatli</small><b>${KPI.high} <i>nafar${KPI.total ? ' (' + Math.round(KPI.high/KPI.total*100) + '%)' : ''}</i></b></span></div>
           <div class="st"><span class="ic i-bl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></span>
-            <span><small>Eng yuqori yo'nalish</small><b class="sm">IT va texnologiya</b><span class="sub2">82% moyillik</span></span></div>
+            <span><small>Eng yuqori yo'nalish</small><b class="sm">${KPI.topSkillName}</b><span class="sub2">${KPI.topSkillVal}% moyillik</span></span></div>
           <div class="st"><span class="ic i-am"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16"/><path d="M8 16l3.5-5 3 3L20 7"/></svg></span>
-            <span><small>Kuchli yo'nalishlar</small><b>5 <i>ta</i></b><span class="sub2">80% dan yuqori</span></span></div>
+            <span><small>Kuchli yo'nalishlar</small><b>${KPI.strongCount} <i>ta</i></b><span class="sub2">80% dan yuqori</span></span></div>
           <div class="st"><span class="ic i-rd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 17H3z"/><path d="M12 10v4M12 17h.01"/></svg></span>
-            <span><small>Qo'shimcha yordam kerak</small><b>${need} <i>nafar (${Math.round(need/186*100)}%)</i></b></span></div>
+            <span><small>Qo'shimcha yordam kerak</small><b>${KPI.need} <i>nafar${KPI.total ? ' (' + Math.round(KPI.need/KPI.total*100) + '%)' : ''}</i></b></span></div>
         </div>
       </div>
 
@@ -11770,7 +11796,7 @@ function render(){
       <div class="bottom">
         <div class="card">
           <div class="card-h"><b>Qobiliyatlarga mos rivojlanish yo'l xaritasi (umumiy)</b>
-            <small>Asosiy yo'nalish: IT va texnologiya</small></div>
+            <small>Asosiy yo'nalish: ${KPI.topSkillName}</small></div>
           <div class="card-b">
             <div class="road">
               ${ROAD.map((r, i) => `
@@ -11794,10 +11820,10 @@ function render(){
           <div class="card-h"><b>AI aniqlagan individual ehtiyojlar</b>
             <small>O'quvchilarda ko'proq e'tibor talab qiladigan sohalar</small></div>
           <div class="card-b">
-            ${NEEDS.map(x => `
+            ${NEEDS.map((x, i) => `
               <div class="need"><span class="nic ${x[2]}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[3]}</svg></span>
-                <span class="t">${x[0]}</span><span class="n">${Math.round(x[1] * k)} nafar</span></div>`).join('')}
+                <span class="t">${x[0]}</span><span class="n">${i === 0 ? KPI.need + ' nafar' : "Ma'lumot yo'q"}</span></div>`).join('')}
           </div>
           <div class="card-f">
             <button class="more" data-more="needs">Batafsil ro'yxatni ko'rish
@@ -11809,10 +11835,10 @@ function render(){
         <div class="ai-sum">
           <div class="t"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.3"/><circle cx="15" cy="13" r="1.3"/></svg></span>
             <b>AI tavsiyasi (umumiy xulosa)</b></div>
-          <p>Maktab o'quvchilarining asosiy salohiyati <b>IT va texnologiya</b> yo'nalishida namoyon bo'lmoqda.</p>
+          <p>${KPI.total === 0 ? "Hozircha tizimda tahlil qilingan o'quvchi yo'q." : `Maktab o'quvchilarining asosiy salohiyati <b>${KPI.topSkillName}</b> yo'nalishida namoyon bo'lmoqda.`}</p>
           <p>Matematika, informatika va ingliz tili fanlariga e'tiborni kuchaytirish, loyiha asosida o'qitish va
             tanlovlarda ishtirokni ko'paytirish tavsiya etiladi.</p>
-          <p>Yuqori salohiyatli ${high} nafar o'quvchini individual rivojlantirish maqsadga muvofiq.</p>
+          <p>Yuqori salohiyatli ${KPI.high} nafar o'quvchini individual rivojlantirish maqsadga muvofiq.</p>
           <button class="more" style="margin-top:auto" data-go="summary">Batafsil AI xulosasini ko'rish
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
@@ -11827,20 +11853,24 @@ function render(){
   }
 
   if (tab === 1) {
+    if (!STUDENTS.length) {
+      box.innerHTML = `<div class="card"><div class="card-b" style="padding:40px;text-align:center;color:var(--muted)">Hozircha bazada o'quvchi yo'q.</div></div>`;
+      return;
+    }
+    if (selStu >= STUDENTS.length) selStu = 0;
     const s = STUDENTS[selStu];
-    const shift = selStu * 3;
-    const profs = PROFS.map(p => [p[0], Math.max(45, p[1] - shift), p[2]]).sort((a,b) => b[1] - a[1]);
+    const profs = [...PROFS].sort((a, b) => b[1] - a[1]);
     box.innerHTML = `
       <div class="picker">
         <div class="f">
           <label for="stuSel">O'quvchini tanlang</label>
-          <select id="stuSel">${STUDENTS.map((x, i) => `<option value="${i}"${i === selStu ? ' selected' : ''}>${x.name} · ${x.cls}</option>`).join('')}</select>
+          <select id="stuSel">${STUDENTS.map((x, i) => `<option value="${i}"${i === selStu ? ' selected' : ''}>${x.name} \u00b7 ${x.cls}</option>`).join('')}</select>
         </div>
       </div>
 
       <div class="stu-head">
         <span class="ava ${G[selStu % 4]}">${ini(s.name)}</span>
-        <div><b>${s.name}</b><small>${s.cls} · Kuchli yo'nalish: ${s.top}</small></div>
+        <div><b>${s.name}</b><small>${s.cls} \u00b7 Kuchli yo'nalish: ${s.top}</small></div>
         <div class="kv">
           <div><small>Qobiliyat indeksi</small><b style="color:var(--primary)">${s.idx}%</b></div>
           <div><small>Eng mos kasb</small><b style="font-size:14px">${profs[0][0]}</b></div>
@@ -11857,7 +11887,7 @@ function render(){
 
         ${recCard(null, 'Kuchaytirish kerak bo\u2018lgan fanlar', 'Baholar tahlili asosida', 'i-bl',
           '<path d="M4 5a2 2 0 012-2h13v18H6a2 2 0 01-2-2z"/><path d="M8 8h7M8 12h5"/>',
-          SUBJ.slice(selStu % 3, (selStu % 3) + 4).map(x => `
+          SUBJ.slice(0, 4).map(x => `
             <div class="li"><span class="lic" style="background:${x[3]}1a;color:${x[3]}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[4]}</svg></span>
               <span class="t">${x[0]}</span><span class="badge ${x[2]}">${x[1]}</span></div>`).join(''))}
@@ -11867,7 +11897,7 @@ function render(){
           COURSES.slice(0, 4).map(x => `
             <div class="li"><span class="lic" style="background:${x[2]}1a;color:${x[2]}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[3]}</svg></span>
-              <span class="t">${x[0]}</span><span class="badge b-vi">${Math.max(60, x[1] - shift)}%</span></div>`).join(''))}
+              <span class="t">${x[0]}</span><span class="badge b-vi">${x[1]}%</span></div>`).join(''))}
 
         ${recCard(null, 'To\u2018garak va tanlovlar', 'Ishtirok etish tavsiya etiladi', 'i-am',
           '<path d="M8 4h8v5a4 4 0 01-8 0z"/><path d="M10 20h4M12 13v7"/>',
@@ -11879,10 +11909,9 @@ function render(){
         <div class="ai-sum" id="aiSumBox">
           <div class="t"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.3"/><circle cx="15" cy="13" r="1.3"/></svg></span>
             <b>AI xulosasi</b></div>
-          <p id="aiSumP1"><b>${s.name}</b> uchun eng mos yo'nalish — <b>${profs[0][0]}</b> (${profs[0][1]}% moslik).</p>
-          <p id="aiSumP2">Kuchli tomoni: ${s.top}. Qobiliyat indeksi ${s.idx}% — sinf o'rtachasidan
-            ${s.idx > 80 ? 'yuqori' : 'yaqin'}.</p>
-          <p id="aiSumP3">Tavsiya: ${COURSES[0][0]} kursi va ${CLUBS[0][0]} orqali amaliy tajriba orttirish.</p>
+          <p id="aiSumP1">Bu o'quvchi uchun hali AI xulosasi generatsiya qilinmagan.</p>
+          <p id="aiSumP2">Kuchli tomoni: ${s.top}. Qobiliyat indeksi ${s.idx}%.</p>
+          <p id="aiSumP3">Haqiqiy, shaxsiylashtirilgan AI tahlilini olish uchun quyidagi tugmani bosing.</p>
           <button class="more" style="margin-top:10px" id="aiRefreshBtn" data-name="${s.name}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/></svg>
             AI orqali yangilash
@@ -11901,7 +11930,7 @@ function render(){
         <div style="overflow-x:auto">
           <table class="gtab">
             <thead><tr><th>Sinf</th><th>O'quvchilar</th><th>Qobiliyat indeksi</th><th>Ustun yo'nalish</th><th>AI tavsiyasi</th><th></th></tr></thead>
-            <tbody>${CLASS_REC.map(c => `
+            <tbody>${CLASS_REC.length ? CLASS_REC.map(c => `
               <tr>
                 <td><span class="chip">${c.n}</span></td>
                 <td>${c.cnt} nafar</td>
@@ -11909,7 +11938,7 @@ function render(){
                 <td>${c.focus}</td>
                 <td>${c.need}</td>
                 <td style="text-align:right"><button class="act-b" data-cls="${c.n}">Tavsiyani ko'rish</button></td>
-              </tr>`).join('')}
+              </tr>`).join('') : `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Hozircha sinflar bo'yicha ma'lumot yo'q.</td></tr>`}
             </tbody>
           </table>
         </div>
@@ -11979,7 +12008,7 @@ function drawModal(){
 document.getElementById('rmExport').onclick = () => dl([MD.head, ...MD.rows], MD.title.replace(/\s+/g,'_') + '.csv');
 
 function openMore(key){
-  const k = K();
+  const KPI = kpiNow();
   if (key === 'prof')
     showModal("Tavsiya etilgan kasb yo'nalishlari", 'Qobiliyat va qiziqishlar asosida',
       ['#','Kasb yo\u2018nalishi','Moslik'], PROFS.map((p, i) => [i+1, p[0], p[1] + '%']));
@@ -11997,11 +12026,11 @@ function openMore(key){
       ['Tanlov'], OLYMP.map(x => [x[0]]));
   if (key === 'needs')
     showModal('AI aniqlagan individual ehtiyojlar', "O'quvchilar soni bo'yicha",
-      ['Ehtiyoj','O\u2018quvchilar'], NEEDS.map(x => [x[0], Math.round(x[1]*k) + ' nafar']));
+      ['Ehtiyoj','O\u2018quvchilar'], NEEDS.map((x, i) => [x[0], i === 0 ? KPI.need + ' nafar' : "Ma'lumot yo'q"]));
   if (key === 'road') {
     const rows = [];
     ROAD.forEach((r, i) => r.items.forEach(t => rows.push([r.t + ' (' + r.d + ')', t, r.res])));
-    showModal("To'liq rivojlanish yo'l xaritasi", 'Asosiy yo\u2018nalish: IT va texnologiya',
+    showModal("To'liq rivojlanish yo'l xaritasi", 'Asosiy yo\u2018nalish: ' + KPI.topSkillName,
       ['Bosqich','Vazifa','Kutilayotgan natija'], rows);
   }
 }
@@ -12041,12 +12070,12 @@ document.querySelectorAll('#adviceView .tab[data-t]').forEach(t => t.onclick = (
 
 /* ============ Hisobot ============ */
 document.getElementById('repBtnR').onclick = () => {
-  const k = K();
+  const KPI = kpiNow();
   const rows = [
     ['AI TAVSIYALAR HISOBOTI'], ['Davr', fmt(P.from) + ' – ' + fmt(P.to)], [],
     ['Kasb yo\u2018nalishi','Moslik'], ...PROFS.map(p => [p[0], p[1] + '%']), [],
     ['Kurs','Moslik'], ...COURSES.map(c => [c[0], c[1] + '%']), [],
-    ['Ehtiyoj','O\u2018quvchilar'], ...NEEDS.map(n => [n[0], Math.round(n[1]*k) + ' nafar']),
+    ['Ehtiyoj','O\u2018quvchilar'], ...NEEDS.map((n, i) => [n[0], i === 0 ? KPI.need + ' nafar' : "Ma'lumot yo'q"]),
   ];
   dl(rows, 'ai_tavsiyalar.csv');
 };
@@ -14999,11 +15028,20 @@ function applyRealUser(){
   try {
     const u = JSON.parse(localStorage.getItem('qp_user') || 'null');
     if (!u) return;
+    const roleLabel = u.role === 'maslahatchi' ? 'Maslahatchi' : u.role;
     document.getElementById('headerName').textContent = u.full_name;
-    document.getElementById('headerRole').textContent = u.role === 'maslahatchi' ? 'Maslahatchi' : u.role;
+    document.getElementById('headerRole').textContent = roleLabel;
     document.getElementById('pName').textContent = u.full_name;
     document.getElementById('headerPic').textContent = iniOf(u.full_name);
     document.getElementById('pAva').textContent = iniOf(u.full_name);
+    /* Har bir menyu (view) o'zining alohida sarlavha bloki nusxasiga ega —
+       shuning uchun yuqoridagi ID'lar faqat "Profilim" sahifasini yangilaydi.
+       Boshqa barcha menyularning yuqori o'ng burchagidagi profil tugmasini ham
+       real foydalanuvchi ismi bilan yangilaymiz (aks holda hamma joyda
+       "Abdulaziz Jurayev" demo ismi ko'rinib qolaveradi). */
+    document.querySelectorAll('.header .profile .pic').forEach(el => el.textContent = iniOf(u.full_name));
+    document.querySelectorAll('.header .profile b').forEach(el => el.textContent = u.full_name);
+    document.querySelectorAll('.header .profile small').forEach(el => el.textContent = roleLabel);
     const welcomeEl = document.getElementById('welcomeName');
     if (welcomeEl) {
       const firstName = (u.full_name || '').trim().split(/\s+/)[0] || '';
