@@ -4903,8 +4903,6 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
         <label for="fClass">Sinf</label>
         <select class="f-sel" id="fClass">
           <option value="">Barcha sinflar</option>
-          <option>8-A</option><option>8-B</option><option>9-A</option><option>9-B</option>
-          <option>10-A</option><option>10-B</option><option>11-A</option><option>11-B</option>
         </select>
       </div>
       <div class="f-item">
@@ -5036,10 +5034,7 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
         <div class="m-two">
           <div class="m-field">
             <label for="eCls">Sinf</label>
-            <select class="m-inp" id="eCls">
-              <option>8-A</option><option>8-B</option><option>9-A</option><option>9-B</option>
-              <option>10-A</option><option>10-B</option><option>11-A</option><option>11-B</option>
-            </select>
+            <select class="m-inp" id="eCls"></select>
           </div>
           <div class="m-field">
             <label for="eBd">Tug'ilgan sana</label>
@@ -5545,8 +5540,6 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
             <div class="pop-t">Sinf</div>
             <select class="pop-inp" id="fCls">
               <option value="">Barcha sinflar</option>
-              <option>8-A</option><option>8-B</option><option>9-A</option><option>9-B</option>
-              <option>10-A</option><option>10-B</option><option>11-A</option><option>11-B</option>
             </select>
             <div class="pop-t" style="margin-top:14px">Sinf bosqichi</div>
             <select class="pop-inp" id="mapLevel">
@@ -5961,8 +5954,6 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
         <label for="tCls">Sinf</label>
         <select class="f-sel" id="tCls">
           <option value="">Barcha sinflar</option>
-          <option>8-A</option><option>8-B</option><option>9-A</option><option>9-B</option>
-          <option>10-A</option><option>10-B</option><option>11-A</option><option>11-B</option>
         </select>
       </div>
       <button class="f-clear" id="tClear">
@@ -6599,8 +6590,6 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
         <label for="pCls">Sinf</label>
         <select class="f-sel" id="pCls">
           <option value="">Barcha sinflar</option>
-          <option>8-A</option><option>8-B</option><option>9-A</option><option>9-B</option>
-          <option>10-A</option><option>10-B</option><option>11-A</option><option>11-B</option>
         </select>
       </div>
       <button class="f-clear" id="pClear">
@@ -9806,13 +9795,17 @@ let apiLoaded = false;
 async function loadStudentsFromAPI(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
-    const rows = await apiFetch('/api/students');
+    const [rows, classes] = await Promise.all([
+      apiFetch('/api/students'),
+      apiFetch('/api/classes').catch(() => []),
+    ]);
     /* MUHIM: avval "ro'yxat bo'sh bo'lsa demo ro'yxat qoladi" degan shart
        bor edi — shu sabab bazadan o'quvchilar o'chirilgach ham bu yerda
        15 ta soxta (namunaviy) o'quvchi abadiy ko'rinib turardi. Endi
        so'rov muvaffaqiyatli bo'lsa (hatto natija bo'sh bo'lsa ham) har
        doim haqiqiy ro'yxat bilan almashtiramiz. */
     if (!rows) return;
+    const clsById = {}; (classes || []).forEach(c => { clsById[c.id] = c.name; });
     STUDENTS_LOAD_FAILED = false;
     STUDENTS = rows.map((r, k) => ({
       apiId: r.id,
@@ -9821,7 +9814,7 @@ async function loadStudentsFromAPI(){
       login: r.login,
       pass: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',
       mustChange: r.must_change_password,
-      cls: r.class_id ? String(r.class_id) : '\u2014',
+      cls: r.class_id ? (clsById[r.class_id] || '\u2014') : '\u2014',
       idx: 0, strength: '\u2014', status: 'Tahlil qilinmagan', ach: 0,
       last: '\u2014', order: k,
       phone: (r.phone || '').replace(/^\+998/, ''),
@@ -10394,10 +10387,36 @@ async function loadClassesFromAPI(){
     if (sel >= CLASSES.length) sel = 0;
     renderCards(); renderDetail();
     if (CLASSES.length) loadClassStats(sel);
+    populateClassFilterOptions();
   } catch (err) {
     console.warn("Sinflar ro'yxatini backenddan yuklab bo'lmadi:", err.message);
     CLASSES_LOAD_FAILED = true;
     renderCards(); renderDetail();
+  }
+}
+/* MUHIM #3: Sinf bo'yicha filtr/tanlov ro'yxatlari (O'quvchilar, Testlar,
+   Portfolio filtrlari va o'quvchi tahrirlash oynasidagi sinf tanlovi) avval
+   faqat 8-A dan 11-B gacha QATTIQ YOZILGAN (hardcoded) variantlarni
+   ko'rsatardi — boshqa sinflar (masalan 5-A yoki 7-A) ro'yxatda umuman
+   bo'lmagani uchun tanlab bo'lmasdi va filtr hech narsa topmasdi. Endi
+   barchasi haqiqiy /api/classes ro'yxatidan dinamik to'ldiriladi. */
+function populateClassFilterOptions(){
+  if (!CLASSES.length) return;
+  const names = [...new Set(CLASSES.map(c => c.name).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, 'uz'));
+
+  ['fCls', 'fClass', 'tCls', 'pCls'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">Barcha sinflar</option>' +
+      names.map(n => `<option${n === current ? ' selected' : ''}>${n}</option>`).join('');
+  });
+
+  const eCls = document.getElementById('eCls');
+  if (eCls) {
+    const current = eCls.value;
+    eCls.innerHTML = names.map(n => `<option${n === current ? ' selected' : ''}>${n}</option>`).join('');
   }
 }
 loadClassesFromAPI();
@@ -13782,9 +13801,13 @@ render();
 async function loadAchievementsFromAPI(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
-    const students = await apiFetch('/api/students');
+    const [students, classes] = await Promise.all([
+      apiFetch('/api/students'),
+      apiFetch('/api/classes').catch(() => []),
+    ]);
+    const clsById = {}; (classes || []).forEach(c => { clsById[c.id] = c.name; });
     REAL_STUDENTS = {};
-    (students || []).forEach(s => { REAL_STUDENTS[s.id] = { name: s.full_name, cls: s.class_id ? String(s.class_id) : '\u2014' }; });
+    (students || []).forEach(s => { REAL_STUDENTS[s.id] = { name: s.full_name, cls: s.class_id ? (clsById[s.class_id] || '\u2014') : '\u2014' }; });
     refreshStuSelect();
 
     const rows = await apiFetch('/api/achievements');
