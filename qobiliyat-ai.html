@@ -5245,12 +5245,17 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
 
     <!-- 3-qadam -->
     <div class="modal-body hidden" id="impStep3">
-      <div style="text-align:center;padding:20px 0">
+      <div style="text-align:center;padding:20px 0 8px">
         <div class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
         <h3 style="font-size:20px;font-weight:800;margin-top:16px"><span id="impDone">0</span> ta o'quvchi qo'shildi</h3>
         <p style="color:var(--muted);font-size:13.5px;margin-top:8px;line-height:1.6">
-          Har biriga login va vaqtinchalik parol yaratildi.<br>Ro'yxatdan ularni ko'rishingiz mumkin.</p>
+          Har biriga login va vaqtinchalik parol yaratildi. <b>Diqqat: bu parollar faqat HOZIR ko'rinadi —
+          keyinroq qayta ko'rish imkoni yo'q, shuning uchun hoziroq yozib oling yoki nusxalang.</b></p>
       </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+        <button type="button" class="btn btn-ghost btn-sm" id="impCredsCopy">Barchasini nusxalash</button>
+      </div>
+      <div id="impCredsList" style="max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px"></div>
     </div>
 
     <div class="modal-foot">
@@ -9542,6 +9547,24 @@ document.getElementById('editSave').onclick = async () => {
         date: a.y ? `${a.y}-01-01` : null, organizer: null, description: null,
       }));
       await apiFetch(`/api/students/${s.apiId}/achievements/bulk`, { method: 'PUT', body: JSON.stringify(achRows) });
+
+      /* MUHIM: avval yangi parol faqat shu ekranda ko'rsatilardi, backendga
+         umuman yuborilmasdi — shuning uchun "Avtomatik yaratish" bilan
+         berilgan parol o'quvchi uchun hech qachon ishlamasdi. Endi haqiqiy
+         saqlash /reset-password orqali amalga oshadi, va muvaffaqiyatsiz
+         bo'lsa maslahatchiga ANIQ ogohlantirish beriladi — aks holda u
+         ishlamaydigan parolni o'quvchiga berib qo'yishi mumkin edi. */
+      if (np) {
+        try {
+          await apiFetch(`/api/students/${s.apiId}/reset-password`, {
+            method: 'POST',
+            body: JSON.stringify({ password: np, must_change_password: s.mustChange }),
+          });
+        } catch (pwErr) {
+          alert("Boshqa o'zgarishlar saqlandi, LEKIN yangi parol saqlanmadi: " + pwErr.message +
+                "\n\nBu parolni o'quvchiga BERMANG — u ishlamaydi. Qayta urinib ko'ring.");
+        }
+      }
     } catch (err) {
       alert("Backendga saqlashda xatolik: " + err.message + "\n\nO'zgarish shu sahifada saqlandi, lekin serverga yetmadi.");
     } finally {
@@ -9750,6 +9773,25 @@ document.getElementById('impConfirm').onclick = async () => {
     if (res.failed.length) {
       noteEl.textContent = `${res.failed.length} ta qatorda xatolik: ` + res.failed.slice(0, 5).join('; ');
     }
+    /* MUHIM: avval bu yerda faqat yaratilgan o'quvchilar SONI ko'rsatilardi,
+       login/parolning o'zi hech qayerda ko'rsatilmasdi — matnda esa
+       "ro'yxatdan ko'rishingiz mumkin" deb yozilgan edi, bu esa noto'g'ri:
+       parol bazada faqat xeshlangan holda saqlanadi, keyinroq uni umuman
+       qayta o'qib bo'lmaydi. Shu sabab maslahatchi Excel orqali qo'shgan
+       o'quvchilarning haqiqiy vaqtinchalik parolini hech qachon ko'rolmasdi. */
+    const credsList = document.getElementById('impCredsList');
+    credsList.innerHTML = (res.created || []).map(c => `
+      <div style="display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:12.5px">
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.full_name} <span style="color:var(--muted)">(${c.class_name || '—'})</span></span>
+        <span class="mono" style="color:var(--muted)">${c.login}</span>
+        <span class="mono" style="font-weight:700">${c.temporary_password}</span>
+      </div>`).join('') || '<div style="padding:12px;color:var(--muted);font-size:13px">Ro\u2018yxat bo\u2018sh.</div>';
+    document.getElementById('impCredsCopy').onclick = function(){
+      const text = (res.created || []).map(c => `${c.full_name}\t${c.login}\t${c.temporary_password}`).join('\n');
+      navigator.clipboard?.writeText(text);
+      const old2 = this.textContent; this.textContent = 'Nusxalandi!';
+      setTimeout(() => { this.textContent = old2; }, 1500);
+    };
     impStep(3);
     await loadStudentsFromAPI();
     page = 1; render();
