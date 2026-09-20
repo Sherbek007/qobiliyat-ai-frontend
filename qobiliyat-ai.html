@@ -12589,7 +12589,10 @@ async function openTest(id){
     const byId = {}; (students || []).forEach(s => { byId[s.id] = s; });
     TM.rows = (results || []).map(r => {
       const s = byId[r.student_id];
-      return { name: s ? s.full_name : `O'quvchi #${r.student_id}`, cls: s ? (clsById[s.class_id] || '—') : '—', score: r.score_percent };
+      return {
+        name: s ? s.full_name : `O'quvchi #${r.student_id}`, cls: s ? (clsById[s.class_id] || '—') : '—',
+        score: r.score_percent, isFanTest: r.is_fan_test !== false, profile: r.profile || [],
+      };
     }).sort((a, b) => b.score - a.score);
     TM.loading = false;
   } catch (err) {
@@ -12602,12 +12605,24 @@ async function openTest(id){
 
 function drawTest(){
   const t = TM.t;
+  const isFan = t.type === 'Fan testi';
   const PERM = 10;
   const pages = Math.max(1, Math.ceil(TM.rows.length / PERM));
   if (TM.page > pages) TM.page = pages;
   const from = (TM.page - 1) * PERM;
   const slice = TM.rows.slice(from, from + PERM);
   const passed = TM.rows.filter(r => r.score >= 60).length;
+  // Tegga asoslangan test turlarida (Qiziqish/Qobiliyat/Kasbga yo'nalish) barcha
+  // o'quvchilar natijalari orasida eng ko'p uchragan yetakchi ko'nikma/yo'nalish —
+  // "O'tganlar (60%+)" o'rniga ko'rsatiladi, chunki bu turlarda "o'tish balli"
+  // tushunchasi yo'q.
+  let topTagLabel = '—';
+  if (!isFan) {
+    const tagCounts = {};
+    TM.rows.forEach(r => { const p = r.profile && r.profile[0]; if (p) tagCounts[p.name] = (tagCounts[p.name] || 0) + 1; });
+    const names = Object.keys(tagCounts).sort((a, b) => tagCounts[b] - tagCounts[a]);
+    if (names.length) topTagLabel = names[0];
+  }
 
   let pg = '';
   if (pages > 1) {
@@ -12622,24 +12637,28 @@ function drawTest(){
     <div class="stat3">
       <div><b style="color:var(--primary)">${t.done}/${t.target}</b><small>Topshirganlar</small></div>
       <div><b style="color:${resColor(t.avg)}">${t.avg ? t.avg + '%' : '—'}</b><small>O'rtacha natija</small></div>
-      <div><b style="color:var(--green)">${passed}</b><small>O'tganlar (60%+)</small></div>
+      ${isFan
+        ? `<div><b style="color:var(--green)">${passed}</b><small>O'tganlar (60%+)</small></div>`
+        : `<div><b style="color:var(--primary)">${topTagLabel}</b><small>Eng ko'p uchragan yo'nalish</small></div>`}
     </div>
 
     <div class="v-sect">Test haqida</div>
     <div class="v-row"><span>Holati</span><b>${t.status}</b></div>
     <div class="v-row"><span>Sinflar</span><b>${t.cls.join(', ')}</b></div>
     <div class="v-row"><span>Yaratilgan</span><b>${t.created}</b></div>
+    ${!isFan ? `<div class="v-row"><span>Baholash</span><b>Bu turda "to'g'ri javob" yo'q — har bir o'quvchi natijasi javoblari asosida aniqlangan yo'nalish profili</b></div>` : ''}
 
     <div class="v-sect">O'quvchilar natijalari</div>
     ${TM.loading ? '<p style="font-size:13px;color:var(--muted);padding:10px 0">Yuklanmoqda…</p>'
     : TM.loadFailed ? '<p style="font-size:13px;color:var(--red);padding:10px 0">Natijalarni yuklab bo\'lmadi. Sahifani yangilab qayta urinib ko\'ring.</p>'
     : TM.rows.length ? `
       <table class="mtab">
-        <thead><tr><th style="width:36px">#</th><th>O'quvchi</th><th>Sinf</th><th style="text-align:right">Natija</th></tr></thead>
+        <thead><tr><th style="width:36px">#</th><th>O'quvchi</th><th>Sinf</th>${isFan ? '' : "<th>Yo'nalish</th>"}<th style="text-align:right">Natija</th></tr></thead>
         <tbody>${slice.map((r, i) => `
           <tr><td>${from + i + 1}</td>
             <td><div class="who"><span class="ava ${G[i % 4]}">${ini(r.name)}</span>${r.name}</div></td>
             <td>${r.cls}</td>
+            ${isFan ? '' : `<td>${(r.profile && r.profile[0]) ? r.profile[0].name : '—'}</td>`}
             <td style="text-align:right;font-weight:700;color:${resColor(r.score)}">${r.score}%</td></tr>`).join('')}
         </tbody>
       </table>${pg}`
@@ -12654,7 +12673,10 @@ function drawTest(){
 }
 
 document.getElementById('tmExport').onclick = () => {
-  const rows = [['#',"F.I.Sh.",'Sinf','Natija'], ...TM.rows.map((r, i) => [i+1, r.name, r.cls, r.score + '%'])];
+  const isFan = TM.t.type === 'Fan testi';
+  const rows = isFan
+    ? [['#',"F.I.Sh.",'Sinf','Natija'], ...TM.rows.map((r, i) => [i+1, r.name, r.cls, r.score + '%'])]
+    : [['#',"F.I.Sh.",'Sinf',"Yo'nalish",'Natija'], ...TM.rows.map((r, i) => [i+1, r.name, r.cls, (r.profile && r.profile[0]) ? r.profile[0].name : '—', r.score + '%'])];
   dl(rows, TM.t.name.replace(/\s+/g,'_') + '_natijalar.csv');
 };
 document.getElementById('tExport').onclick = () => {
@@ -12735,6 +12757,13 @@ const ALL_CLS = ['8-A','8-B','9-A','9-B','10-A','10-B','11-A','11-B'];
 const CLS_SIZE = { '8-A':18,'8-B':16,'9-A':28,'9-B':26,'10-A':24,'10-B':27,'11-A':22,'11-B':25 };
 const Q_TYPES = ['Bitta javob','Bir nechta javob','Ha / Yo\u2018q','Matnli javob','Rasmli savol'];
 
+/* skills.py dagi SKILL_ORDER bilan bir xil \u2014 Fan testidan boshqa turlarda
+   (Qiziqish/Qobiliyat/Kasbga yo'nalish) har bir variant "to'g'ri/noto'g'ri"
+   emas, shu ro'yxatdan bitta ko'nikma/yo'nalishga bog'lanadi. */
+const TAG_SKILLS = ['IT va texnologiya','Analitik fikrlash','Matematika','Ijodkorlik',
+  'Tabiiy fanlar','Sport',"San'at",'Muloqot','Liderlik','Tadbirkorlik'];
+const isTagTest = () => T.type !== 'Fan testi';
+
 const T = {
   name:'', type:'Fan testi', desc:'', cls:[], dur:30, lang:"O'zbek tili", status:'Qoralama',
   questions:[], pass:60,
@@ -12767,10 +12796,12 @@ async function loadTestForEditing(){
       T.cls = (test.class_ids || []).map(cid => classes.find(c => c.id === cid)?.name).filter(Boolean);
     } catch (e) { /* sinflar ro'yxati yuklanmasa, bo'sh qoldiramiz */ }
 
-    /* savollarni backend shaklidan (options/correct) T.questions shakliga (opts/ok) o'tkazamiz */
+    /* savollarni backend shaklidan (options/correct YOKI options/tag) T.questions
+       shakliga (opts/ok yoki opts/tag) o'tkazamiz — Fan testidan boshqa turlarda
+       "correct" o'rniga "tag" (ko'nikma nomi) keladi. */
     T.questions = (test.questions || []).map(q => ({
       id: qid++, type: q.type || 'Bitta javob', text: q.text || '', score: q.score || 1,
-      opts: (q.options || []).map(o => ({ t: o.text || '', ok: !!o.correct })),
+      opts: (q.options || []).map(o => ({ t: o.text || '', ok: !!o.correct, tag: o.tag || null })),
     }));
     if (!T.questions.length) T.questions.push(newQuestion());
 
@@ -12893,11 +12924,20 @@ function drawCls(){
 }
 
 /* ============ 2-bosqich: savollar ============ */
-function newQuestion(data){
+function defaultOpts(){
+  if (isTagTest()) {
+    // 4 ta variant, imkon qadar 4 xil ko'nikmaga — savollar ko'payганда
+    // doim bir xil 4 tasi bo'lib qolmasin uchun boshlanish nuqtasi aylanadi.
+    const start = Math.floor(Math.random() * TAG_SKILLS.length);
+    return [0,1,2,3].map(i => ({ t:'', tag: TAG_SKILLS[(start + i) % TAG_SKILLS.length] }));
+  }
   const okIdx = Math.floor(Math.random() * 4);
+  return [0,1,2,3].map(i => ({ t:'', ok: i === okIdx }));
+}
+function newQuestion(data){
   return Object.assign({
     id: qid++, type:'Bitta javob', text:'', score:1,
-    opts: [0,1,2,3].map(i => ({ t:'', ok: i === okIdx })),
+    opts: defaultOpts(),
   }, data || {});
 }
 
@@ -12916,19 +12956,29 @@ function drawQ(){
         </div>
       </div>
       <div class="q-body">
-        <input class="q-text" data-text placeholder="Savol matnini kiriting..." value="${q.text.replace(/"/g,'&quot;')}">
+        <input class="q-text" data-text placeholder="${isTagTest() ? "Savol matnini kiriting (vaziyat/moyillik savoli)..." : 'Savol matnini kiriting...'}" value="${q.text.replace(/"/g,'&quot;')}">
         ${q.type === 'Matnli javob'
           ? `<p class="hint" style="margin:0">O'quvchi javobni matn ko'rinishida yozadi. Javob maslahatchi tomonidan tekshiriladi.</p>`
+          : isTagTest()
+          ? q.opts.map((o, k) => `
+            <div class="opt tagopt">
+              <span class="opt-key" style="cursor:default" title="Variant harfi">${String.fromCharCode(65 + k)}</span>
+              <input data-opt="${k}" placeholder="Variant ${String.fromCharCode(65 + k)}" value="${(o.t||'').replace(/"/g,'&quot;')}">
+              <select data-tag="${k}" title="Bu variant qaysi ko'nikma/yo'nalishga tegishli">
+                ${TAG_SKILLS.map(s => `<option${s === o.tag ? ' selected' : ''}>${s}</option>`).join('')}
+              </select>
+              ${q.opts.length > 2 ? `<button class="rm" data-rm="${k}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>` : ''}
+            </div>`).join('')
           : q.opts.map((o, k) => `
             <div class="opt ${o.ok ? 'correct' : ''}">
               <span class="opt-key" data-ok="${k}" title="To'g'ri javob deb belgilash">${String.fromCharCode(65 + k)}</span>
-              <input data-opt="${k}" placeholder="Variant ${String.fromCharCode(65 + k)}" value="${o.t.replace(/"/g,'&quot;')}">
+              <input data-opt="${k}" placeholder="Variant ${String.fromCharCode(65 + k)}" value="${(o.t||'').replace(/"/g,'&quot;')}">
               ${q.opts.length > 2 ? `<button class="rm" data-rm="${k}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>` : ''}
             </div>`).join('')}
         ${q.type !== 'Matnli javob' && q.opts.length < 6 ? `<button class="link-btn" data-addopt style="margin-top:4px">+ Variant qo'shish</button>` : ''}
         <div class="q-foot">
           <span class="score">Ball: <input data-score value="${q.score}" maxlength="2"> ball</span>
-          <span style="margin-left:auto;font-size:12px;color:var(--muted)">To'g'ri javobni belgilash uchun harfni bosing</span>
+          <span style="margin-left:auto;font-size:12px;color:var(--muted)">${isTagTest() ? "Bu turda \"to'g'ri javob\" yo'q — har bir variant yonidagi ro'yxatdan qaysi ko'nikmaga tegishli ekanini tanlang" : "To'g'ri javobni belgilash uchun harfni bosing"}</span>
         </div>
       </div>
     </div>`).join('');
@@ -12953,13 +13003,21 @@ function bindQ(){
     });
     card.querySelector('[data-type]').onchange = function(){
       q.type = this.value;
-      if (q.type === 'Ha / Yo\u2018q') q.opts = [{t:'Ha',ok:true},{t:'Yo\u2018q',ok:false}];
-      if (q.type === 'Bitta javob' && q.opts.length < 3)
-        q.opts = [{t:'',ok:true},{t:'',ok:false},{t:'',ok:false},{t:'',ok:false}];
+      if (isTagTest()) {
+        if (q.type === 'Ha / Yo\u2018q') q.opts = [{t:'Ha',tag:TAG_SKILLS[0]},{t:'Yo\u2018q',tag:TAG_SKILLS[1]}];
+        if (q.type === 'Bitta javob' && q.opts.length < 3) q.opts = defaultOpts();
+      } else {
+        if (q.type === 'Ha / Yo\u2018q') q.opts = [{t:'Ha',ok:true},{t:'Yo\u2018q',ok:false}];
+        if (q.type === 'Bitta javob' && q.opts.length < 3)
+          q.opts = [{t:'',ok:true},{t:'',ok:false},{t:'',ok:false},{t:'',ok:false}];
+      }
       drawQ();
     };
     card.querySelectorAll('[data-opt]').forEach(inp => inp.addEventListener('input', function(){
       q.opts[+this.dataset.opt].t = this.value;
+    }));
+    card.querySelectorAll('[data-tag]').forEach(sel => sel.addEventListener('change', function(){
+      q.opts[+this.dataset.tag].tag = this.value;
     }));
     card.querySelectorAll('[data-ok]').forEach(b => b.onclick = () => {
       const k = +b.dataset.ok;
@@ -12969,11 +13027,14 @@ function bindQ(){
     });
     card.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => {
       q.opts.splice(+b.dataset.rm, 1);
-      if (!q.opts.some(o => o.ok)) q.opts[0].ok = true;
+      if (!isTagTest() && !q.opts.some(o => o.ok)) q.opts[0].ok = true;
       drawQ();
     });
     const addOpt = card.querySelector('[data-addopt]');
-    if (addOpt) addOpt.onclick = () => { q.opts.push({ t:'', ok:false }); drawQ(); };
+    if (addOpt) addOpt.onclick = () => {
+      q.opts.push(isTagTest() ? { t:'', tag: TAG_SKILLS[q.opts.length % TAG_SKILLS.length] } : { t:'', ok:false });
+      drawQ();
+    };
 
     card.querySelector('[data-del]').onclick = () => {
       if (confirm('Savolni o\u2018chirasizmi?')) { T.questions.splice(i, 1); drawQ(); }
@@ -13085,7 +13146,7 @@ document.getElementById('genBtn').onclick = async function(){
       T.questions.push(newQuestion({
         id: qid++, text: q.text,
         score: lvl === 'Qiyin' ? 2 : 1,
-        opts: (q.options || []).map(o => ({ t: o.text, ok: !!o.correct })),
+        opts: (q.options || []).map(o => ({ t: o.text, ok: !!o.correct, tag: o.tag || null })),
       }));
     });
     drawQ();
@@ -13129,10 +13190,19 @@ function drawReview(){
     <div class="sum-row"><span>Holati</span><b>${T.status}</b></div>`;
 
   document.getElementById('revQ').innerHTML = T.questions.slice(0, 6).map((q, i) => {
-    const ok = q.opts.filter(o => o.ok).map(o => String.fromCharCode(65 + q.opts.indexOf(o))).join(', ');
+    let metaTail = '';
+    if (q.type !== 'Matnli javob') {
+      if (isTagTest()) {
+        const tags = [...new Set((q.opts || []).map(o => o.tag).filter(Boolean))].join(', ');
+        metaTail = ' · Ko‘nikmalar: ' + (tags || '—');
+      } else {
+        const ok = q.opts.filter(o => o.ok).map(o => String.fromCharCode(65 + q.opts.indexOf(o))).join(', ');
+        metaTail = " · To'g'ri javob: " + (ok || '—');
+      }
+    }
     return `<div class="q-mini"><span class="n">${i + 1}</span>
       <div><p>${q.text || '(savol matni kiritilmagan)'}</p>
-      <small>${q.type} · ${q.score} ball${q.type !== 'Matnli javob' ? " · To'g'ri javob: " + (ok || '—') : ''}</small></div></div>`;
+      <small>${q.type} · ${q.score} ball${metaTail}</small></div></div>`;
   }).join('') + (T.questions.length > 6
     ? `<div style="text-align:center;color:var(--muted);font-size:12.5px;padding-top:12px">… yana ${T.questions.length - 6} ta savol</div>` : '');
 }
@@ -13207,7 +13277,9 @@ async function finish(status){
         class_ids: classIds,
         questions: T.questions.map(q => ({
           text: q.text, type: q.type, score: q.score,
-          options: (q.opts || []).map(o => ({ text: o.t, correct: !!o.ok })),
+          options: (q.opts || []).map(o => isTagTest()
+            ? { text: o.t, tag: o.tag || null }
+            : { text: o.t, correct: !!o.ok }),
         })),
         duration_minutes: T.dur, language: T.lang, status: T.status,
         pass_percent: T.pass, settings: T.set,

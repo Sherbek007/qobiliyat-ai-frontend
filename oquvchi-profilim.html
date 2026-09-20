@@ -1309,13 +1309,13 @@ a{color:inherit;text-decoration:none}
           <div><span class="lbl2">Natija</span><span class="val2" id="tdScore" style="color:var(--primary)">0%</span></div>
         </div>
         <div class="kpi-card" style="box-shadow:none;border-radius:12px">
-          <div><span class="lbl2">To'g'ri javob</span><span class="val2" id="tdCorrect">0/0</span></div>
+          <div><span class="lbl2" id="tdCorrectLbl">To'g'ri javob</span><span class="val2" id="tdCorrect">0/0</span></div>
         </div>
         <div class="kpi-card" style="box-shadow:none;border-radius:12px">
           <div><span class="lbl2">Davomiyligi</span><span class="val2" id="tdDuration">0 daqiqa</span></div>
         </div>
       </div>
-      <p style="font-size:13px;color:#5B5A7A;line-height:1.7">Test turi: <b style="color:var(--ink)" id="tdType">—</b>. Daraja: <b style="color:var(--ink)" id="tdLvl">—</b>. Bu testni sizga maslahatchingiz tayinlagan — natijangiz avtomatik ravishda Qobiliyatlarim tahlilingizga qo'shiladi.</p>
+      <p style="font-size:13px;color:#5B5A7A;line-height:1.7" id="tdFootNote">Test turi: <b style="color:var(--ink)" id="tdType">—</b>. Daraja: <b style="color:var(--ink)" id="tdLvl">—</b>. Bu testni sizga maslahatchingiz tayinlagan — natijangiz avtomatik ravishda Qobiliyatlarim tahlilingizga qo'shiladi.</p>
     </div>
   </div>
 
@@ -1367,9 +1367,10 @@ a{color:inherit;text-decoration:none}
         <h3 style="margin:16px 0 6px">Test yakunlandi!</h3>
         <span class="badge" id="ttResultBadge" style="margin-bottom:16px;display:inline-block">—</span>
         <p style="font-size:13px;color:#5B5A7A;line-height:1.7;margin-bottom:18px" id="ttResultSummary">—</p>
+        <div id="ttResultProfile" style="display:none;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px"></div>
         <div class="qcols3" style="grid-template-columns:repeat(2,1fr);margin-bottom:20px">
-          <div class="kpi-card" style="box-shadow:none;border-radius:12px">
-            <div><span class="lbl2">To'g'ri javob</span><span class="val2" id="ttResultCorrect">0/0</span></div>
+          <div class="kpi-card" id="ttResultCorrectCard" style="box-shadow:none;border-radius:12px">
+            <div><span class="lbl2" id="ttResultCorrectLbl">To'g'ri javob</span><span class="val2" id="ttResultCorrect">0/0</span></div>
           </div>
           <div class="kpi-card" style="box-shadow:none;border-radius:12px">
             <div><span class="lbl2">Sarflangan vaqt</span><span class="val2" id="ttResultTime">0 daqiqa</span></div>
@@ -2784,7 +2785,10 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
       sumScore += score;
       if (score > best) { best = score; bestName = r.dataset.subject + ' testi'; }
       sumDur += parseInt(r.dataset.duration, 10);
-      sumCorrect += parseInt(r.dataset.correct, 10);
+      // "To'g'ri javob" tushunchasi faqat Fan testida bor — Qiziqish/Qobiliyat/
+      // Kasbga yo'nalish testlarida bu son ma'nosiz bo'lgani uchun yig'indiga
+      // qo'shilmaydi (aks holda haqiqatda bo'lmagan "to'g'ri javob" ko'rsatilardi).
+      if (r.dataset.isfan !== '0') sumCorrect += parseInt(r.dataset.correct, 10);
     });
     var avg = count ? Math.round(sumScore / count) : 0;
     var avgDur = count ? Math.round(sumDur / count) : 0;
@@ -2987,13 +2991,35 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
   var testDetailOverlay = document.getElementById('testDetailOverlay');
   function wireTestRowClick(row){
     row.addEventListener('click', function(){
+      var isFan = row.dataset.isfan !== '0';
       document.getElementById('tdName').textContent = row.dataset.name;
       document.getElementById('tdMeta').textContent = row.dataset.subject + ' · ' + row.dataset.date;
       document.getElementById('tdScore').textContent = row.dataset.score + '%';
-      document.getElementById('tdCorrect').textContent = row.dataset.correct + '/' + row.dataset.total;
       document.getElementById('tdDuration').textContent = row.dataset.duration;
       document.getElementById('tdType').textContent = row.dataset.type;
       document.getElementById('tdLvl').textContent = row.dataset.lvl;
+      if (isFan) {
+        document.getElementById('tdCorrectLbl').textContent = "To'g'ri javob";
+        document.getElementById('tdCorrect').textContent = row.dataset.correct + '/' + row.dataset.total;
+        document.getElementById('tdFootNote').innerHTML =
+          'Test turi: <b style="color:var(--ink)">' + escapeHtml(row.dataset.type) + '</b>. Daraja: <b style="color:var(--ink)">' +
+          escapeHtml(row.dataset.lvl) + "</b>. Bu testni sizga maslahatchingiz tayinlagan — natijangiz avtomatik ravishda Qobiliyatlarim tahlilingizga qo'shiladi.";
+      } else {
+        var profile = [];
+        try { profile = JSON.parse(row.dataset.profile || '[]'); } catch (e) {}
+        document.getElementById('tdCorrectLbl').textContent = 'Yetakchi yo‘nalish';
+        document.getElementById('tdCorrect').textContent = profile.length
+          ? profile.map(function(p){ return p.name + ' (' + p.pct + '%)'; }).join(', ')
+          : '—';
+        // Faqat "Qobiliyat testi" natijalari Qobiliyatlarim tahliliga qo'shiladi —
+        // Qiziqish/Kasbga yo'nalish testlari alohida profil sifatida ko'rsatiladi.
+        var joinsSkills = row.dataset.type === 'Qobiliyat testi';
+        document.getElementById('tdFootNote').innerHTML =
+          'Test turi: <b style="color:var(--ink)">' + escapeHtml(row.dataset.type) + '</b>. Bu turda "to‘g‘ri javob" yo‘q — natija javoblaringiz asosida aniqlangan moyillik profili.' +
+          (joinsSkills
+            ? " Natijangiz Qobiliyatlarim tahlilingizga qo'shiladi."
+            : ' Bu test natijasi alohida profil sifatida ko‘rsatiladi, Qobiliyatlarim tahliliga aralashtirilmaydi.');
+      }
       testDetailOverlay.classList.add('open');
     });
   }
@@ -3152,12 +3178,24 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
     }
     sorted.forEach(function(t){
       var score = Math.round(t.score_percent || 0);
-      var lv = scoreLevel(score);
+      var isFan = t.is_fan_test !== false; // eski javoblar (fallback) Fan testi kabi ko'rsatiladi
+      var profile = t.profile || [];
       var ic = iconForTest(t.name);
+      var badgeText, badgeBg, badgeFg, scoreColor;
+      if (isFan) {
+        var lv = scoreLevel(score);
+        badgeText = lv.lvl; badgeBg = lv.bg; badgeFg = lv.fg; scoreColor = lv.scoreColor;
+      } else {
+        // Qiziqish/Qobiliyat/Kasbga yo'nalish testida "daraja" (A'lo/Yaxshi...) tushunchasi
+        // yo'q — buning o'rniga aniqlangan yetakchi yo'nalish/ko'nikma ko'rsatiladi.
+        badgeText = profile.length ? profile[0].name : 'Aniqlanmadi';
+        badgeBg = 'var(--blue-soft,#EAF3FC)'; badgeFg = '#2E86C8'; scoreColor = '#2E86C8';
+      }
       // Backend endi haqiqiy savollar sonini beradi (correct_questions/total_questions).
       // Eski versiyada bu yo'q edi, shuning uchun foizdan taxminan hisoblanardi —
       // endi shunga ehtiyoj yo'q, lekin eski javob kelib qolsa (masalan deploy
-      // paytida) yiqilib qolmasligi uchun fallback saqlanadi.
+      // paytida) yiqilib qolmasligi uchun fallback saqlanadi. Bu faqat Fan testi
+      // uchun ma'noli — boshqa turlarda "to'g'ri javob" tushunchasi yo'q.
       var qCount = t.total_questions != null ? t.total_questions : (t.question_count || 0);
       var estCorrect = t.correct_questions != null ? t.correct_questions : (qCount ? Math.round(score / 100 * qCount) : 0);
       var dateStr = formatApiDateTime(t.submitted_at);
@@ -3168,17 +3206,19 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
       row.dataset.subject = t.type || '';
       row.dataset.date = dateStr;
       row.dataset.score = score;
-      row.dataset.lvl = lv.lvl;
+      row.dataset.lvl = badgeText;
       row.dataset.type = t.type || '';
       row.dataset.correct = estCorrect;
       row.dataset.total = qCount;
+      row.dataset.isfan = isFan ? '1' : '0';
+      row.dataset.profile = JSON.stringify(profile);
       row.dataset.duration = (t.duration_minutes || 0) + ' daqiqa';
       row.innerHTML =
         '<span class="tico" style="background:' + ic.bg + ';color:' + ic.color + '">' + ic.icon + '</span>' +
         '<div class="body"><b>' + escapeHtml(t.name) + '</b><small>' + escapeHtml(t.type || '') + '</small></div>' +
         '<span class="when">' + dateStr + '</span>' +
-        '<span class="score" style="color:' + lv.scoreColor + '">' + score + '%</span>' +
-        '<span class="badge" style="background:' + lv.bg + ';color:' + lv.fg + '">' + lv.lvl + '</span>' +
+        '<span class="score" style="color:' + scoreColor + '">' + score + '%</span>' +
+        '<span class="badge" style="background:' + badgeBg + ';color:' + badgeFg + '">' + escapeHtml(badgeText) + '</span>' +
         '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
       container.appendChild(row);
       wireTestRowClick(row);
@@ -3334,30 +3374,65 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
     }
 
     var score = result.score_percent;
-    var lv = scoreLevel(score);
     var scoreEl = document.getElementById('ttResultScore');
-    scoreEl.textContent = score + '%';
-    scoreEl.style.color = lv.scoreColor;
     var badgeEl = document.getElementById('ttResultBadge');
-    badgeEl.textContent = lv.lvl;
-    badgeEl.style.background = lv.bg;
-    badgeEl.style.color = lv.fg;
-    // DIQQAT: "correct_questions"/"total_questions" — HAQIQIY savollar soni bo'yicha
-    // (masalan "3/5"). Eski "correct"/"total" maydonlari esa savol BALLI (og'irligi)
-    // bo'yicha edi — "Qiyin" savollar 2 ball bo'lgani uchun 5 ta savol bo'lsa ham
-    // "6/10" kabi chalkash ko'rinish berardi. Foiz (score_percent) baribir ball
-    // bo'yicha hisoblanadi — shu yerda faqat "nechta savoldan nechtasi to'g'ri"
-    // ko'rsatkichi tuzatildi.
-    document.getElementById('ttResultCorrect').textContent =
-      (result.correct_questions != null ? result.correct_questions : (result.correct != null ? result.correct : '—'))
-      + '/' +
-      (result.total_questions != null ? result.total_questions : (result.total != null ? result.total : total));
+    var profileEl = document.getElementById('ttResultProfile');
+    var correctCard = document.getElementById('ttResultCorrectCard');
+    var isFanTest = result.is_fan_test !== false; // eski javoblar (fallback) Fan testi kabi ko'rsatiladi
+
+    if (isFanTest) {
+      // Fan testi — bitta to'g'ri javob asosida foiz baho (o'zgarishsiz).
+      var lv = scoreLevel(score);
+      scoreEl.textContent = score + '%';
+      scoreEl.style.color = lv.scoreColor;
+      badgeEl.textContent = lv.lvl;
+      badgeEl.style.background = lv.bg;
+      badgeEl.style.color = lv.fg;
+      profileEl.style.display = 'none';
+      correctCard.style.display = '';
+      document.getElementById('ttResultCorrectLbl').textContent = "To'g'ri javob";
+      // DIQQAT: "correct_questions"/"total_questions" — HAQIQIY savollar soni bo'yicha
+      // (masalan "3/5"). Eski "correct"/"total" maydonlari esa savol BALLI (og'irligi)
+      // bo'yicha edi — "Qiyin" savollar 2 ball bo'lgani uchun 5 ta savol bo'lsa ham
+      // "6/10" kabi chalkash ko'rinish berardi. Foiz (score_percent) baribir ball
+      // bo'yicha hisoblanadi — shu yerda faqat "nechta savoldan nechtasi to'g'ri"
+      // ko'rsatkichi tuzatildi.
+      document.getElementById('ttResultCorrect').textContent =
+        (result.correct_questions != null ? result.correct_questions : (result.correct != null ? result.correct : '—'))
+        + '/' +
+        (result.total_questions != null ? result.total_questions : (result.total != null ? result.total : total));
+    } else {
+      // Qiziqish / Qobiliyat / Kasbga yo'nalish testi — bu yerda "to'g'ri javob"
+      // tushunchasi yo'q. Javoblar asosida aniqlangan moyillik/ko'nikma profili
+      // ko'rsatiladi (backend har bir tegning necha marta tanlanganini hisoblab,
+      // eng ko'p tanlangan 3 tasini "profile" sifatida qaytaradi).
+      var profile = result.profile || [];
+      var top = profile[0];
+      scoreEl.textContent = top ? top.pct + '%' : '—';
+      scoreEl.style.color = 'var(--blue,#2E86C8)';
+      badgeEl.textContent = top ? top.name : 'Aniqlanmadi';
+      badgeEl.style.background = 'var(--blue-soft,#EAF3FC)';
+      badgeEl.style.color = '#2E86C8';
+      correctCard.style.display = 'none';
+      if (profile.length) {
+        profileEl.style.display = 'flex';
+        profileEl.innerHTML = profile.map(function(p){
+          return '<span class="badge" style="background:var(--blue-soft,#EAF3FC);color:#2E86C8">' +
+            escapeHtml(p.name) + ' · ' + p.pct + '%</span>';
+        }).join('');
+      } else {
+        profileEl.style.display = 'none';
+      }
+    }
+
     document.getElementById('ttResultTime').textContent = elapsedMin + ' daqiqa';
     document.getElementById('ttResultSummary').textContent = timeUp
       ? "Vaqt tugadi, test avtomatik yakunlandi. Natijangiz saqlandi."
-      : (result.passed
-        ? "Tabriklaymiz, testni muvaffaqiyatli yakunladingiz! Natijangiz saqlandi."
-        : "Test yakunlandi. Natijangiz saqlandi.");
+      : (!isFanTest
+        ? "Test yakunlandi. Bu turdagi testda \"to'g'ri javob\" yo'q — javoblaringiz asosida moyilligingiz aniqlandi."
+        : (result.passed
+          ? "Tabriklaymiz, testni muvaffaqiyatli yakunladingiz! Natijangiz saqlandi."
+          : "Test yakunlandi. Natijangiz saqlandi."));
 
     PENDING_TESTS = PENDING_TESTS.filter(function(t){ return String(t.id) !== String(ttCurrentTest.id); });
     renderPendingTests();
