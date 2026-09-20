@@ -11719,40 +11719,80 @@ const RANGES = buildRanges();
 const P = { range:'month', from:RANGES.month.f, to:RANGES.month.t };
 
 /* ============ Ma'lumotlar ============ */
-const PROFS = [
-  ['Dasturiy ta\u2019minot muhandisi', 98, '#4C2CE2'],
-  ["Ma'lumotlar tahlilchisi", 95, '#2563EB'],
-  ["Sun'iy intellekt muhandisi", 93, '#10B981'],
-  ['Robototexnika muhandisi', 90, '#F59E0B'],
-  ['UX/UI dizayner', 88, '#EF4444'],
-  ['Kiberxavfsizlik mutaxassisi', 86, '#8B5CF6'],
-  ['Tarmoq administratori', 82, '#0EA5E9'],
-  ['Mobil ilova dasturchisi', 80, '#EC4899'],
-  ['Bioinformatika mutaxassisi', 76, '#14B8A6'],
-  ['Loyiha menejeri', 74, '#F97316'],
-  ['Test muhandisi (QA)', 71, '#6366F1'],
-  ['Texnik yozuvchi', 68, '#84CC16'],
-];
-
-const SUBJ = [
-  ['Matematika','Yuqori','b-hi','#4C2CE2','<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 13h3M8 17h3M15 13v4M13.5 15h3"/>'],
-  ['Informatika','Yuqori','b-hi','#10B981','<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M2 20h20"/>'],
-  ['Fizika','O\u2018rta','b-mid','#2563EB','<circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="9" ry="4"/><ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(60 12 12)"/>'],
-  ['Ingliz tili','O\u2018rta','b-mid','#F59E0B','<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18"/>'],
-  ['Mantiq','O\u2018rta','b-mid','#EC4899','<path d="M12 3a6 6 0 00-4 10.5V16h8v-2.5A6 6 0 0012 3z"/><path d="M9 19h6M10 22h4"/>'],
-  ['Kimyo','O\u2018rta','b-mid','#14B8A6','<path d="M9 3v6l-5 9a2 2 0 002 3h12a2 2 0 002-3l-5-9V3"/><path d="M8 3h8"/>'],
-  ['Ona tili','Yaxshi','b-ok','#8B5CF6','<path d="M4 5a2 2 0 012-2h13v18H6a2 2 0 01-2-2z"/><path d="M8 8h7M8 12h5"/>'],
-];
-
-const COURSES = [
-  ['Python dasturlash', 98, '#4C2CE2','<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M2 20h20"/>'],
-  ['Web dasturlash', 95, '#2563EB','<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/>'],
-  ["Ma'lumotlar analitikasi", 93, '#10B981','<path d="M4 19V5M4 19h16"/><path d="M8 16v-5M12 16V8M16 16v-3"/>'],
-  ["Sun'iy intellekt", 91, '#F59E0B','<rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.2"/><circle cx="15" cy="13" r="1.2"/>'],
-  ['Grafik dizayn (UI/UX)', 88, '#EF4444','<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.2"/><circle cx="15" cy="10" r="1.2"/>'],
-  ['Mobil dasturlash', 85, '#8B5CF6','<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/>'],
-  ['Kiberxavfsizlik asoslari', 82, '#0EA5E9','<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/>'],
-];
+// MUHIM (tuzatildi): PROFS/SUBJ/COURSES ilgari shu yerda QATTIQ YOZILGAN,
+// hech qanday haqiqiy o'quvchi ma'lumotiga bog'liq bo'lmagan ro'yxatlar edi
+// (har doim bir xil 12 ta "kasb" va bir xil foizlar \u2014 masalan "Dasturiy
+// ta'minot muhandisi 98%" \u2014 hech kim hech qanday test topshirmagan taqdirda
+// ham). Endi bular backend /api/students/advice-data'dan keladigan HAQIQIY
+// fan o'rtachalari, ko'nikma ballari va "Kasbga yo'nalish testi" natijalari
+// asosida quriladi (pastdagi buildProfs/buildSubj/buildCourses funksiyalari).
+// Kasb/kurs NOMLARI hamon quyidagi kichik lug'atlar orqali tanlanadi (bazada
+// alohida "kasblar katalogi" yo'qligi sababli), lekin QAYSI nom ko'rsatilishi
+// va FOIZ \u2014 endi to'liq haqiqiy o'lchangan ma'lumotdan keladi.
+const CAREER_BY_SKILL = {
+  'IT va texnologiya': ['Dasturiy ta\u2019minot muhandisi', "Sun'iy intellekt muhandisi"],
+  'Analitik fikrlash': ["Ma'lumotlar tahlilchisi", 'Tizim analitikasi mutaxassisi'],
+  'Matematika': ['Moliyaviy analitik', 'Muhandis-matematik'],
+  'Ijodkorlik': ['UX/UI dizayner', 'Grafik dizayner'],
+  'Tabiiy fanlar': ['Bioinformatika mutaxassisi', 'Laboratoriya tadqiqotchisi'],
+  'Sport': ['Sport murabbiyi', 'Jismoniy tarbiya mutaxassisi'],
+  "San'at": ['Ijodiy yo\u2018nalish mutaxassisi', 'Dizayner'],
+  'Muloqot': ['PR va aloqalar mutaxassisi', "O'qituvchi"],
+  'Liderlik': ['Loyiha menejeri', 'Jamoa rahbari'],
+  'Tadbirkorlik': ['Startup asoschisi', 'Marketing mutaxassisi'],
+};
+const SKILL_TO_COURSE = {
+  'IT va texnologiya': ['Python dasturlash', '<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M2 20h20"/>'],
+  'Analitik fikrlash': ["Ma'lumotlar analitikasi", '<path d="M4 19V5M4 19h16"/><path d="M8 16v-5M12 16V8M16 16v-3"/>'],
+  'Matematika': ['Amaliy matematika', '<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 13h3M8 17h3"/>'],
+  'Ijodkorlik': ['Grafik dizayn (UI/UX)', '<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.2"/><circle cx="15" cy="10" r="1.2"/>'],
+  'Tabiiy fanlar': ["Tabiiy fanlar bo'yicha loyiha", '<path d="M9 3v6l-5 9a2 2 0 002 3h12a2 2 0 002-3l-5-9V3"/>'],
+  'Sport': ['Sport va jismoniy tayyorgarlik', '<circle cx="12" cy="12" r="9"/>'],
+  "San'at": ["San'at va ijod studiyasi", '<path d="M12 3a6 6 0 00-4 10.5V16h8v-2.5A6 6 0 0012 3z"/>'],
+  'Muloqot': ['Notiqlik va muloqot mahorati', '<path d="M21 12a8 8 0 01-8 8H5l-2 2V12a8 8 0 018-8h1a8 8 0 018 8z"/>'],
+  'Liderlik': ['Loyiha boshqaruvi asoslari', '<rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/>'],
+  'Tadbirkorlik': ['Startup va tadbirkorlik asoslari', '<path d="M12 3l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-1.4z"/>'],
+};
+const SKILL_COLOR = ['#4C2CE2','#2563EB','#10B981','#F59E0B','#EF4444','#8B5CF6','#0EA5E9','#EC4899','#14B8A6','#F97316'];
+function skillColor(name){
+  const i = skills_mod_order().indexOf(name);
+  return SKILL_COLOR[i >= 0 ? i % SKILL_COLOR.length : 0];
+}
+function skills_mod_order(){
+  return ['IT va texnologiya','Analitik fikrlash','Matematika','Ijodkorlik','Tabiiy fanlar','Sport',"San'at",'Muloqot','Liderlik','Tadbirkorlik'];
+}
+function buildProfs(){
+  const tags = (ADVICE_DATA && ADVICE_DATA.career_tags) || [];
+  const out = [];
+  tags.forEach(t => {
+    (CAREER_BY_SKILL[t.name] || [t.name]).forEach(title => {
+      if (!out.some(o => o[0] === title)) out.push([title, t.pct, skillColor(t.name)]);
+    });
+  });
+  return out;
+}
+function buildCourses(){
+  const needs = (ADVICE_DATA && ADVICE_DATA.skill_needs) || [];
+  return needs.map(n => {
+    const c = SKILL_TO_COURSE[n.name] || [n.name, '<circle cx="12" cy="12" r="9"/>'];
+    return [c[0], n.value, skillColor(n.name), c[1], n.name];
+  });
+}
+function buildSubj(){
+  const subjects = (ADVICE_DATA && ADVICE_DATA.subjects) || [];
+  const cls = { 'Past': 'b-mid', "O'rta": 'b-mid', 'Yuqori': 'b-hi' };
+  const icons = {
+    'Matematika': '<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 13h3M8 17h3M15 13v4M13.5 15h3"/>',
+    'Informatika': '<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M2 20h20"/>',
+    'Fizika': '<circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="9" ry="4"/>',
+    'Ingliz tili': '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18"/>',
+    'Kimyo': '<path d="M9 3v6l-5 9a2 2 0 002 3h12a2 2 0 002-3l-5-9V3"/><path d="M8 3h8"/>',
+    'Ona tili': '<path d="M4 5a2 2 0 012-2h13v18H6a2 2 0 01-2-2z"/><path d="M8 8h7M8 12h5"/>',
+    'Biologiya': '<path d="M9 3v6l-5 9a2 2 0 002 3h12a2 2 0 002-3l-5-9V3"/>',
+    'Tarix': '<path d="M12 3l9 5v8l-9 5-9-5V8z"/>',
+  };
+  return subjects.map(s => [s.name, s.level, cls[s.level] || 'b-mid', '#4C2CE2', icons[s.name] || '<circle cx="12" cy="12" r="9"/>', s.avg]);
+}
 
 const CLUBS = [
   ['Robototexnika to\u2018garagi','#4C2CE2','<rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.2"/><circle cx="15" cy="13" r="1.2"/>'],
@@ -11798,17 +11838,20 @@ const ROAD = [
 let STUDENTS = [];
 let CLASS_REC = [];
 let ADVICE_KPI = null;
+let ADVICE_DATA = null;
 let ADVICE_LOADED = false;
 
 async function loadAdviceData(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) { ADVICE_LOADED = true; return; }
   try {
-    const [detail, stats, insightsData, skillsSum] = await Promise.all([
+    const [detail, stats, insightsData, skillsSum, adviceData] = await Promise.all([
       apiFetch('/api/students/skills-detail'),
       apiFetch('/api/students/stats/summary'),
       apiFetch('/api/students/insights'),
       apiFetch('/api/students/skills-summary'),
+      apiFetch('/api/students/advice-data').catch(() => null),
     ]);
+    ADVICE_DATA = adviceData;
     const rows = (detail && detail.students) || [];
 
     STUDENTS = rows.map(s => {
@@ -11898,24 +11941,27 @@ function render(){
       <div class="recs">
         ${recCard('prof', 'Tavsiya etilgan kasb yo\u2018nalishlari', 'Qobiliyat va qiziqishlar asosida', 'i-vi',
           '<path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/>',
-          PROFS.slice(0, 5).map((p, i) => `
+          (() => { const PROFS = buildProfs(); return PROFS.length ? PROFS.slice(0, 5).map((p, i) => `
             <div class="prof"><span class="rk">${i + 1}</span>
               <span class="bd"><span class="nm">${p[0]}</span><span class="bar"><i style="width:${p[1]}%;background:${p[2]}"></i></span></span>
-              <span class="pc">${p[1]}%</span></div>`).join(''))}
+              <span class="pc">${p[1]}%</span></div>`).join('')
+            : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali hech kim "Kasbga yo'nalish testi"ni topshirmagan \u2014 natija chiqqach shu yerda ko'rinadi.</p>`; })()) }
 
-        ${recCard('subj', 'Kuchaytirish tavsiya etilgan fanlar', 'AI tahlil asosida', 'i-bl',
+        ${recCard('subj', 'Kuchaytirish tavsiya etilgan fanlar', 'Baholar bo\u2018yicha real o\u2018rtacha (eng zaifi birinchi)', 'i-bl',
           '<path d="M4 5a2 2 0 012-2h13v18H6a2 2 0 01-2-2z"/><path d="M8 8h7M8 12h5"/>',
-          SUBJ.slice(0, 5).map(x => `
+          (() => { const SUBJ = buildSubj(); return SUBJ.length ? SUBJ.slice(0, 5).map(x => `
             <div class="li"><span class="lic" style="background:${x[3]}1a;color:${x[3]}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[4]}</svg></span>
-              <span class="t">${x[0]}</span><span class="badge ${x[2]}">${x[1]}</span></div>`).join(''))}
+              <span class="t">${x[0]}</span><span class="badge ${x[2]}">${x[1]} (${x[5]})</span></div>`).join('')
+            : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali baho kiritilmagan \u2014 ma'lumot chiqqach shu yerda ko'rinadi.</p>`; })()) }
 
-        ${recCard('course', 'Tavsiya etilgan kurslar', 'Rivojlanish uchun eng mos kurslar', 'i-gr',
+        ${recCard('course', 'Tavsiya etilgan kurslar', "Eng zaif ko'nikmalar asosida", 'i-gr',
           '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/>',
-          COURSES.slice(0, 5).map(x => `
+          (() => { const COURSES = buildCourses(); return COURSES.length ? COURSES.slice(0, 5).map(x => `
             <div class="li"><span class="lic" style="background:${x[2]}1a;color:${x[2]}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[3]}</svg></span>
-              <span class="t">${x[0]}</span><span class="badge b-vi">Moslik: ${x[1]}%</span></div>`).join(''))}
+              <span class="t">${x[0]}</span><span class="badge b-vi">${x[4]}: ${x[1]}%</span></div>`).join('')
+            : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali "Qobiliyat testi" natijalari yo'q \u2014 kurs tavsiyalari shundan keyin chiqadi.</p>`; })()) }
 
         ${recCard('club', 'Tavsiya etilgan to\u2018garaklar', 'Qobiliyat va qiziqishlar asosida', 'i-am',
           '<path d="M8 4h8v5a4 4 0 01-8 0z"/><path d="M10 20h4M12 13v7"/>',
@@ -11975,8 +12021,12 @@ function render(){
           <div class="t"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.3"/><circle cx="15" cy="13" r="1.3"/></svg></span>
             <b>AI tavsiyasi (umumiy xulosa)</b></div>
           <p>${KPI.total === 0 ? "Hozircha tizimda tahlil qilingan o'quvchi yo'q." : `Maktab o'quvchilarining asosiy salohiyati <b>${KPI.topSkillName}</b> yo'nalishida namoyon bo'lmoqda.`}</p>
-          <p>Matematika, informatika va ingliz tili fanlariga e'tiborni kuchaytirish, loyiha asosida o'qitish va
-            tanlovlarda ishtirokni ko'paytirish tavsiya etiladi.</p>
+          <p>${(() => {
+            const weak = ((ADVICE_DATA && ADVICE_DATA.subjects) || []).slice(0, 3).map(s => s.name);
+            return weak.length
+              ? `<b>${weak.join(', ')}</b> fanlariga e'tiborni kuchaytirish (real o'rtacha ballar bo'yicha eng zaif fanlar), loyiha asosida o'qitish va tanlovlarda ishtirokni ko'paytirish tavsiya etiladi.`
+              : "Hali baho kiritilmagan — fanlar bo'yicha tavsiya ma'lumot yig'ilgach chiqadi.";
+          })()}</p>
           <p>Yuqori salohiyatli ${KPI.high} nafar o'quvchini individual rivojlantirish maqsadga muvofiq.</p>
           <button class="more" style="margin-top:auto" data-go="summary">Batafsil AI xulosasini ko'rish
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -11998,7 +12048,13 @@ function render(){
     }
     if (selStu >= STUDENTS.length) selStu = 0;
     const s = STUDENTS[selStu];
-    const profs = [...PROFS].sort((a, b) => b[1] - a[1]);
+    // MUHIM (tuzatildi): ilgari bu yerda HAR BIR o'quvchi uchun bir xil,
+    // qattiq yozilgan PROFS ro'yxati ko'rsatilardi (go'yo shaxsiylashtirilgandek).
+    // Endi shu o'quvchining o'zining eng kuchli o'lchangan ko'nikmasi (s.top,
+    // skills.py orqali haqiqiy hisoblangan) asosida tanlanadi.
+    const profs = s.top && s.top !== '—'
+      ? (CAREER_BY_SKILL[s.top] || [s.top]).map(title => [title, s.idx, skillColor(s.top)])
+      : [];
     box.innerHTML = `
       <div class="picker">
         <div class="f">
@@ -12012,31 +12068,34 @@ function render(){
         <div><b>${s.name}</b><small>${s.cls} \u00b7 Kuchli yo'nalish: ${s.top}</small></div>
         <div class="kv">
           <div><small>Qobiliyat indeksi</small><b style="color:var(--primary)">${s.idx}%</b></div>
-          <div><small>Eng mos kasb</small><b style="font-size:14px">${profs[0][0]}</b></div>
+          <div><small>Eng mos kasb</small><b style="font-size:14px">${profs.length ? profs[0][0] : "Ma'lumot yo'q"}</b></div>
         </div>
       </div>
 
       <div class="recs">
         ${recCard(null, 'Eng mos kasb yo\u2018nalishlari', s.name + ' uchun', 'i-vi',
           '<path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/>',
-          profs.slice(0, 5).map((p, i) => `
+          profs.length ? profs.slice(0, 5).map((p, i) => `
             <div class="prof"><span class="rk">${i + 1}</span>
               <span class="bd"><span class="nm">${p[0]}</span><span class="bar"><i style="width:${p[1]}%;background:${p[2]}"></i></span></span>
-              <span class="pc">${p[1]}%</span></div>`).join(''))}
+              <span class="pc">${p[1]}%</span></div>`).join('')
+            : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Bu o'quvchi uchun hali yetarli qobiliyat ma'lumoti yo'q.</p>`)}
 
-        ${recCard(null, 'Kuchaytirish kerak bo\u2018lgan fanlar', 'Baholar tahlili asosida', 'i-bl',
+        ${recCard(null, 'Kuchaytirish kerak bo\u2018lgan fanlar', 'Maktab bo\u2018yicha real o\u2018rtacha (eng zaifi birinchi)', 'i-bl',
           '<path d="M4 5a2 2 0 012-2h13v18H6a2 2 0 01-2-2z"/><path d="M8 8h7M8 12h5"/>',
-          SUBJ.slice(0, 4).map(x => `
+          (() => { const SUBJ = buildSubj(); return SUBJ.length ? SUBJ.slice(0, 4).map(x => `
             <div class="li"><span class="lic" style="background:${x[3]}1a;color:${x[3]}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[4]}</svg></span>
-              <span class="t">${x[0]}</span><span class="badge ${x[2]}">${x[1]}</span></div>`).join(''))}
+              <span class="t">${x[0]}</span><span class="badge ${x[2]}">${x[1]}</span></div>`).join('')
+            : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali baho kiritilmagan.</p>`; })()) }
 
-        ${recCard(null, 'Tavsiya etilgan kurslar', 'Moslik darajasi bo\u2018yicha', 'i-gr',
+        ${recCard(null, 'Tavsiya etilgan kurslar', "Eng zaif ko'nikmalar asosida", 'i-gr',
           '<path d="M22 10L12 5 2 10l10 5 10-5z"/>',
-          COURSES.slice(0, 4).map(x => `
+          (() => { const COURSES = buildCourses(); return COURSES.length ? COURSES.slice(0, 4).map(x => `
             <div class="li"><span class="lic" style="background:${x[2]}1a;color:${x[2]}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[3]}</svg></span>
-              <span class="t">${x[0]}</span><span class="badge b-vi">${x[1]}%</span></div>`).join(''))}
+              <span class="t">${x[0]}</span><span class="badge b-vi">${x[1]}%</span></div>`).join('')
+            : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali "Qobiliyat testi" natijalari yo'q.</p>`; })()) }
 
         ${recCard(null, 'To\u2018garak va tanlovlar', 'Ishtirok etish tavsiya etiladi', 'i-am',
           '<path d="M8 4h8v5a4 4 0 01-8 0z"/><path d="M10 20h4M12 13v7"/>',
@@ -12149,14 +12208,14 @@ document.getElementById('rmExport').onclick = () => dl([MD.head, ...MD.rows], MD
 function openMore(key){
   const KPI = kpiNow();
   if (key === 'prof')
-    showModal("Tavsiya etilgan kasb yo'nalishlari", 'Qobiliyat va qiziqishlar asosida',
-      ['#','Kasb yo\u2018nalishi','Moslik'], PROFS.map((p, i) => [i+1, p[0], p[1] + '%']));
+    showModal("Tavsiya etilgan kasb yo'nalishlari", "Kasbga yo'nalish testi natijalari asosida",
+      ['#','Kasb yo\u2018nalishi','Moslik'], buildProfs().map((p, i) => [i+1, p[0], p[1] + '%']));
   if (key === 'subj')
-    showModal('Kuchaytirish tavsiya etilgan fanlar', 'AI tahlil asosida',
-      ['Fan','Daraja'], SUBJ.map(x => [x[0], x[1]]));
+    showModal('Kuchaytirish tavsiya etilgan fanlar', "Baholar bo'yicha real o'rtacha",
+      ['Fan','Daraja'], buildSubj().map(x => [x[0], x[1] + ' (' + x[5] + ')']));
   if (key === 'course')
-    showModal('Tavsiya etilgan kurslar', 'Moslik darajasi bo\u2018yicha',
-      ['Kurs','Moslik'], COURSES.map(x => [x[0], x[1] + '%']));
+    showModal('Tavsiya etilgan kurslar', "Eng zaif ko'nikmalar asosida",
+      ['Kurs','Ehtiyoj'], buildCourses().map(x => [x[0], x[1] + '%']));
   if (key === 'club')
     showModal("Tavsiya etilgan to'garaklar", 'Qobiliyat va qiziqishlar asosida',
       ["To'garak"], CLUBS.map(x => [x[0]]));
@@ -12176,14 +12235,15 @@ function openMore(key){
 
 function openClass(n){
   const c = CLASS_REC.find(x => x.n === n);
+  const courses = buildCourses(), subj = buildSubj();
   showModal(c.n + ' sinfi uchun tavsiyalar', c.cnt + " nafar o'quvchi · Qobiliyat indeksi " + c.idx + '%',
     ['Yo\u2018nalish','Tavsiya'], [
       ['Ustun yo\u2018nalish', c.focus],
       ['Asosiy taklif', c.need],
-      ['Kurs', COURSES[0][0]],
+      ['Kurs', courses.length ? courses[0][0] : "Ma'lumot yo'q"],
       ["To'garak", CLUBS[0][0]],
       ['Tanlov', OLYMP[0][0]],
-      ['Fan kuchaytirish', SUBJ[0][0] + ', ' + SUBJ[1][0]],
+      ['Fan kuchaytirish', subj.length ? subj.slice(0, 2).map(x => x[0]).join(', ') : "Ma'lumot yo'q"],
     ]);
 }
 
@@ -12212,8 +12272,8 @@ document.getElementById('repBtnR').onclick = () => {
   const KPI = kpiNow();
   const rows = [
     ['AI TAVSIYALAR HISOBOTI'], ['Davr', fmt(P.from) + ' – ' + fmt(P.to)], [],
-    ['Kasb yo\u2018nalishi','Moslik'], ...PROFS.map(p => [p[0], p[1] + '%']), [],
-    ['Kurs','Moslik'], ...COURSES.map(c => [c[0], c[1] + '%']), [],
+    ['Kasb yo\u2018nalishi','Moslik'], ...buildProfs().map(p => [p[0], p[1] + '%']), [],
+    ['Kurs','Ehtiyoj'], ...buildCourses().map(c => [c[0], c[1] + '%']), [],
     ['Ehtiyoj','O\u2018quvchilar'], ...NEEDS.map((n, i) => [n[0], i === 0 ? KPI.need + ' nafar' : "Ma'lumot yo'q"]),
   ];
   dl(rows, 'ai_tavsiyalar.csv');
@@ -14398,20 +14458,39 @@ async function showResult(){
   const selectedTestId = tplId === 'test' ? document.getElementById('testSel')?.value : null;
   genResult = { name: label, tpl: tplId, date: TODAY_ISO, size: (80 + Math.round(Math.random()*700)) + ' KB', fmt: fmtSel, clsId: selectedClsId, stuId: selectedStuId, testId: selectedTestId };
   RECENT.unshift(genResult);
-/* Backend ulangan bo'lsa — haqiqiy sonlarni olamiz; aks holda yoki
-   so'rov muvaffaqiyatsiz bo'lsa, soxta raqam o'rniga "—" chiqaramiz. */
+/* MUHIM (tuzatildi): ilgari bu yerda TANLANGAN sinf/o'quvchi/test qanday
+   bo'lishidan qat'i nazar HAR DOIM butun maktab bo'yicha (barcha o'quvchilar)
+   raqamlar ko'rsatilardi — masalan "Sinf hisoboti" uchun 6-A tanlansa ham,
+   7-B tanlansa ham xuddi shu (butun maktab) sonlar chiqardi, chunki
+   /api/students hech qanday sinf filtri bilan chaqirilmasdi. Ustiga, o'rtacha
+   indeks ham skills.py (YAGONA MANBA)dan emas, balki shu yerning o'zining
+   alohida "xom baholar o'rtachasi * 10" formulasidan hisoblanardi — bu butun
+   tizimdagi boshqa barcha joylardan (Bosh sahifa, Qobiliyat xaritasi va h.k.)
+   farqli raqam berardi. Endi: har bir hisobot turi TANLANGAN doirasiga mos
+   endpointdan, YAGONA MANBA (skills.py) orqali hisoblangan sonni oladi. */
   let totalStudents = null, avgIdx = null;
-  const skillCount = 9; /* tizimda belgilangan qobiliyat yo'nalishlari soni — sobit taksonomiya, ma'lumot emas */
+  const skillCount = 10; /* skills.py SKILL_ORDER'dagi ko'nikmalar soni — sobit taksonomiya, ma'lumot emas */
   if (window.apiFetch && localStorage.getItem('qp_token')) {
     try {
-      const students = await apiFetch('/api/students');
-      totalStudents = students.length;
-      const allGrades = [];
-      for (const s of students) {
-        try { const g = await apiFetch(`/api/students/${s.id}/grades`); g.forEach(x => allGrades.push(x.score)); }
-        catch(e){}
+      if (tplId === 'sinf' && selectedClsId) {
+        const stats = await apiFetch(`/api/classes/${selectedClsId}/stats`);
+        totalStudents = stats.student_count;
+        avgIdx = stats.idx;
+      } else if (tplId === 'stu' && selectedStuId) {
+        const detail = await apiFetch('/api/students/skills-detail');
+        const row = (detail.students || []).find(s => String(s.id) === String(selectedStuId));
+        totalStudents = row ? 1 : null;
+        avgIdx = row ? row.overall : null;
+      } else if (tplId === 'test' && selectedTestId) {
+        const tests = await apiFetch('/api/tests');
+        const row = (tests || []).find(t => String(t.id) === String(selectedTestId));
+        totalStudents = row ? row.result_count : null;
+        avgIdx = row ? Math.round(row.avg_score) : null;
+      } else {
+        const summary = await apiFetch('/api/students/stats/summary');
+        totalStudents = summary.total;
+        avgIdx = summary.avg_index;
       }
-      if (allGrades.length) avgIdx = Math.round(allGrades.reduce((a,b) => a+b, 0) / allGrades.length * 10);
     } catch (err) { console.warn("Haqiqiy statistikani olishda xatolik:", err.message); }
   }
 
