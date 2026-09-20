@@ -9889,7 +9889,11 @@ aiC.onclick = () => { aiC.classList.toggle('open'); document.getElementById('aiS
 
 /* ============ Ma'lumotlar ============ */
 const SUBJ = ['Matematika','Fizika','Ingliz tili','Ona tili','Kimyo','Biologiya','Tarix'];
-const SKILLS = ['IT va texnologiya','Matematika','Tabiiy fanlar','Ijodkorlik','Muloqot','Liderlik'];
+// MUHIM (tuzatildi): ilgari shu yerda faqat 6 ta ko'rsatkich bor edi — endi
+// skills.py'dagi (backend, YAGONA MANBA) 10 ta ko'rsatkichning HAMMASI, xuddi
+// shu tartibda. O'quvchining o'z "Qobiliyatlarim" sahifasidagi ro'yxat bilan
+// endi to'liq mos keladi.
+const SKILLS = ['IT va texnologiya','Analitik fikrlash','Matematika','Ijodkorlik','Tabiiy fanlar','Sport',"San'at",'Muloqot','Liderlik','Tadbirkorlik'];
 
 let CLASSES = [];
 let CLASSES_LOAD_FAILED = false;
@@ -10029,31 +10033,38 @@ async function loadClassStats(idx){
   }
 }
 
-/* ============ Radar ============ */
+/* ============ Radar ============
+   MUHIM (tuzatildi): ilgari bu yerda faqat 6 burchakka (Math.PI/3, [0..5])
+   MAHKAM bog'langan geometriya bor edi — shuning uchun SKILLS ro'yxatini
+   10 taga kengaytirish uchun butun diagrammani qayta chizish kerak edi.
+   Endi bu funksiya, xuddi "Qobiliyat xaritasi" sahifasidagi radar()
+   funksiyasi kabi, burchaklar sonini (N) o'zi vals.length'dan hisoblaydi —
+   shuning uchun endi 6 ta ham, 10 ta ham ko'rsatkich bilan to'g'ri ishlaydi. */
 function radar(vals){
-  const cx = 150, cy = 150, R = 100;
+  const N = vals.length, cx = 220, cy = 220, R = 140;
   const pt = (i, r) => {
-    const a = (Math.PI / 3) * i - Math.PI / 2;
+    const a = (2 * Math.PI / N) * i - Math.PI / 2;
     return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
   };
-  const ring = r => [0,1,2,3,4,5].map(i => pt(i, r).map(n => n.toFixed(1)).join(',')).join(' ');
+  const ring = r => Array.from({length:N}, (_, i) => pt(i, r).map(n => n.toFixed(1)).join(',')).join(' ');
   const poly = vals.map((v, i) => pt(i, R * v / 100).map(n => n.toFixed(1)).join(',')).join(' ');
-  const dots = vals.map((v, i) => { const [x,y] = pt(i, R * v / 100); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.6" fill="#4C2CE2"/>`; }).join('');
+  const dots = vals.map((v, i) => { const [x,y] = pt(i, R * v / 100); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="#4C2CE2"/>`; }).join('');
   const labels = SKILLS.map((s, i) => {
-    const [x, y] = pt(i, R + 34);
-    return `<text x="${x.toFixed(0)}" y="${(y - 4).toFixed(0)}" font-size="11" font-weight="600" fill="#171543" text-anchor="middle">${s}</text>
-            <text x="${x.toFixed(0)}" y="${(y + 10).toFixed(0)}" font-size="11.5" font-weight="800" fill="#4C2CE2" text-anchor="middle">${vals[i]}%</text>`;
+    const [x, y] = pt(i, R + 42);
+    return `<text x="${x.toFixed(0)}" y="${(y - 5).toFixed(0)}" font-size="11.5" font-weight="600" fill="#171543" text-anchor="middle">${s}</text>
+            <text x="${x.toFixed(0)}" y="${(y + 11).toFixed(0)}" font-size="12" font-weight="800" fill="#4C2CE2" text-anchor="middle">${vals[i]}%</text>`;
   }).join('');
-  const axes = [0,1,2,3,4,5].map(i => { const [x,y] = pt(i, R); return `<line x1="150" y1="150" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`; }).join('');
-  return `<svg class="radar" viewBox="-40 -30 380 360">
+  const axes = Array.from({length:N}, (_, i) => { const [x,y] = pt(i, R); return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`; }).join('');
+  return `<svg class="radar" viewBox="-10 -20 460 480">
     <g fill="none" stroke="#EDECF6" stroke-width="1.2">
       <polygon points="${ring(R)}"/><polygon points="${ring(R*.75)}"/><polygon points="${ring(R*.5)}"/><polygon points="${ring(R*.25)}"/>
     </g>
     <g stroke="#EDECF6" stroke-width="1.2">${axes}</g>
-    <g font-size="9" fill="#B4B2CB" text-anchor="end">
-      <text x="146" y="54">100</text><text x="146" y="79">75</text><text x="146" y="104">50</text><text x="146" y="129">25</text>
+    <g font-size="10" fill="#B4B2CB" text-anchor="end">
+      <text x="215" y="${cy-R+4}">100</text><text x="215" y="${cy-R*.75+4}">75</text>
+      <text x="215" y="${cy-R*.5+4}">50</text><text x="215" y="${cy-R*.25+4}">25</text>
     </g>
-    <polygon points="${poly}" fill="rgba(76,44,226,.15)" stroke="#4C2CE2" stroke-width="2.2" stroke-linejoin="round"/>
+    <polygon points="${poly}" fill="rgba(76,44,226,.15)" stroke="#4C2CE2" stroke-width="2.4" stroke-linejoin="round"/>
     ${dots}${labels}
   </svg>`;
 }
@@ -10391,7 +10402,7 @@ document.getElementById('clsSave').onclick = async () => {
     Object.assign(CLASSES[editIdx], { name:n, count:cnt, teacher:t });
   } else {
     CLASSES.push({ name:n, count:cnt, teacher:t, avg:0, idx:0, ach:0, done:0, of:cnt, growth:0,
-      skills:[0,0,0,0,0,0], q:[0,0,0,0], subs:SUBJ.map(() => 0), top:[],
+      skills:[0,0,0,0,0,0,0,0,0,0], q:[0,0,0,0], subs:SUBJ.map(() => 0), top:[],
       ai:"Bu sinf bo'yicha AI tahlil hali o'tkazilmagan. O'quvchilar test topshirgach xulosa shakllanadi." });
     sel = CLASSES.length - 1;
     /* filtr yangi sinfni yashirib qo'ymasin */
@@ -10432,7 +10443,7 @@ async function loadClassesFromAPI(){
         ? { ...prev, name: r.name, count: r.student_count || 0, of: r.student_count || 0 }
         : { apiId: r.id, name: r.name, count: r.student_count || 0, teacher: '',
             avg:0, idx:0, ach:0, done:0, of: r.student_count || 0, growth:0,
-            skills:[0,0,0,0,0,0], q:[0,0,0,0], subs:SUBJ.map(() => 0), top:[],
+            skills:[0,0,0,0,0,0,0,0,0,0], q:[0,0,0,0], subs:SUBJ.map(() => 0), top:[],
             ai:"Bu sinf bo'yicha AI tahlil hali o'tkazilmagan. O'quvchilar test topshirgach xulosa shakllanadi." };
     });
     if (sel >= CLASSES.length) sel = 0;
