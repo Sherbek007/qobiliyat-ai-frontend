@@ -999,15 +999,22 @@ a{color:inherit;text-decoration:none}
         </div>
       </section>
 
-      <section class="card">
+      <section class="card" id="recCard">
         <div class="card-head"><h2>🎯 Siz uchun keyingi tavsiya</h2></div>
         <div class="card-body">
           <div class="rec-inner">
             <div>
               <div class="rec-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.5" fill="currentColor"/></svg></div>
-              <h3>Python dasturlash kursi</h3>
-              <p>Sizning texnologik qobiliyatlaringizni yanada rivojlantirishga yordam beradi. Dasturlash asoslarini mustahkamlab, yangi loyihalar yaratishni o'rganasiz.</p>
-              <a href="#" class="btn">Batafsil ko'rish <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+              <!-- DIQQAT: bu yerda ilgari "Python dasturlash kursi" degan matn QATTIQ
+                   YOZILGAN edi — hech qanday JS uni to'ldirmasdi, shuning uchun
+                   HAR BIR o'quvchiga, hatto hech qanday IT testi ishlamagan bo'lsa
+                   ham, doim aynan shu tavsiya ko'rsatilardi. Endi matn haqiqiy
+                   qobiliyat ma'lumotidan (loadSkills → renderRecommendation)
+                   to'ldiriladi; ma'lumot umuman bo'lmasa, karta butunlay
+                   yashiriladi — o'ylab topilgan tavsiya ko'rsatilmaydi. -->
+              <h3 id="recTitle">Yuklanmoqda...</h3>
+              <p id="recDesc"></p>
+              <a href="#tests" class="btn">Testlarim <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
             </div>
             <svg class="rec-art" viewBox="0 0 110 100" fill="none">
               <rect x="6" y="14" width="80" height="56" rx="6" fill="#fff" stroke="#DCD4F8" stroke-width="2"/>
@@ -1907,12 +1914,37 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
     try { renderRadarChart(document.getElementById('skillsRadarSvg'), 240, 205, 125, skills); } catch (e) { console.error(e); }
   }
 
+  /* "Siz uchun keyingi tavsiya" kartasi — HAQIQIY qobiliyat ma'lumotidan.
+     Eng past foizli (lekin ma'lumoti bor) ko'nikma tanlanadi; agar hech
+     qanday ko'nikma bo'yicha ma'lumot bo'lmasa (baho, yutuq yoki
+     "Qobiliyat testi" natijasi yo'q), karta butunlay yashiriladi — bo'sh
+     joydan tavsiya "o'ylab topilmaydi". */
+  function renderRecommendation(data){
+    var card = document.getElementById('recCard');
+    if (!card) return;
+    var skills = (data && data.skills) || [];
+    var withData = skills.filter(function(s){ return s && s.has_data; });
+    if (!withData.length) {
+      card.style.display = 'none';
+      return;
+    }
+    card.style.display = '';
+    var weakest = withData.slice().sort(function(a, b){ return a.pct - b.pct; })[0];
+    setText('recTitle', weakest.name + " yo'nalishini rivojlantiring");
+    setText('recDesc',
+      "Hozirgi ko'rsatkichingiz: " + weakest.pct + "%. Shu yo'nalishga oid testlarni yechish, " +
+      "yangi yutuqlar qo'shish va baholaringizni yaxshilash qobiliyat indeksingizni oshiradi.");
+  }
+
   async function loadSkills(){
     try {
       var data = await apiFetch('/api/student/me/skills');
       renderSkillsPages(data);
+      renderRecommendation(data);
     } catch (e) {
       if (!e.isAuthError) console.error('Qobiliyatlar yuklanmadi:', errMsg(e));
+      var card = document.getElementById('recCard');
+      if (card) card.style.display = 'none';
     }
   }
 
@@ -2907,8 +2939,12 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
       var score = Math.round(t.score_percent || 0);
       var lv = scoreLevel(score);
       var ic = iconForTest(t.name);
-      var qCount = t.question_count || 0;
-      var estCorrect = qCount ? Math.round(score / 100 * qCount) : 0;
+      // Backend endi haqiqiy savollar sonini beradi (correct_questions/total_questions).
+      // Eski versiyada bu yo'q edi, shuning uchun foizdan taxminan hisoblanardi —
+      // endi shunga ehtiyoj yo'q, lekin eski javob kelib qolsa (masalan deploy
+      // paytida) yiqilib qolmasligi uchun fallback saqlanadi.
+      var qCount = t.total_questions != null ? t.total_questions : (t.question_count || 0);
+      var estCorrect = t.correct_questions != null ? t.correct_questions : (qCount ? Math.round(score / 100 * qCount) : 0);
       var dateStr = formatApiDateTime(t.submitted_at);
       var row = document.createElement('div');
       row.className = 'test-row';
@@ -3089,7 +3125,16 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
     badgeEl.textContent = lv.lvl;
     badgeEl.style.background = lv.bg;
     badgeEl.style.color = lv.fg;
-    document.getElementById('ttResultCorrect').textContent = (result.correct != null ? result.correct : '—') + '/' + (result.total != null ? result.total : total);
+    // DIQQAT: "correct_questions"/"total_questions" — HAQIQIY savollar soni bo'yicha
+    // (masalan "3/5"). Eski "correct"/"total" maydonlari esa savol BALLI (og'irligi)
+    // bo'yicha edi — "Qiyin" savollar 2 ball bo'lgani uchun 5 ta savol bo'lsa ham
+    // "6/10" kabi chalkash ko'rinish berardi. Foiz (score_percent) baribir ball
+    // bo'yicha hisoblanadi — shu yerda faqat "nechta savoldan nechtasi to'g'ri"
+    // ko'rsatkichi tuzatildi.
+    document.getElementById('ttResultCorrect').textContent =
+      (result.correct_questions != null ? result.correct_questions : (result.correct != null ? result.correct : '—'))
+      + '/' +
+      (result.total_questions != null ? result.total_questions : (result.total != null ? result.total : total));
     document.getElementById('ttResultTime').textContent = elapsedMin + ' daqiqa';
     document.getElementById('ttResultSummary').textContent = timeUp
       ? "Vaqt tugadi, test avtomatik yakunlandi. Natijangiz saqlandi."

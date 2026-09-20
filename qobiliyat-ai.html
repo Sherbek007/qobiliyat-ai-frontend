@@ -10013,7 +10013,16 @@ async function loadClassStats(idx){
       avg: Math.round(s.avg / 2 * 100) / 100, idx: s.idx, ach: s.ach,
       skills: s.skills, q: s.q, subs: s.subs && s.subs.length ? s.subs.map(v => Math.round(v / 2 * 100) / 100) : c.subs,
       top: (s.top || []).map(t => [t.name, Math.round(t.avg / 2 * 100) / 100, Math.round(t.avg * 10)]),
+      // "AI tahlil qilinganlar" endi backenddan haqiqiy keladi (s.analyzed) —
+      // ilgari bunday maydon umuman qaytarilmasdi, shuning uchun karta doim
+      // "0 / N" ko'rsatardi, hatto o'quvchilar test topshirgan bo'lsa ham.
+      done: s.analyzed != null ? s.analyzed : c.done,
     });
+    // MUHIM (tuzatildi): ilgari shu yerda faqat renderDetail() chaqirilardi —
+    // tepadagi kartochkalar tokdi (renderCards) esa hech qachon yangilanmasdi,
+    // shuning uchun hatto shu sinfning statistikasi muvaffaqiyatli yuklangach
+    // ham, kartochkada baribir eski (nol) raqamlar ko'rinib turardi.
+    renderCards();
     if (sel === idx) renderDetail();
   } catch (err) {
     console.warn("Sinf statistikasini yuklab bo'lmadi:", err.message);
@@ -10428,7 +10437,13 @@ async function loadClassesFromAPI(){
     });
     if (sel >= CLASSES.length) sel = 0;
     renderCards(); renderDetail();
-    if (CLASSES.length) loadClassStats(sel);
+    // MUHIM (tuzatildi): ilgari faqat TANLANGAN (odatda 1-chi) sinf uchun
+    // statistika yuklanardi — qolgan barcha sinf kartochkalari maslahatchi
+    // ustiga bosib "kirmaguncha" doim "0%"/"0 ta" ko'rsatardi, hatto o'sha
+    // sinfda o'quvchilar allaqachon test topshirgan yoki baho qo'yilgan
+    // bo'lsa ham. Endi HAMMA sinf uchun bir vaqtda yuklanadi — sahifa
+    // ochilishi bilan kartochkalarda haqiqiy raqamlar ko'rinadi.
+    CLASSES.forEach((c, i) => loadClassStats(i));
     populateClassFilterOptions();
   } catch (err) {
     console.warn("Sinflar ro'yxatini backenddan yuklab bo'lmadi:", err.message);
