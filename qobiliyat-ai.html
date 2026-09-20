@@ -6556,10 +6556,34 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
 
     <div class="kpi" id="pfKpiBox"></div>
 
+    <div class="card" id="ixtiroPanelCard" style="margin-bottom:20px">
+      <div style="padding:16px 18px;border-bottom:1px solid var(--line)">
+        <b style="font-size:14px">Ixtiro qo'shish huquqi</b>
+        <p style="font-size:12.5px;color:var(--muted);margin-top:3px">O'quvchilar "Ixtiro" (yillik loyiha) ni o'zi erkin qo'sha olmaydi — faqat shu yerdan sinfga yoki bitta o'quvchiga ochib bergandan keyin qo'sha oladi (odatda yil oxirida).</p>
+      </div>
+      <div style="padding:16px 18px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:22px">
+        <div style="display:flex;align-items:flex-end;gap:8px">
+          <div class="field" style="margin:0">
+            <label for="ixtiroClsSel">Butun sinfga ochish</label>
+            <select class="inp" id="ixtiroClsSel" style="min-width:160px"><option value="">Yuklanmoqda…</option></select>
+          </div>
+          <button class="btn btn-primary" style="padding:8px 14px;font-size:12.5px" id="ixtiroOpenClsBtn">Ochish</button>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:8px">
+          <div class="field" style="margin:0">
+            <label for="ixtiroStuSel">Bitta o'quvchiga ochish</label>
+            <select class="inp" id="ixtiroStuSel" style="min-width:220px"><option value="">Yuklanmoqda…</option></select>
+          </div>
+          <button class="btn btn-primary" style="padding:8px 14px;font-size:12.5px" id="ixtiroOpenStuBtn">Ochish</button>
+        </div>
+      </div>
+      <div id="ixtiroGrantsList" style="padding:4px 18px"></div>
+    </div>
+
     <div class="card" id="pendingProjectsCard" style="margin-bottom:20px;display:none">
       <div style="padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
         <div style="display:flex;align-items:center;gap:10px">
-          <b style="font-size:14px">Kichik yakuniy loyihalar</b>
+          <b style="font-size:14px">Kichik yakuniy Ixtirolar</b>
           <span class="pill" id="pendingProjectsCount" style="background:#FEF3E2;color:#B4720A">0</span>
         </div>
         <button class="btn" style="padding:6px 14px;font-size:12.5px" id="teamSizeBtn">Guruh soni: <span id="teamSizeVal">3</span></button>
@@ -12666,15 +12690,23 @@ render();
 async function loadTestsFromAPI(){
   if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
   try {
-    const rows = await apiFetch('/api/tests');
+    // MUHIM (tuzatildi): ilgari shu yerda "cls: (r.class_ids || []).map(String)"
+    // bor edi — ya'ni "Sinflar" ustunida sinf NOMI o'rniga xom class_id sonlari
+    // (masalan "14", "18") ko'rsatilardi. To'g'ri usul (openTest()'da allaqachon
+    // ishlatilgan) — /api/classes'dan nomlarni olib, ID orqali moslashtirish.
+    const [rows, classes] = await Promise.all([
+      apiFetch('/api/tests'),
+      apiFetch('/api/classes').catch(() => []),
+    ]);
     /* MUHIM: avval ro'yxat bo'sh bo'lsa demo testlar abadiy qolib ketardi
        — endi so'rov muvaffaqiyatli bo'lsa har doim haqiqiy (bo'sh bo'lsa
        ham) ro'yxat bilan almashtiramiz. */
     if (!rows) return;
+    const clsById = {}; (classes || []).forEach(c => { clsById[c.id] = c.name; });
     TESTS_LOAD_FAILED = false;
     TESTS = rows.map(r => ({
       apiId: r.id, id: 'T-' + r.id, name: r.name, type: r.type,
-      cls: (r.class_ids || []).map(String), q: (r.questions || []).length,
+      cls: (r.class_ids || []).map(cid => clsById[cid] || String(cid)), q: (r.questions || []).length,
       target: 0, done: r.result_count || 0, avg: r.avg_score || 0,
       status: r.status, dur: r.duration_minutes,
       created: new Date(r.created_at).toLocaleDateString('uz-UZ'),
@@ -13900,7 +13932,80 @@ async function loadAchievementsFromAPI(){
   }
 }
 loadAchievementsFromAPI();
-window.addEventListener('view:shown', e => { if (e.detail === 'portfolio') { loadAchievementsFromAPI(); loadPendingProjects(); loadTeamSizeSetting(); } });
+window.addEventListener('view:shown', e => { if (e.detail === 'portfolio') { loadAchievementsFromAPI(); loadPendingProjects(); loadTeamSizeSetting(); loadIxtiroPanel(); } });
+
+/* ============ Ixtiro (yillik loyiha) qo'shish huquqi — sinf/o'quvchi bo'yicha ochish ============ */
+let IXTIRO_CLASSES = [];
+let IXTIRO_STUDENTS = [];
+
+function ixtiroGrantRowHtml(g){
+  const who = g.class_id ? (g.class_name || 'Sinf #' + g.class_id) : (g.student_name || "O'quvchi #" + g.student_id);
+  const kind = g.class_id ? 'Butun sinf' : 'Bitta o‘quvchi';
+  return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2)" data-grant-row="${g.id}">
+    <div><b style="font-size:13px">${who}</b><span class="pill" style="margin-left:8px;background:var(--primary-soft);color:var(--primary);font-size:11px">${kind}</span></div>
+    <button class="btn" style="padding:5px 12px;font-size:12px" data-revoke-grant="${g.id}">Yopish</button>
+  </div>`;
+}
+
+async function loadIxtiroPanel(){
+  if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
+  try {
+    const [classes, students] = await Promise.all([
+      apiFetch('/api/classes').catch(() => []),
+      apiFetch('/api/students').catch(() => []),
+    ]);
+    IXTIRO_CLASSES = (classes || []).slice().sort((a, b) => (a.name || '').localeCompare(b.name || '', 'uz'));
+    const clsById = {}; IXTIRO_CLASSES.forEach(c => { clsById[c.id] = c.name; });
+    IXTIRO_STUDENTS = (students || []).map(s => ({ id: s.id, name: s.full_name, cls: clsById[s.class_id] || '—' }))
+      .sort((a, b) => a.cls.localeCompare(b.cls, 'uz') || a.name.localeCompare(b.name, 'uz'));
+
+    const clsSel = document.getElementById('ixtiroClsSel');
+    if (clsSel) clsSel.innerHTML = IXTIRO_CLASSES.length
+      ? IXTIRO_CLASSES.map(c => `<option value="${c.id}">${c.name}</option>`).join('')
+      : '<option value="">Sinflar yo‘q</option>';
+
+    const stuSel = document.getElementById('ixtiroStuSel');
+    if (stuSel) stuSel.innerHTML = IXTIRO_STUDENTS.length
+      ? IXTIRO_STUDENTS.map(s => `<option value="${s.id}">${s.cls} — ${s.name}</option>`).join('')
+      : '<option value="">O‘quvchilar yo‘q</option>';
+
+    const grantsRes = await apiFetch('/api/students/ixtiro-access');
+    const grants = (grantsRes && grantsRes.grants) || [];
+    const listEl = document.getElementById('ixtiroGrantsList');
+    if (listEl) {
+      listEl.innerHTML = grants.length
+        ? grants.map(ixtiroGrantRowHtml).join('')
+        : '<p style="color:var(--muted);font-size:12.5px;padding:10px 0">Hozircha hech kimga ochilmagan.</p>';
+      listEl.querySelectorAll('[data-revoke-grant]').forEach(b => b.onclick = async () => {
+        if (!confirm("Bu huquqni yopmoqchimisiz? O'quvchi endi yangi Ixtiro qo'sha olmaydi.")) return;
+        try {
+          await apiFetch(`/api/students/ixtiro-access/${b.dataset.revokeGrant}`, { method: 'DELETE' });
+          loadIxtiroPanel();
+        } catch (err) { alert(err.message); }
+      });
+    }
+  } catch (err) {
+    console.warn("Ixtiro huquqlarini yuklab bo'lmadi:", err.message);
+  }
+}
+
+document.getElementById('ixtiroOpenClsBtn').onclick = async () => {
+  const sel = document.getElementById('ixtiroClsSel');
+  if (!sel.value) return;
+  try {
+    await apiFetch('/api/students/ixtiro-access', { method: 'POST', body: JSON.stringify({ class_id: +sel.value }) });
+    loadIxtiroPanel();
+  } catch (err) { alert(err.message); }
+};
+document.getElementById('ixtiroOpenStuBtn').onclick = async () => {
+  const sel = document.getElementById('ixtiroStuSel');
+  if (!sel.value) return;
+  try {
+    await apiFetch('/api/students/ixtiro-access', { method: 'POST', body: JSON.stringify({ student_id: +sel.value }) });
+    loadIxtiroPanel();
+  } catch (err) { alert(err.message); }
+};
+loadIxtiroPanel();
 
 /* ============ Guruh soni sozlamasi ============ */
 let CURRENT_MAX_TEAM = 3;

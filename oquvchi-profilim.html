@@ -887,27 +887,8 @@ a{color:inherit;text-decoration:none}
       <section class="card">
         <div class="card-head"><h2>So'nggi faoliyat</h2></div>
         <div class="card-body">
-          <div class="act-list">
-            <div class="act">
-              <span class="ico i-green" style="width:38px;height:38px;border-radius:11px;display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span>
-              <div class="body"><b>Matematika testini yakunladingiz</b><small>94% natija bilan</small></div>
-              <span class="time">2 soat oldin</span>
-            </div>
-            <div class="act">
-              <span class="ico i-amber" style="width:38px;height:38px;border-radius:11px;display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4"/><path d="M7 4h10v6a5 5 0 01-10 0V4z"/></svg></span>
-              <div class="body"><b>Python sertifikati yuklandi</b><small>Portfolio yangilandi</small></div>
-              <span class="time">Kecha</span>
-            </div>
-            <div class="act">
-              <span class="ico i-violet" style="width:38px;height:38px;border-radius:11px;display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6 6.6.6-5 4.4 1.5 6.5-6-3.6-6 3.6 1.5-6.5-5-4.4 6.6-.6z"/></svg></span>
-              <div class="body"><b>Yangi AI tavsiya oldingiz</b><small>Robototexnika to'garagi</small></div>
-              <span class="time">2 kun oldin</span>
-            </div>
-            <div class="act">
-              <span class="ico i-blue" style="width:38px;height:38px;border-radius:11px;display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4"/><path d="M7 4h10v6a5 5 0 01-10 0V4z"/></svg></span>
-              <div class="body"><b>Informatika olimpiadasida qatnashdingiz</b><small>Tuman bosqichi, 1-o'rin</small></div>
-              <span class="time">1 hafta oldin</span>
-            </div>
+          <div class="act-list" id="recentActivityList">
+            <p style="color:var(--muted);font-size:12.5px;padding:6px 0">Yuklanmoqda...</p>
           </div>
         </div>
       </section>
@@ -1294,15 +1275,11 @@ a{color:inherit;text-decoration:none}
             <div class="sw-cols">
               <div class="sw-box good">
                 <h4>KUCHLI YO'NALISHLAR</h4>
-                <div class="swrow"><span><i></i>Informatika</span><b>92%</b></div>
-                <div class="swrow"><span><i></i>Matematika</span><b>85%</b></div>
-                <div class="swrow"><span><i></i>Fizika</span><b>78%</b></div>
+                <div id="swGoodList"><p style="color:var(--muted);font-size:12.5px;padding:6px 0">Yuklanmoqda...</p></div>
               </div>
               <div class="sw-box bad">
                 <h4>RIVOJLANTIRISH KERAK</h4>
-                <div class="swrow"><span><i></i>Ingliz tili</span><b>65%</b></div>
-                <div class="swrow"><span><i></i>Ona tili</span><b>62%</b></div>
-                <div class="swrow"><span><i></i>Kimyo</span><b>58%</b></div>
+                <div id="swBadList"><p style="color:var(--muted);font-size:12.5px;padding:6px 0">Yuklanmoqda...</p></div>
               </div>
             </div>
             <a href="#" class="more" id="testsRecBtn" style="margin-top:14px">Tavsiyalarni ko'rish <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
@@ -1347,9 +1324,7 @@ a{color:inherit;text-decoration:none}
     <div class="modal">
       <button class="x" id="statsClose" aria-label="Yopish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       <h3>Batafsil statistika</h3>
-      <p style="font-size:13px;color:#5B5A7A;line-height:1.7;margin-bottom:12px">Siz jami <b style="color:var(--ink)">11 ta test</b> topshirgansiz, o'rtacha natijangiz <b style="color:var(--ink)">74%</b>. Natijalaringizning <b style="color:var(--ink)">63%</b> i "A'lo" yoki "Yaxshi" darajasida — bu barqaror va ishonchli natija hisoblanadi.</p>
-      <p style="font-size:13px;color:#5B5A7A;line-height:1.7;margin-bottom:12px">Eng yuqori natijalar aniq fanlarda (Informatika, Matematika, Geografiya) qayd etilgan, bu sizning analitik va raqamli fikrlashga moyilligingizni tasdiqlaydi.</p>
-      <p style="font-size:13px;color:#5B5A7A;line-height:1.7">"Past" darajadagi yagona natija — San'at testi (45%) — bitta hodisa bo'lib, umumiy tendentsiyaga ta'sir qilmaydi, biroq qo'shimcha mashq tavsiya etiladi.</p>
+      <div id="statsOverlayBody"><p style="font-size:13px;color:#5B5A7A;line-height:1.7">Yuklanmoqda...</p></div>
     </div>
   </div>
 
@@ -1409,10 +1384,8 @@ a{color:inherit;text-decoration:none}
   <div class="overlay" id="testsRecOverlay">
     <div class="modal">
       <button class="x" id="testsRecClose" aria-label="Yopish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-      <h3>Test natijalari bo'yicha AI tavsiyasi</h3>
-      <p style="font-size:13px;color:#5B5A7A;line-height:1.7;margin-bottom:12px">Ingliz tili (68%), Ona tili (62%) va Kimyo (58%) bo'yicha natijalaringizni oshirish uchun haftasiga kamida 2 marta qo'shimcha mashq qilishni tavsiya qilamiz.</p>
-      <p style="font-size:13px;color:#5B5A7A;line-height:1.7;margin-bottom:12px">Ingliz tili uchun kundalik so'z boyligini oshiruvchi mashqlar, Ona tili uchun matn tahlili topshiriqlari, Kimyo uchun formulalarni takrorlash kartochkalari tavsiya etiladi.</p>
-      <p style="font-size:13px;color:#5B5A7A;line-height:1.7">Kuchli tomonlaringizni (Informatika, Matematika) saqlab qolish uchun haftada kamida 1 ta qo'shimcha amaliy mashq bilan shug'ullanishni davom ettiring.</p>
+      <h3>Test natijalari bo'yicha tavsiya</h3>
+      <div id="testsRecBody"><p style="font-size:13px;color:#5B5A7A;line-height:1.7">Yuklanmoqda...</p></div>
     </div>
   </div>
 
@@ -1441,6 +1414,29 @@ a{color:inherit;text-decoration:none}
         </div>
       </div>
       <p style="font-size:12.5px;color:var(--muted);margin-top:16px">Qo'shimcha savolingiz bo'lsa, maslahatchingiz bilan bevosita bog'lanishingiz mumkin.</p>
+    </div>
+  </div>
+
+  <!-- Yangi Ixtiro (yillik loyiha) qo'shish modali -->
+  <div class="overlay" id="addIxtiroOverlay">
+    <div class="modal">
+      <button class="x" id="addIxtiroClose" aria-label="Yopish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <h3>Yangi Ixtiro qo'shish</h3>
+      <p style="font-size:13px;color:var(--muted);margin:-10px 0 18px">Ixtiroingiz haqida qisqacha ma'lumot kiriting — keyinroq tahrirlab, guruhga a'zo taklif qilib, so'ng maslahatchingizga yuborishingiz mumkin.</p>
+      <div class="st-field" style="margin-bottom:14px">
+        <label for="ixtiroTitleInput">Nomi</label>
+        <input type="text" id="ixtiroTitleInput" placeholder="Masalan: Quyosh energiyasidan foydalanuvchi qurilma" maxlength="150">
+      </div>
+      <div class="st-field" style="margin-bottom:14px">
+        <label for="ixtiroSubjectInput">Fan (ixtiyoriy)</label>
+        <input type="text" id="ixtiroSubjectInput" placeholder="Masalan: Fizika" maxlength="80">
+      </div>
+      <div class="st-field" style="margin-bottom:18px">
+        <label for="ixtiroDescInput">Qisqacha tavsif (ixtiyoriy)</label>
+        <textarea id="ixtiroDescInput" rows="3" style="width:100%;resize:vertical;font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line)" placeholder="Ixtiroingiz nima haqida?"></textarea>
+      </div>
+      <button class="btn" id="ixtiroSaveBtn" style="width:100%;justify-content:center">Saqlash</button>
+      <div class="st-msg" id="ixtiroSaveMsg"></div>
     </div>
   </div>
 
@@ -1475,9 +1471,14 @@ a{color:inherit;text-decoration:none}
     </section>
 
     <section class="card" style="margin-bottom:20px">
-      <div class="card-head"><h2>Yillik loyihalarim</h2></div>
-      <div class="card-body" id="portfolioProjectsList">
-        <p style="color:var(--muted);font-size:13px;padding:8px 0">Yuklanmoqda...</p>
+      <div class="card-head"><h2>Ixtirolarim</h2>
+        <button class="btn" id="addIxtiroBtn" style="display:none">+ Ixtiro qo'shish</button>
+      </div>
+      <div class="card-body">
+        <div id="ixtiroLockedBanner" style="display:none;background:var(--amber-soft);color:#C87A12;border-radius:12px;padding:12px 14px;font-size:12.5px;margin-bottom:14px;line-height:1.6"></div>
+        <div id="portfolioProjectsList">
+          <p style="color:var(--muted);font-size:13px;padding:8px 0">Yuklanmoqda...</p>
+        </div>
       </div>
     </section>
 
@@ -1991,6 +1992,55 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
     }
   }
 
+  /* "So'nggi faoliyat" — bosh sahifada, haqiqiy hodisalar (test topshirish,
+     yutuq, yuborilgan loyiha) bilan /api/student/me/recent-activity dan.
+     Ilgari bu ro'yxat butunlay qattiq yozilgan (fake) edi. */
+  var ACT_ICON = {
+    test: { cls: 'i-green', svg: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
+    achievement: { cls: 'i-blue', svg: '<path d="M8 21h8M12 17v4"/><path d="M7 4h10v6a5 5 0 01-10 0V4z"/>' },
+    project: { cls: 'i-violet', svg: '<path d="M12 2l2.9 6 6.6.6-5 4.4 1.5 6.5-6-3.6-6 3.6 1.5-6.5-5-4.4 6.6-.6z"/>' }
+  };
+  function timeAgo(iso){
+    if (!iso) return '';
+    var then = new Date(iso).getTime();
+    if (isNaN(then)) return '';
+    var diffMs = Date.now() - then;
+    var min = Math.floor(diffMs / 60000);
+    if (min < 1) return 'Hozirgina';
+    if (min < 60) return min + ' daqiqa oldin';
+    var hr = Math.floor(min / 60);
+    if (hr < 24) return hr + ' soat oldin';
+    var day = Math.floor(hr / 24);
+    if (day === 1) return 'Kecha';
+    if (day < 7) return day + ' kun oldin';
+    var wk = Math.floor(day / 7);
+    if (wk < 5) return wk + ' hafta oldin';
+    var mo = Math.floor(day / 30);
+    if (mo < 12) return mo + ' oy oldin';
+    return Math.floor(day / 365) + ' yil oldin';
+  }
+  function renderActivityRow(it){
+    var ic = ACT_ICON[it.type] || ACT_ICON.test;
+    return '<div class="act">' +
+      '<span class="ico ' + ic.cls + '" style="width:38px;height:38px;border-radius:11px;display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">' + ic.svg + '</svg></span>' +
+      '<div class="body"><b>' + escapeHtml(it.title || '') + '</b><small>' + escapeHtml(it.subtitle || '') + '</small></div>' +
+      '<span class="time">' + escapeHtml(timeAgo(it.when)) + '</span></div>';
+  }
+  async function loadRecentActivity(){
+    var container = document.getElementById('recentActivityList');
+    if (!container) return;
+    try {
+      var data = await apiFetch('/api/student/me/recent-activity');
+      var items = data.items || [];
+      container.innerHTML = items.length ? items.map(renderActivityRow).join('') : emptyMsg('Hozircha faoliyat mavjud emas.');
+    } catch (e) {
+      if (!e.isAuthError) {
+        console.error('So\'nggi faoliyat yuklanmadi:', errMsg(e));
+        container.innerHTML = emptyMsg('Faoliyatni yuklab bo\'lmadi.');
+      }
+    }
+  }
+
   /* ============================================================
      Testlar — item 7 (pastda PENDING_TESTS/startTest/finishTest
      bilan birga to'liq yoziladi)
@@ -2236,10 +2286,32 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
       renderRetryError(el, errMsg(e), loadPortfolioAchievements);
     }
   }
+  /* "Ixtiro" qo'shish — o'quvchi o'zi erkin qo'sha olmaydi, faqat
+     maslahatchi sinfiga yoki unga shaxsan ochib bergandan keyin
+     (backend: /api/student/me/projects/settings -> ixtiro_open). */
+  async function loadIxtiroAccessState(){
+    var btn = document.getElementById('addIxtiroBtn');
+    var banner = document.getElementById('ixtiroLockedBanner');
+    if (!btn || !banner) return;
+    try {
+      var s = await apiFetch('/api/student/me/projects/settings');
+      if (s.ixtiro_open) {
+        btn.style.display = '';
+        banner.style.display = 'none';
+      } else {
+        btn.style.display = 'none';
+        banner.style.display = '';
+        banner.textContent = "Ixtiro qo'shish hozircha yopiq. Maslahatchingiz sizga yoki sinfingizga ochgach, shu yerdan yangi Ixtiro qo'sha olasiz.";
+      }
+    } catch (e) {
+      if (!e.isAuthError) { btn.style.display = 'none'; banner.style.display = 'none'; }
+    }
+  }
   function loadPortfolio(){
     loadPortfolioAchievements();
     loadProjectInvites();
     loadProjects();
+    loadIxtiroAccessState();
   }
 
   /* ============================================================
@@ -2353,7 +2425,8 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
       loadProfile(),
       loadSkills(),
       loadAchievementsData(),
-      loadTests()
+      loadTests(),
+      loadRecentActivity()
     ]);
     if (window._qpLastNetworkError && !isRetry) {
       setTimeout(function(){ loadAllStudentData(true); }, 4000);
@@ -2793,6 +2866,96 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
     }).join('');
   }
 
+  /* "Batafsil statistika" modali — ilgari hamma raqam (11 ta test, 74%,
+     Informatika/Matematika/Geografiya, San'at testi 45%) qattiq yozilgan
+     edi, o'quvchining haqiqiy natijalariga umuman bog'liq emas edi. */
+  function renderDetailedStats(list){
+    var el = document.getElementById('statsOverlayBody');
+    if (!el) return;
+    var arr = list || [];
+    if (!arr.length) {
+      el.innerHTML = emptyMsg("Hali test natijalari yo'q — statistika ko'rish uchun kamida bitta test yakunlang.");
+      return;
+    }
+    var total = arr.length;
+    var sum = 0, goodCount = 0, worst = null;
+    var typeGroups = {};
+    arr.forEach(function(t){
+      var s = Math.round(t.score_percent || 0);
+      sum += s;
+      if (s >= 70) goodCount++;
+      if (worst === null || s < worst.score) worst = { score: s, name: t.name, type: t.type };
+      var key = t.type || 'Boshqa';
+      if (!typeGroups[key]) typeGroups[key] = { sum: 0, count: 0 };
+      typeGroups[key].sum += s;
+      typeGroups[key].count++;
+    });
+    var avg = Math.round(sum / total);
+    var goodPct = Math.round(goodCount / total * 100);
+    var typeRows = Object.keys(typeGroups).map(function(name){
+      return { name: name, avg: Math.round(typeGroups[name].sum / typeGroups[name].count) };
+    }).sort(function(a, b){ return b.avg - a.avg; });
+    var best = typeRows[0];
+
+    var parts = [];
+    parts.push('<p style="font-size:13px;color:#5B5A7A;line-height:1.7;margin-bottom:12px">Siz jami <b style="color:var(--ink)">' + total + " ta test</b> topshirgansiz, o'rtacha natijangiz <b style=\"color:var(--ink)\">" + avg + '%</b>. Natijalaringizning <b style="color:var(--ink)">' + goodPct + '%</b> i "A\'lo" yoki "Yaxshi" darajasida.</p>');
+    if (best) {
+      parts.push('<p style="font-size:13px;color:#5B5A7A;line-height:1.7;margin-bottom:12px">Eng yuqori o\'rtacha natija — <b style="color:var(--ink)">' + escapeHtml(best.name) + ' (' + best.avg + '%)</b> turidagi testlarda qayd etilgan.</p>');
+    }
+    if (worst && worst.score < 50) {
+      parts.push('<p style="font-size:13px;color:#5B5A7A;line-height:1.7">Eng past natija — <b style="color:var(--ink)">' + escapeHtml(worst.name || '—') + ' (' + worst.score + '%)</b> — bu yo\'nalishda qo\'shimcha mashq tavsiya etiladi.</p>');
+    }
+    el.innerHTML = parts.join('');
+  }
+
+  /* "Kuchli va rivojlantirish kerak bo'lgan yo'nalishlar" — haqiqiy ma'lumot
+     yo'q edi (Informatika 92%, Matematika 85% va h.k. qattiq yozilgan edi).
+     API'da fan (subject) maydoni yo'qligi sababli (yuqoridagi izohga qarang),
+     test TURI bo'yicha real o'rtacha balldan foydalanamiz — xuddi "Turi
+     bo'yicha" tabida ishlatilgan haqiqiy guruhlash kabi. */
+  function renderStrengthWeakness(list){
+    var goodEl = document.getElementById('swGoodList');
+    var badEl = document.getElementById('swBadList');
+    var recBody = document.getElementById('testsRecBody');
+    var groups = {};
+    (list || []).forEach(function(t){
+      var key = t.type || 'Boshqa';
+      if (!groups[key]) groups[key] = { sum: 0, count: 0 };
+      groups[key].sum += Math.round(t.score_percent || 0);
+      groups[key].count++;
+    });
+    var rows = Object.keys(groups).map(function(name){
+      var g = groups[name];
+      return { name: name, avg: Math.round(g.sum / g.count) };
+    });
+    if (!rows.length) {
+      var msg = emptyMsg('Hozircha ma\'lumot yetarli emas.');
+      if (goodEl) goodEl.innerHTML = msg;
+      if (badEl) badEl.innerHTML = msg;
+      if (recBody) recBody.innerHTML = emptyMsg("Tavsiya berish uchun hali yetarli test natijasi yo'q. Kamida bitta test yakunlang.");
+      return;
+    }
+    var sorted = rows.slice().sort(function(a, b){ return b.avg - a.avg; });
+    var good = sorted.filter(function(r){ return r.avg >= 70; }).slice(0, 3);
+    var bad = sorted.filter(function(r){ return r.avg < 70; }).sort(function(a, b){ return a.avg - b.avg; }).slice(0, 3);
+    function rowHtml(r){ return '<div class="swrow"><span><i></i>' + escapeHtml(r.name) + '</span><b>' + r.avg + '%</b></div>'; }
+    if (goodEl) goodEl.innerHTML = good.length ? good.map(rowHtml).join('') : emptyMsg("Hali yetarli yuqori natija yo'q.");
+    if (badEl) badEl.innerHTML = bad.length ? bad.map(rowHtml).join('') : emptyMsg("Rivojlantirish kerak bo'lgan yo'nalish topilmadi.");
+
+    if (recBody) {
+      var parts = [];
+      if (bad.length) {
+        var badNames = bad.map(function(r){ return escapeHtml(r.name) + ' (' + r.avg + '%)'; }).join(', ');
+        parts.push('<p style="font-size:13px;color:#5B5A7A;line-height:1.7;margin-bottom:12px">' + badNames + " bo'yicha natijalaringizni oshirish uchun muntazam qo'shimcha mashq qilishni tavsiya qilamiz.</p>");
+      }
+      if (good.length) {
+        var goodNames = good.map(function(r){ return escapeHtml(r.name); }).join(', ');
+        parts.push('<p style="font-size:13px;color:#5B5A7A;line-height:1.7">Kuchli tomonlaringizni (' + goodNames + ") saqlab qolish uchun bu yo'nalishlarda ham mashqni davom ettiring.</p>");
+      }
+      recBody.innerHTML = parts.length ? parts.join('') : emptyMsg("Hozircha tavsiya berish uchun ma'lumot yetarli emas.");
+    }
+  }
+
   if (testDateRange) {
     testDateRangeBtn.addEventListener('click', function(e){
       e.stopPropagation();
@@ -2870,6 +3033,58 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
   });
   testsRecOverlay.addEventListener('click', function(e){
     if (e.target === testsRecOverlay) testsRecOverlay.classList.remove('open');
+  });
+
+  /* Yangi Ixtiro qo'shish modali — faqat maslahatchi ochgan bo'lsagina
+     tugma ko'rinadi (loadIxtiroAccessState orqali), lekin himoya sifatida
+     backend ham /me/projects POST'da qayta tekshiradi. */
+  var addIxtiroOverlay = document.getElementById('addIxtiroOverlay');
+  var addIxtiroBtn = document.getElementById('addIxtiroBtn');
+  var ixtiroSaveBtn = document.getElementById('ixtiroSaveBtn');
+  var ixtiroSaveMsg = document.getElementById('ixtiroSaveMsg');
+  function closeAddIxtiroModal(){
+    addIxtiroOverlay.classList.remove('open');
+    document.getElementById('ixtiroTitleInput').value = '';
+    document.getElementById('ixtiroSubjectInput').value = '';
+    document.getElementById('ixtiroDescInput').value = '';
+    ixtiroSaveMsg.textContent = '';
+    ixtiroSaveMsg.className = 'st-msg';
+  }
+  if (addIxtiroBtn) addIxtiroBtn.addEventListener('click', function(){
+    addIxtiroOverlay.classList.add('open');
+  });
+  document.getElementById('addIxtiroClose').addEventListener('click', closeAddIxtiroModal);
+  addIxtiroOverlay.addEventListener('click', function(e){
+    if (e.target === addIxtiroOverlay) closeAddIxtiroModal();
+  });
+  if (ixtiroSaveBtn) ixtiroSaveBtn.addEventListener('click', async function(){
+    var title = (document.getElementById('ixtiroTitleInput').value || '').trim();
+    var subject = (document.getElementById('ixtiroSubjectInput').value || '').trim();
+    var desc = (document.getElementById('ixtiroDescInput').value || '').trim();
+    ixtiroSaveMsg.textContent = '';
+    ixtiroSaveMsg.className = 'st-msg';
+    if (!title) {
+      ixtiroSaveMsg.textContent = "Nomini kiriting.";
+      ixtiroSaveMsg.className = 'st-msg err';
+      return;
+    }
+    ixtiroSaveBtn.disabled = true;
+    try {
+      await apiFetch('/api/student/me/projects', {
+        method: 'POST',
+        body: JSON.stringify({ title: title, subject: subject || null, description: desc || null }),
+      });
+      closeAddIxtiroModal();
+      loadProjects();
+    } catch (e) {
+      ixtiroSaveBtn.disabled = false;
+      if (!e.isAuthError) {
+        ixtiroSaveMsg.textContent = errMsg(e);
+        ixtiroSaveMsg.className = 'st-msg err';
+      }
+    } finally {
+      ixtiroSaveBtn.disabled = false;
+    }
   });
 
   /* ===== Yechish kerak testlar + test yechish oynasi (real API) ===== */
@@ -2978,6 +3193,8 @@ window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-b
     renderTestList();
     try { renderScoreDistribution(sorted); } catch (e) { console.error(e); }
     try { renderTestGroupTabs(sorted); } catch (e) { console.error(e); }
+    try { renderStrengthWeakness(sorted); } catch (e) { console.error(e); }
+    try { renderDetailedStats(sorted); } catch (e) { console.error(e); }
   }
 
   async function loadTests(){
