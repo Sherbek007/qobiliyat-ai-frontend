@@ -6353,7 +6353,7 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
         <span>Sinf: <b id="aiClsShown">—</b> — 1-bosqichda tanlangan sinflar</span>
       </div>
       <div><label for="aiTopic">Mavzu <span class="hint-inline" id="aiTopicHint">(ixtiyoriy)</span></label>
-        <input class="inp" id="aiTopic" maxlength="60" placeholder="Masalan: Kvadrat tenglamalar" value="Kvadrat tenglamalar"></div>
+        <input class="inp" id="aiTopic" maxlength="60" placeholder="Masalan: Kvadrat tenglamalar"></div>
       <div class="two">
         <div><label for="aiCount">Savollar soni</label>
           <select class="inp" id="aiCount"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></div>
@@ -12948,7 +12948,17 @@ document.getElementById('openAI').onclick = () => {
   document.getElementById('aiClsShown').textContent = T.cls.length ? T.cls.join(', ') : "tanlanmagan";
   const isFanTest = T.type === 'Fan testi';
   document.getElementById('aiSubjField').style.display = isFanTest ? '' : 'none';
-  document.getElementById('aiTopicHint').textContent = isFanTest ? '(ixtiyoriy)' : '';
+  // Har safar modal ochilganda mavzu maydoni bo'shatiladi — oldingi test turida
+  // yozilgan/qolib ketgan mavzu matni boshqa test turiga (masalan Kasbga yo'nalish
+  // testiga) tasodifan yuborilib qolmasligi uchun. Ilgari bu maydonda "Kvadrat
+  // tenglamalar" degan HAQIQIY (placeholder emas) default qiymat bor edi — shu
+  // sababli har qanday test turida, agar maslahatchi uni o'chirib yozmasa, AI'ga
+  // doim shu mavzu yuborilar va savollar doim shu mavzuda chiqaverar edi.
+  document.getElementById('aiTopic').value = '';
+  document.getElementById('aiTopic').classList.remove('err');
+  document.getElementById('aiTopicHint').textContent = isFanTest
+    ? '(ixtiyoriy)'
+    : "(ixtiyoriy — bo'sh qoldirsangiz, AI test turiga mos umumiy savollar tuzadi)";
   openM(aiModal);
 };
 aiModal.querySelectorAll('[data-close]').forEach(b => b.onclick = () => closeM(aiModal));
