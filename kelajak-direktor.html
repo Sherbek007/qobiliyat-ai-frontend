@@ -423,41 +423,30 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
 
           <div class="kpi" id="kpiBox"></div>
 
-          <div class="grid-2">
-            <div class="card">
-              <div class="card-head"><b>Maktablar xaritasi</b><span class="link" data-view-link="schools">Barcha maktablar <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
-              <div class="map-wrap" id="mapWrap"></div>
-            </div>
-            <div class="card">
-              <div class="card-head"><b>Maslahatchilar faoliyati samaradorligi</b><div class="filter-sel">Oylik bo'yicha <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div></div>
-              <div class="bars" id="barsBox"></div>
-            </div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-head"><b>Maslahatchilar samaradorligi taqsimoti</b></div>
+            <div class="bars" id="barsBox"></div>
           </div>
 
           <div class="grid-2">
             <div class="card">
               <div class="card-head"><b>Maktablar reytingi</b><span class="link" data-view-link="schools">Barchasini ko'rish <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
               <table>
-                <thead><tr><th>#</th><th>Maktab nomi</th><th>Tuman</th><th>O'quvchilar</th><th>O'rtacha natija</th><th>O'sish</th></tr></thead>
+                <thead><tr><th>#</th><th>Maktab nomi</th><th>Tuman</th><th>O'quvchilar</th><th>O'rtacha natija</th></tr></thead>
                 <tbody id="schoolRankBody"></tbody>
               </table>
             </div>
             <div class="card">
               <div class="card-head"><b>Maslahatchilar samaradorligi (TOP 5)</b><span class="link" data-view-link="advisors">Barchasini ko'rish <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
               <table>
-                <thead><tr><th>#</th><th>Maslahatchi</th><th>Maktab</th><th>Natija</th><th>Ta'sir</th></tr></thead>
+                <thead><tr><th>#</th><th>Maslahatchi</th><th>Maktab</th><th>Natija</th><th>Holat</th></tr></thead>
                 <tbody id="advisorRankBody"></tbody>
               </table>
             </div>
           </div>
 
-          <div class="card" style="margin-bottom:16px">
-            <div class="card-head"><b>Asosiy ta'sir ko'rsatkichlari</b></div>
-            <div class="impact-grid" id="impactBox"></div>
-          </div>
-
           <div class="card">
-            <div class="card-head"><b>So'nggi yangiliklar</b><span class="link">Barchasi <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
+            <div class="card-head"><b>So'nggi yangiliklar</b><span class="link" data-view-link="monitoring">Barchasi <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
             <div id="newsBox"></div>
           </div>
         </div>
@@ -503,18 +492,13 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
 
             <div>
               <div class="side-card">
-                <b>Maktablar hudud xaritasi</b>
-                <div class="mini-map" id="miniMapBox"></div>
-                <div class="mini-legend">
-                  <span><span class="dot" style="background:#16A34A"></span>Faol (44)</span>
-                  <span><span class="dot" style="background:#E08A15"></span>Ehtiyoj (3)</span>
-                  <span><span class="dot" style="background:#D6473C"></span>Faol emas (1)</span>
-                </div>
+                <b>Maktablar holati taqsimoti</b>
+                <div class="mini-legend" id="schoolStatusLegend" style="flex-direction:column;align-items:flex-start;gap:9px;margin-top:12px"></div>
               </div>
 
               <div class="side-card">
-                <b>Viloyatlar kesimida <a href="#" style="color:var(--primary);font-size:12px">Barchasini ko'rish &rarr;</a></b>
-                <div id="regionDistBox"></div>
+                <b>Natija bo'yicha taqsimot</b>
+                <div id="schoolPctDistBox"></div>
               </div>
 
               <div class="cta-mini">
@@ -619,16 +603,7 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
             <span class="tab-item2">📄 Hisobotlar</span>
           </div>
 
-          <div class="grid-3b">
-            <div class="card">
-              <div class="card-head"><b>Asosiy ko'rsatkichlar dinamikasi</b><div class="filter-sel">Oylar bo'yicha <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div></div>
-              <div class="line-legend">
-                <span><span class="dot" style="background:#6C4CE0"></span>O'quvchilar soni</span>
-                <span><span class="dot" style="background:#16A34A"></span>Maslahatchilar faolligi</span>
-                <span><span class="dot" style="background:#2E86C8"></span>Maktablar samaradorligi</span>
-              </div>
-              <div class="line-chart-wrap2"><svg id="multiLineSvg" width="100%" height="190" viewBox="0 0 400 190" preserveAspectRatio="none"></svg></div>
-            </div>
+          <div class="grid-2">
             <div class="card">
               <div class="card-head"><b>Maktablar faoliyati toifalar bo'yicha</b></div>
               <div class="mini-donut-wrap" style="flex-direction:column;gap:14px">
@@ -685,17 +660,6 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
           </div>
 
           <div class="kpi-sm" id="monKpiBox"></div>
-
-          <div class="grid-2">
-            <div class="card">
-              <div class="card-head"><b>Maktablar holati xaritada</b><span class="link" data-view-link="schools">Barcha maktablar <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
-              <div class="map-wrap" id="monMapWrap" style="height:280px"></div>
-            </div>
-            <div class="card">
-              <div class="card-head"><b>Monitoring ko'rsatkichlari</b><div class="filter-sel">Tizim bo'yicha <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div></div>
-              <div class="gauge-grid" id="gaugeBox"></div>
-            </div>
-          </div>
 
           <div class="content-2col2" style="grid-template-columns:1fr 400px">
             <div class="card" style="padding:0">
@@ -987,9 +951,12 @@ function startApp(){
     document.getElementById('avaIni').textContent = u.full_name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
   }
   fillSettingsProfile(u);
+  document.getElementById('kpiBox').innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px 0">Yuklanmoqda…</div>';
   loadOverview();
   loadSchools();
-  renderSampleWidgets();
+  loadAdvisorsData();
+  loadReports();
+  loadMonitoring();
 }
 
 document.querySelectorAll('.nav-item[data-view]').forEach(b => b.onclick = () => switchView(b.dataset.view));
@@ -1003,19 +970,23 @@ function switchView(view){
 
 function kpiCard(icoClass, iconSvg, label, value, delta){
   return `<div class="kpi-card"><span class="kpi-ico ${icoClass}">${iconSvg}</span>
-    <div><div class="lbl">${label}</div><div class="val">${value}</div>${delta ? `<span class="delta">\u2191 ${delta}</span>` : ''}</div></div>`;
+    <div><div class="lbl">${label}</div><div class="val">${value}</div>${delta ? `<span class="delta">${delta}</span>` : ''}</div></div>`;
 }
 
 let SCHOOLS = [];
+let OVERVIEW = { school_count: 0, student_count: 0, avg_grade: 0, total_achievements: 0 };
+function renderHomeKpis(){
+  document.getElementById('kpiBox').innerHTML =
+    kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>', 'Jami maktablar', OVERVIEW.school_count) +
+    kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', 'Maslahatchilar soni', ADV_KPI.total) +
+    kpiCard('i-blue', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', "Jami o'quvchilar", OVERVIEW.student_count) +
+    kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>', "O'rtacha natija", (OVERVIEW.avg_grade ? Math.round(OVERVIEW.avg_grade*10) : 0) + '%');
+}
 async function loadOverview(){
   try {
-    const d = await apiFetch('/api/kelajak-direktor/overview');
-    document.getElementById('kpiBox').innerHTML =
-      kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>', 'Jami maktablar', d.school_count, '2') +
-      kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', 'Maslahatchilar soni', 96, '5') +
-      kpiCard('i-blue', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', "Jami o'quvchilar", d.student_count, '3%') +
-      kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>', "O'rtacha natija", (d.avg_grade ? Math.round(d.avg_grade*10) : 0) + '%', '6%');
-  } catch (e) { console.warn(e.message); }
+    OVERVIEW = await apiFetch('/api/kelajak-direktor/overview');
+  } catch (e) { console.warn(e.message); OVERVIEW = { school_count: 0, student_count: 0, avg_grade: 0, total_achievements: 0 }; }
+  renderHomeKpis();
 }
 
 async function loadSchools(){
@@ -1023,95 +994,39 @@ async function loadSchools(){
     const res = await apiFetch('/api/kelajak-direktor/schools');
     SCHOOLS = res.schools || [];
   } catch (e) { console.warn(e.message); SCHOOLS = []; }
-  renderMap();
   renderSchoolRank();
 }
 
-function renderMap(){
-  const districts = [
-    { name: 'Namangan', x: 42, y: 22 }, { name: 'Pop', x: 52, y: 40, dot: true, big: true },
-    { name: 'Chortoq', x: 78, y: 30 }, { name: 'Uychi', x: 45, y: 52 },
-    { name: 'Kosonsoy', x: 68, y: 55 }, { name: 'Chust', x: 20, y: 62 }, { name: 'Mingbuloq', x: 48, y: 78 },
-  ];
-  const dots = [
-    { x: 12, y: 38, c: 'green' }, { x: 30, y: 20, c: 'amber' }, { x: 65, y: 18, c: 'amber' },
-    { x: 20, y: 45, c: 'green' }, { x: 40, y: 45, c: 'red' }, { x: 60, y: 45, c: 'red' },
-    { x: 40, y: 70, c: 'amber' }, { x: 58, y: 80, c: 'red' },
-  ];
-  const colorMap = { green: '#16A34A', amber: '#E08A15', red: '#D6473C' };
-  const wrap = document.getElementById('mapWrap');
-  let html = '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">' +
-    '<path d="M8,25 Q20,8 45,10 Q75,8 90,25 Q95,45 85,65 Q75,88 50,92 Q25,90 12,68 Q3,48 8,25 Z" fill="#DAD3F7" stroke="#C7BDF2" stroke-width="0.6"/></svg>';
-  districts.forEach(d => {
-    html += `<span class="map-label" style="left:${d.x}%;top:${d.y}%">${d.name}</span>`;
-    if (d.dot) html += `<span class="map-dot" style="left:${d.x}%;top:${d.y}%;background:${PRIMARY_C}"></span>`;
-  });
-  dots.forEach(d => {
-    html += `<span class="map-dot" style="left:${d.x}%;top:${d.y}%;background:${colorMap[d.c]}"></span>`;
-  });
-  html += `<div class="map-legend">
-    <div class="row"><span class="dot" style="background:#16A34A"></span>Yuqori samaradorlik</div>
-    <div class="row"><span class="dot" style="background:#E08A15"></span>O'rta samaradorlik</div>
-    <div class="row"><span class="dot" style="background:#D6473C"></span>Past samaradorlik</div>
-  </div>`;
-  wrap.innerHTML = html;
-}
-const PRIMARY_C = '#4C2CE2';
-
 function renderSchoolRank(){
   const ranked = [...SCHOOLS].sort((a,b) => (b.avg_grade||0)-(a.avg_grade||0)).slice(0,5);
-  const rows = ranked.length ? ranked : SAMPLE_SCHOOLS;
-  document.getElementById('schoolRankBody').innerHTML = rows.map((s, i) => {
-    const pct = s.avg_grade ? Math.round(s.avg_grade*10) : s.pct;
+  document.getElementById('schoolRankBody').innerHTML = ranked.length ? ranked.map((s, i) => {
+    const pct = s.avg_grade ? Math.round(s.avg_grade*10) : 0;
     const pillClass = pct >= 85 ? 'pill-green' : pct >= 70 ? 'pill-amber' : 'pill-red';
-    return `<tr><td>${i+1}</td><td>${s.name}</td><td>${s.district || '\u2014'}</td><td>${s.student_count || s.students}</td>
-      <td><span class="idx-pill ${pillClass}">${pct}%</span></td><td class="up-txt">\u2191 ${s.growth || (5+i)}%</td></tr>`;
-  }).join('');
+    return `<tr><td>${i+1}</td><td>${s.name}</td><td>${s.district || '\u2014'}</td><td>${s.student_count}</td>
+      <td><span class="idx-pill ${pillClass}">${pct}%</span></td></tr>`;
+  }).join('') : `<tr><td colspan="5"><div class="empty">Hozircha maktablar yo'q</div></td></tr>`;
 
   renderSchoolsPage();
 }
 
-const SAMPLE_SCHOOLS = [
-  { name: '12-sonli umumiy o\u2018rta ta\u2019lim maktabi', region: 'Namangan', district: 'Pop', students: 582, advisor: 'Aliyeva M.', pct: 92, status: 'Faol', growth: 8 },
-  { name: '7-sonli maktab', region: 'Namangan', district: 'Pop', students: 516, advisor: 'Karimov A.', pct: 87, status: 'Faol', growth: 6 },
-  { name: '25-sonli maktab', region: 'Namangan', district: 'Chortoq', students: 498, advisor: 'Ismoilova D.', pct: 84, status: 'Faol', growth: 5 },
-  { name: '11-sonli maktab', region: 'Namangan', district: 'Namangan', students: 612, advisor: 'Nosirov S.', pct: 81, status: 'Ehtiyoj', growth: 4 },
-  { name: '3-sonli maktab', region: 'Namangan', district: 'Uychi', students: 467, advisor: 'Abdullayeva S.', pct: 78, status: 'Ehtiyoj', growth: 7 },
-  { name: '9-sonli maktab', region: 'Andijon', district: 'Asaka', students: 503, advisor: 'Tursunova N.', pct: 76, status: 'Faol', growth: 3 },
-  { name: '14-sonli maktab', region: 'Andijon', district: 'Marhamat', students: 489, advisor: 'Saidov B.', pct: 69, status: 'Faol', growth: 2 },
-  { name: '5-sonli maktab', region: 'Farg\u2018ona', district: 'Qo\u2018qon', students: 721, advisor: 'Raxmonova Z.', pct: 88, status: 'Faol', growth: 9 },
-  { name: '22-sonli maktab', region: 'Farg\u2018ona', district: 'Beshariq', students: 395, advisor: 'Xolmatov J.', pct: 73, status: 'Ehtiyoj', growth: 1 },
-  { name: '1-sonli maktab', region: 'Toshkent', district: 'Chirchiq', students: 648, advisor: 'To\u2018xtayeva G.', pct: 90, status: 'Faol', growth: 6 },
-];
-const REGION_DIST = [
-  { name: 'Namangan', n: 12 }, { name: 'Andijon', n: 8 }, { name: 'Farg\u2018ona', n: 7 },
-  { name: 'Toshkent', n: 6 }, { name: 'Samarqand', n: 5 }, { name: 'Buxoro', n: 4 },
-  { name: 'Qashqadaryo', n: 3 }, { name: 'Boshqalar', n: 3 },
-];
-const MAP_DOTS2 = [
-  { x: 12, y: 38, c: '#16A34A' }, { x: 30, y: 20, c: '#16A34A' }, { x: 65, y: 18, c: '#16A34A' },
-  { x: 20, y: 45, c: '#16A34A' }, { x: 52, y: 42, c: '#4C2CE2', label: 'Pop tumani \u2014 12 ta maktab' },
-  { x: 40, y: 45, c: '#D6473C' }, { x: 60, y: 45, c: '#16A34A' }, { x: 40, y: 70, c: '#E08A15' }, { x: 58, y: 80, c: '#16A34A' },
-];
-
 let schoolFilterStatus = '';
 let schoolFilterQuery = '';
 function renderSchoolsPage(){
-  const myRegion = (JSON.parse(localStorage.getItem('qp_kelajak_user') || '{}').region) || 'Viloyat';
-  const all = SCHOOLS.length ? SCHOOLS.map(s => ({
+  const myRegion = (JSON.parse(localStorage.getItem('qp_kelajak_user') || '{}').region) || '';
+  const all = SCHOOLS.map(s => ({
     id: s.id, name: s.name, region: myRegion, district: s.district || '\u2014', students: s.student_count,
     advisor: s.director_name || '\u2014', pct: s.avg_grade ? Math.round(s.avg_grade*10) : 0,
-    status: (s.avg_grade ? Math.round(s.avg_grade*10) : 0) >= 70 ? 'Faol' : 'Ehtiyoj', growth: 5,
-  })) : SAMPLE_SCHOOLS;
+    status: (s.avg_grade ? Math.round(s.avg_grade*10) : 0) >= 70 ? 'Faol' : 'Ehtiyoj',
+  }));
 
   const activeCount = all.filter(s => s.status === 'Faol').length;
   const needCount = all.filter(s => s.status === 'Ehtiyoj').length;
   const inactiveCount = all.filter(s => s.status === 'Faol emas').length;
   document.getElementById('schKpiBox').innerHTML =
     kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>', 'Jami maktablar', all.length) +
-    kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>', 'Faol maktablar', activeCount, Math.round(activeCount/all.length*100) + '%') +
-    kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>', 'Ehtiyoj talab qiladi', needCount, Math.round(needCount/all.length*100) + '%') +
-    kpiCard('i-red', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>', 'Faol emas', inactiveCount, Math.round(inactiveCount/all.length*100) + '%');
+    kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>', 'Faol maktablar', activeCount, all.length ? Math.round(activeCount/all.length*100) + '%' : null) +
+    kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>', 'Ehtiyoj talab qiladi', needCount, all.length ? Math.round(needCount/all.length*100) + '%' : null) +
+    kpiCard('i-red', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>', 'Faol emas', inactiveCount, all.length ? Math.round(inactiveCount/all.length*100) + '%' : null);
 
   const filtered = all.filter(s => {
     if (schoolFilterStatus && s.status !== schoolFilterStatus) return false;
@@ -1139,72 +1054,67 @@ function renderSchoolsPage(){
   document.querySelectorAll('[data-view-school]').forEach(b => b.onclick = () => showToast(filtered[+b.dataset.viewSchool].name + " ma'lumotlari"));
   document.querySelectorAll('#schoolsFullBody .dots-btn').forEach(b => b.onclick = e => openSchoolDotsMenu(e, b.dataset.schoolId, b.dataset.schoolName));
 
-  /* Mini xarita */
-  const mm = document.getElementById('miniMapBox');
-  let html = '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">' +
-    '<path d="M8,25 Q20,8 45,10 Q75,8 90,25 Q95,45 85,65 Q75,88 50,92 Q25,90 12,68 Q3,48 8,25 Z" fill="#DAD3F7" stroke="#C7BDF2" stroke-width="0.6"/></svg>';
-  MAP_DOTS2.forEach(d => {
-    html += `<span class="mini-map-dot" style="left:${d.x}%;top:${d.y}%;background:${d.c}"${d.label ? ` title="${d.label}"` : ''}></span>`;
-    if (d.label) html += `<span class="mini-map-tip" style="left:${d.x}%;top:${d.y}%">${d.label}</span>`;
-  });
-  mm.innerHTML = html;
+  /* Maktablar holati taqsimoti (haqiqiy) */
+  document.getElementById('schoolStatusLegend').innerHTML = all.length ? `
+    <span><span class="dot" style="background:#16A34A"></span>Faol (${activeCount})</span>
+    <span><span class="dot" style="background:#E08A15"></span>Ehtiyoj (${needCount})</span>
+    <span><span class="dot" style="background:#D6473C"></span>Faol emas (${inactiveCount})</span>` :
+    `<span style="color:var(--muted);font-size:12.5px">Hozircha maktablar yo'q</span>`;
 
-  /* Viloyatlar kesimida */
-  const maxR = Math.max(...REGION_DIST.map(r => r.n));
-  document.getElementById('regionDistBox').innerHTML = REGION_DIST.map(r => `
+  /* Natija bo'yicha taqsimot (haqiqiy, o'rtacha ball asosida) */
+  const pctBuckets = [
+    { lbl: '85%+', test: p => p >= 85 },
+    { lbl: '70\u201384%', test: p => p >= 70 && p < 85 },
+    { lbl: '50\u201369%', test: p => p >= 50 && p < 70 },
+    { lbl: "50% dan past", test: p => p < 50 },
+  ];
+  const pctRows = pctBuckets.map(b => ({ name: b.lbl, n: all.filter(s => b.test(s.pct)).length }));
+  const maxP = Math.max(1, ...pctRows.map(r => r.n));
+  document.getElementById('schoolPctDistBox').innerHTML = all.length ? pctRows.map(r => `
     <div class="dist-row2"><span class="lbl">${r.name}</span>
-      <span class="track"><span class="fill" style="width:${r.n/maxR*100}%"></span></span>
-      <span class="num">${r.n}</span></div>`).join('');
+      <span class="track"><span class="fill" style="width:${r.n/maxP*100}%"></span></span>
+      <span class="num">${r.n}</span></div>`).join('') :
+    `<div style="color:var(--muted);font-size:12.5px;padding:8px 0">Hozircha ma'lumot yo'q</div>`;
 }
 
-function renderSampleWidgets(){
-  /* Oylik bar chart */
-  const months = [['Yan',62],['Fev',68],['Mar',71],['Apr',75],['May',77],['Iyn',80],['Iyl',82],['Avg',85]];
-  document.getElementById('barsBox').innerHTML = months.map(m => `
-    <div class="bar-col"><span class="pct">${m[1]}%</span><div class="fill" style="height:${m[1]}%"></div><span class="lbl">${m[0]}</span></div>`).join('');
-
-  /* Maslahatchilar TOP5 */
-  const advisors = [
-    { name: 'Aliyeva Madina', school: '12-sonli maktab', pct: 94, impact: "Juda yuqori" },
-    { name: 'Karimov Akmal', school: '7-sonli maktab', pct: 90, impact: 'Yuqori' },
-    { name: 'Ismoilova Dildora', school: '25-sonli maktab', pct: 87, impact: 'Yuqori' },
-    { name: 'Nodirov Sardor', school: '11-sonli maktab', pct: 85, impact: "O'rta" },
-    { name: 'Abdullayeva Sevinch', school: '3-sonli maktab', pct: 83, impact: "O'rta" },
+/* Bosh sahifadagi "Maslahatchilar samaradorligi taqsimoti" \u2014 REAL_ADVISORS
+   ma'lumotidan hisoblangan haqiqiy taqsimot (oylik grafik emas \u2014 bunday
+   tarixiy ma'lumot bazada yo'q). */
+function renderHomeBars(){
+  const buckets = [
+    { lbl: "50% dan past", test: p => p < 50 },
+    { lbl: '50\u201369%', test: p => p >= 50 && p < 70 },
+    { lbl: '70\u201384%', test: p => p >= 70 && p < 85 },
+    { lbl: '85\u2013100%', test: p => p >= 85 },
   ];
-  const advRow = a => {
-    const pillClass = a.impact === "Juda yuqori" || a.impact === 'Yuqori' ? 'pill-green' : 'pill-amber';
-    return `<tr><td>${advisors.indexOf(a)+1}</td>
-      <td><span class="stu-name"><span class="stu-ava">${a.name.split(' ').map(w=>w[0]).join('')}</span>${a.name}</span></td>
-      <td>${a.school}</td><td><span class="idx-pill pill-green">${a.pct}%</span></td>
-      <td><span class="idx-pill ${pillClass}">${a.impact}</span></td></tr>`;
-  };
-  document.getElementById('advisorRankBody').innerHTML = advisors.map(advRow).join('');
+  const rows = buckets.map(b => ({ lbl: b.lbl, n: REAL_ADVISORS.filter(a => b.test(a.score_percent)).length }));
+  const maxN = Math.max(1, ...rows.map(r => r.n));
+  document.getElementById('barsBox').innerHTML = REAL_ADVISORS.length ? rows.map(r => `
+    <div class="bar-col"><span class="pct">${r.n}</span><div class="fill" style="height:${r.n/maxN*100}%"></div><span class="lbl">${r.lbl}</span></div>`).join('') :
+    `<div style="color:var(--muted);font-size:12.5px;padding:30px 0;text-align:center;width:100%">Hozircha maslahatchilar ma'lumoti yo'q</div>`;
+}
 
-  renderAdvisorsPage();
-  loadReports();
-  loadMonitoring();
+/* Bosh sahifadagi "TOP 5 maslahatchi" \u2014 haqiqiy REAL_ADVISORS ro'yxatidan. */
+function renderHomeTop5Advisors(){
+  const top5 = [...REAL_ADVISORS].sort((a,b) => b.score_percent - a.score_percent).slice(0,5);
+  document.getElementById('advisorRankBody').innerHTML = top5.length ? top5.map((a, i) => {
+    const pillClass = a.score_percent >= 85 ? 'pill-green' : a.score_percent >= 70 ? 'pill-amber' : 'pill-red';
+    const statusColor = a.status === 'Faol' ? '#16A34A' : '#E08A15';
+    return `<tr><td>${i+1}</td>
+      <td><span class="stu-name"><span class="stu-ava">${a.full_name.split(' ').filter(Boolean).map(w=>w[0]).join('')}</span>${a.full_name}</span></td>
+      <td>${a.school_name || '\u2014'}</td><td><span class="idx-pill ${pillClass}">${a.score_percent}%</span></td>
+      <td><span class="status-dot2" style="background:${statusColor}"></span>${a.status}</td></tr>`;
+  }).join('') : `<tr><td colspan="5"><div class="empty">Hozircha maslahatchilar yo'q</div></td></tr>`;
+}
 
-  /* Ta'sir ko'rsatkichlari */
-  const impacts = [
-    { g: '\ud83d\udcc8', t: "O'quvchilarda qiziqish", v: '+28%', bg: '#E9F8EF', c: '#16A34A' },
-    { g: '\ud83c\udfaf', t: "To'garaklar qamrovi", v: '+35%', bg: '#E8F1FE', c: '#2E86C8' },
-    { g: '\ud83d\udcda', t: "Fanlar bo'yicha o'sish", v: '+18%', bg: '#FEF4E4', c: '#E08A15' },
-    { g: '\u23f0', t: 'Davomat', v: '+12%', bg: '#FDECEB', c: '#D6473C' },
-  ];
-  document.getElementById('impactBox').innerHTML = impacts.map(i => `
-    <div class="impact-card"><span class="ico" style="background:${i.bg};color:${i.c}">${i.g}</span>
-      <div class="val">${i.v}</div><div class="lbl">${i.t}</div>
-      <div style="font-size:10.5px;color:var(--muted);margin-top:6px">O'tgan davrga nisbatan</div></div>`).join('');
-
-  /* Yangiliklar */
-  const news = [
-    { ico: '\ud83c\udfc6', bg: '#F0EEFC', txt: "12-sonli maktabda yangi STEAM to'garagi ochildi", date: '27.08.2025' },
-    { ico: '\ud83d\udcac', bg: '#E8F1FE', txt: "Maslahatchilar uchun onlayn seminar o'tkazildi", date: '26.08.2025' },
-    { ico: '\ud83c\udfc5', bg: '#FEF4E4', txt: "7-sonli maktabda o'quvchilar loyihasi g'olib bo'ldi", date: '24.08.2025' },
-  ];
-  document.getElementById('newsBox').innerHTML = news.map(n => `
-    <div class="news-row"><span class="news-ico" style="background:${n.bg}">${n.ico}</span>
-      <span class="txt">${n.txt}</span><span class="date">${n.date}</span></div>`).join('');
+/* Bosh sahifadagi "So'nggi yangiliklar" \u2014 monitoring endpointidagi haqiqiy
+   recent_events (so'nggi qo'lga kiritilgan yutuqlar) asosida. */
+function renderHomeNews(){
+  const events = (MONITORING_DATA && MONITORING_DATA.recent_events) || [];
+  document.getElementById('newsBox').innerHTML = events.length ? events.slice(0,3).map(e => `
+    <div class="news-row"><span class="news-ico" style="background:#F0EEFC">\ud83c\udfc6</span>
+      <span class="txt">${e.text}</span><span class="date">${e.date}</span></div>`).join('') :
+    `<div class="empty">Hozircha yangiliklar yo'q</div>`;
 }
 
 function renderDonutMini(svgId, legendId, totalId, data, total){
@@ -1221,34 +1131,22 @@ function renderDonutMini(svgId, legendId, totalId, data, total){
   if (totalId) document.getElementById(totalId).textContent = total;
 }
 
-const ADVISORS_SAMPLE = [
-  { name: 'Aliyeva Madina', school: '12-sonli maktab', region: 'Namangan', district: 'Pop', students: 582, pct: 94, status: 'Faol' },
-  { name: 'Karimov Akmal', school: '7-sonli maktab', region: 'Namangan', district: 'Pop', students: 516, pct: 90, status: 'Faol' },
-  { name: 'Ismoilova Dildora', school: '25-sonli maktab', region: 'Namangan', district: 'Chortoq', students: 498, pct: 87, status: 'Faol' },
-  { name: 'Nosirov Sardor', school: '11-sonli maktab', region: 'Namangan', district: 'Namangan', students: 612, pct: 85, status: 'Faol' },
-  { name: 'Abdullayeva Sevinch', school: '3-sonli maktab', region: 'Namangan', district: 'Uychi', students: 467, pct: 83, status: 'Faol' },
-  { name: 'Tursunova Nilufar', school: '9-sonli maktab', region: 'Andijon', district: 'Asaka', students: 503, pct: 76, status: 'Ehtiyoj' },
-  { name: 'Saidov Bobur', school: '14-sonli maktab', region: 'Andijon', district: 'Marhamat', students: 489, pct: 69, status: 'Ehtiyoj' },
-  { name: 'Raxmonova Zulfiya', school: '5-sonli maktab', region: 'Farg\u2018ona', district: 'Qo\u2018qon', students: 721, pct: 88, status: 'Faol' },
-  { name: 'Xolmatov Javohir', school: '22-sonli maktab', region: 'Farg\u2018ona', district: 'Beshariq', students: 395, pct: 73, status: 'Ehtiyoj' },
-  { name: 'To\u2018xtayeva Gulnora', school: '1-sonli maktab', region: 'Toshkent', district: 'Chirchiq', students: 648, pct: 90, status: 'Faol' },
-];
-
 let REAL_ADVISORS = [];
 let ADV_KPI = { total: 0, active: 0, avg_score: 0 };
 let advisorFilterStatus = '';
 let advisorFilterQuery = '';
-function renderAdvisorsList(){
-  const list = REAL_ADVISORS.length ? REAL_ADVISORS.map(a => ({
-    name: a.full_name, school: a.school_name || '—', district: a.district || '—',
-    students: a.student_count, pct: a.score_percent, status: a.status,
-  })) : ADVISORS_SAMPLE;
-
+function renderAdvisorsKpis(){
   document.getElementById('advKpiBox').innerHTML =
-    kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', 'Jami maslahatchilar', REAL_ADVISORS.length ? ADV_KPI.total : 96, REAL_ADVISORS.length ? null : '5') +
-    kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>', 'Faol maslahatchilar', REAL_ADVISORS.length ? ADV_KPI.active : 88) +
-    kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>', "O'rtacha samaradorlik", (REAL_ADVISORS.length ? ADV_KPI.avg_score : 78) + '%') +
-    kpiCard('i-red', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>', 'Rivojlanish ko‘rsatkichi', '+18%');
+    kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', 'Jami maslahatchilar', ADV_KPI.total) +
+    kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>', 'Faol maslahatchilar', ADV_KPI.active) +
+    kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>', "O'rtacha samaradorlik", ADV_KPI.avg_score + '%') +
+    kpiCard('i-red', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>', 'Ehtiyoj talab qiladi', Math.max(0, ADV_KPI.total - ADV_KPI.active));
+}
+function renderAdvisorsList(){
+  const list = REAL_ADVISORS.map(a => ({
+    name: a.full_name, school: a.school_name || '\u2014', district: a.district || '\u2014',
+    students: a.student_count, pct: a.score_percent, status: a.status,
+  }));
 
   const filtered = list.filter(a => {
     if (advisorFilterStatus && a.status !== advisorFilterStatus) return false;
@@ -1276,112 +1174,116 @@ function renderAdvisorsList(){
   document.querySelectorAll('[data-view-advisor]').forEach(b => b.onclick = () => showToast(filtered[+b.dataset.viewAdvisor].name + " ma'lumotlari"));
 }
 
-async function renderAdvisorsPage(){
+/* Maslahatchilar sahifasidagi yon kartochkalar \u2014 hammasi haqiqiy
+   REAL_ADVISORS ma'lumotidan hisoblanadi (oylik grafik yoki viloyat
+   kesimi emas \u2014 bunday ma'lumot bazada yo'q, direktor bitta tumanga
+   biriktirilgan). */
+function renderAdvisorsSideCards(){
+  const buckets = [
+    { lbl: "50% dan past", test: p => p < 50 },
+    { lbl: '50\u201369%', test: p => p >= 50 && p < 70 },
+    { lbl: '70\u201384%', test: p => p >= 70 && p < 85 },
+    { lbl: '85\u2013100%', test: p => p >= 85 },
+  ];
+  const rows = buckets.map(b => ({ lbl: b.lbl, n: REAL_ADVISORS.filter(a => b.test(a.score_percent)).length }));
+  const maxN = Math.max(1, ...rows.map(r => r.n));
+  document.getElementById('advBarsBox').innerHTML = REAL_ADVISORS.length ? rows.map(r => `
+    <div class="bar-col"><span class="pct">${r.n}</span><div class="fill" style="height:${r.n/maxN*100}%"></div><span class="lbl">${r.lbl}</span></div>`).join('') :
+    `<div style="color:var(--muted);font-size:12.5px;padding:30px 0;text-align:center;width:100%">Hozircha ma'lumot yo'q</div>`;
+
+  const bySchool = {};
+  REAL_ADVISORS.forEach(a => { const k = a.school_name || "Noma'lum"; bySchool[k] = (bySchool[k] || 0) + 1; });
+  const schoolRows = Object.entries(bySchool).map(([name, n]) => ({ name, n })).sort((a,b) => b.n - a.n).slice(0,5);
+  const maxS = Math.max(1, ...schoolRows.map(r => r.n));
+  document.getElementById('advRegionDistBox').innerHTML = schoolRows.length ? schoolRows.map(r => `
+    <div class="dist-row2"><span class="lbl">${r.name}</span>
+      <span class="track"><span class="fill" style="width:${r.n/maxS*100}%"></span></span>
+      <span class="num">${r.n}</span></div>`).join('') :
+    `<div style="color:var(--muted);font-size:12.5px;padding:8px 0">Hozircha ma'lumot yo'q</div>`;
+
+  const total = ADV_KPI.total || 0;
+  const active = ADV_KPI.active || 0;
+  const need = Math.max(0, total - active);
+  const activePct = total ? Math.round(active / total * 100) : 0;
+  const needPct = total ? 100 - activePct : 0;
+  renderDonutMini('advDonutSvg', 'advLegendBox', 'advDonutTotal', total ? [
+    { label: `Faol \u2014 ${active} (${activePct}%)`, val: activePct, color: '#16A34A' },
+    { label: `Ehtiyoj \u2014 ${need} (${needPct}%)`, val: needPct, color: '#E08A15' },
+  ] : [{ label: "Hozircha ma'lumot yo'q", val: 100, color: '#E3E1F7' }], total);
+}
+
+async function loadAdvisorsData(){
   try {
     const res = await apiFetch('/api/kelajak-direktor/advisors');
     REAL_ADVISORS = res.advisors || [];
-    ADV_KPI = res.kpi || ADV_KPI;
-  } catch (e) { console.warn("Maslahatchilarni yuklab bo'lmadi:", e.message); REAL_ADVISORS = []; }
+    ADV_KPI = res.kpi || { total: 0, active: 0, avg_score: 0 };
+  } catch (e) {
+    console.warn("Maslahatchilarni yuklab bo'lmadi:", e.message);
+    REAL_ADVISORS = []; ADV_KPI = { total: 0, active: 0, avg_score: 0 };
+  }
+  renderHomeKpis();
+  renderHomeBars();
+  renderHomeTop5Advisors();
+  renderAdvisorsKpis();
   renderAdvisorsList();
-
-  const months2 = [['Yan',62],['Fev',68],['Mar',71],['Apr',75],['May',77],['Iyn',80],['Iyl',82],['Avg',85]];
-  document.getElementById('advBarsBox').innerHTML = months2.map(m => `
-    <div class="bar-col"><span class="pct">${m[1]}%</span><div class="fill" style="height:${m[1]}%"></div><span class="lbl">${m[0]}</span></div>`).join('');
-
-  const maxR2 = Math.max(...REGION_DIST.slice(0,5).map(r => r.n * 1.5));
-  document.getElementById('advRegionDistBox').innerHTML = REGION_DIST.slice(0,5).map(r => `
-    <div class="dist-row2"><span class="lbl">${r.name}</span>
-      <span class="track"><span class="fill" style="width:${r.n*1.5/maxR2*100}%"></span></span>
-      <span class="num">${r.n*1.5|0}</span></div>`).join('');
-
-  renderDonutMini('advDonutSvg', 'advLegendBox', 'advDonutTotal', [
-    { label: 'Faol \u2014 88 (92%)', val: 92, color: '#16A34A' },
-    { label: 'Ehtiyoj \u2014 6 (9%)', val: 6, color: '#E08A15' },
-    { label: 'Faol emas \u2014 2 (2%)', val: 2, color: '#D6473C' },
-  ], 96);
+  renderAdvisorsSideCards();
+  renderReportsAdvisorsTop5();
 }
 
+let REPORTS_DATA = null;
 async function loadReports(){
   try {
-    const d = await apiFetch('/api/kelajak-direktor/reports');
-    renderReportsPage2(d);
-  } catch (e) { console.warn(e.message); renderReportsPage2(null); }
+    REPORTS_DATA = await apiFetch('/api/kelajak-direktor/reports');
+  } catch (e) { console.warn(e.message); REPORTS_DATA = null; }
+  renderReportsPage2(REPORTS_DATA);
+}
+
+/* "Maslahatchilar samaradorligi (Top 5)" kartochkasi — haqiqiy
+   REAL_ADVISORS ro'yxatidan. Alohida funksiya, chunki maslahatchilar
+   ma'lumoti (/advisors) hisobotlar ma'lumotidan (/reports) mustaqil
+   yuklanadi — ikkalasi ham tayyor bo'lganda chaqiriladi. */
+function renderReportsAdvisorsTop5(){
+  const el = document.getElementById('repRegionBox');
+  if (!el) return;
+  const top5 = [...REAL_ADVISORS].sort((a,b) => b.score_percent - a.score_percent).slice(0,5);
+  el.innerHTML = top5.length ? top5.map(a => `
+    <div class="dist-row2"><span class="lbl">${a.full_name}</span>
+      <span class="track"><span class="fill" style="width:${a.score_percent}%;background:linear-gradient(90deg,#8B6EF0,#6C4CE0)"></span></span>
+      <span class="num">${a.score_percent}%</span></div>`).join('') :
+    `<div style="color:var(--muted);font-size:12.5px;padding:8px 0">Hozircha ma'lumot yo'q</div>`;
 }
 
 function renderReportsPage2(data){
   const kpi = data && data.kpi;
   document.getElementById('repKpiBox2').innerHTML =
-    kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', "Jami o'quvchilar", kpi ? kpi.student_count.toLocaleString('ru-RU') : '24 532', '6%') +
-    kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/></svg>', 'Faol maslahatchilar', kpi ? kpi.active_advisors : 88, '12%') +
-    kpiCard('i-blue', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>', 'Maktablar soni', kpi ? kpi.school_count : 48) +
-    kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>', "O'rtacha samaradorlik", (kpi ? kpi.avg_score_percent : 78) + '%', '8%');
+    kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', "Jami o'quvchilar", kpi ? kpi.student_count : 0) +
+    kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/></svg>', 'Faol maslahatchilar', kpi ? kpi.active_advisors : 0) +
+    kpiCard('i-blue', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>', 'Maktablar soni', kpi ? kpi.school_count : 0) +
+    kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>', "O'rtacha samaradorlik", (kpi ? kpi.avg_score_percent : 0) + '%');
 
-  /* Uch chiziqli grafik */
-  const months3 = ['Yan','Fev','Mar','Apr','May','Iyn','Iyl','Avg','Sen','Noy','Dek'];
-  const s1 = [22,28,35,42,48,55,62,68,74,80,88];   // o'quvchilar soni (shartli shkala)
-  const s2 = [10,14,18,22,27,32,37,42,46,50,55];   // maslahatchilar faolligi
-  const s3 = [5,8,12,16,20,24,28,32,36,40,44];     // maktablar samaradorligi
-  const W = 400, H = 190, padL = 28, padB = 22, padT = 10;
-  const chW = W - padL - 10, chH = H - padB - padT;
-  function pathFor(arr){
-    return arr.map((v, i) => {
-      const x = padL + (i / (arr.length - 1)) * chW;
-      const y = padT + chH - (v / 100) * chH;
-      return (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1);
-    }).join(' ');
-  }
-  const gridLines2 = [0,25,50,75,100].map(g => {
-    const y = padT + chH - (g/100)*chH;
-    return `<line x1="${padL}" y1="${y}" x2="${W-6}" y2="${y}" stroke="#F1F0F9" stroke-width="1"/><text x="0" y="${y+3}" font-size="9" fill="#7A7A96">${g}</text>`;
-  }).join('');
-  const xLabels = months3.map((m, i) => {
-    const x = padL + (i / (months3.length - 1)) * chW;
-    return `<text x="${x}" y="${H-4}" text-anchor="middle" font-size="9" fill="#7A7A96">${m}</text>`;
-  }).join('');
-  document.getElementById('multiLineSvg').innerHTML = gridLines2 + xLabels +
-    `<path d="${pathFor(s1)}" fill="none" stroke="#6C4CE0" stroke-width="2.2"/>` +
-    `<path d="${pathFor(s2)}" fill="none" stroke="#16A34A" stroke-width="2.2"/>` +
-    `<path d="${pathFor(s3)}" fill="none" stroke="#2E86C8" stroke-width="2.2"/>`;
+  const catData = (data && data.category_distribution && data.category_distribution.length) ? data.category_distribution : [];
+  renderDonutMini('catDonutSvg', 'catLegendBox', 'catDonutTotal',
+    catData.length ? catData : [{ label: "Hozircha ma'lumot yo'q", val: 100, color: '#E3E1F7' }],
+    kpi ? kpi.school_count : 0);
 
-  const catData = (data && data.category_distribution && data.category_distribution.length) ? data.category_distribution : [
-    { label: "Yuqori \u2014 22 (46%)", val: 46, color: '#16A34A' },
-    { label: "O'rta \u2014 18 (38%)", val: 38, color: '#2E86C8' },
-    { label: "Past \u2014 6 (12%)", val: 12, color: '#E08A15' },
-    { label: 'Qoniqarsiz \u2014 2 (4%)', val: 4, color: '#D6473C' },
-  ];
-  renderDonutMini('catDonutSvg', 'catLegendBox', 'catDonutTotal', catData, kpi ? kpi.school_count : 48);
+  renderReportsAdvisorsTop5();
 
-  const repRegion = (data && data.district_performance && data.district_performance.length)
-    ? data.district_performance
-    : REGION_DIST.slice(0,5).map((r,i) => ({ name: r.name, pct: [92,87,83,78,76][i] }));
-  document.getElementById('repRegionBox').innerHTML = repRegion.map(r => `
-    <div class="dist-row2"><span class="lbl">${r.name}</span>
-      <span class="track"><span class="fill" style="width:${r.pct}%;background:linear-gradient(90deg,#8B6EF0,#6C4CE0)"></span></span>
-      <span class="num">${r.pct}%</span></div>`).join('');
-
-  const recentReports2 = [
-    { name: 'Maktablar umumiy hisoboti', period: '2025-yil II chorak', cov: '48 maktab' },
-    { name: 'Maslahatchilar faoliyati tahlili', period: '2025-yil II chorak', cov: '96 maslahatchi' },
-    { name: "O'quvchilar ko'rsatkichlari", period: '2025-yil II chorak', cov: "24 532 o'quvchi" },
-    { name: 'Hududlar kesimida tahlil', period: '2025-yil II chorak', cov: '14 tuman' },
-    { name: 'Tavsiyalar va takliflar', period: '2025-yil II chorak', cov: '48 maktab' },
-  ];
-  document.getElementById('recentReportsBody2').innerHTML = recentReports2.map((r, i) => `
-    <tr><td style="padding-left:20px">${i+1}</td><td>${r.name}</td><td>${r.period}</td><td>${r.cov}</td>
-    <td><span class="status-dot2" style="background:#16A34A"></span>Tayyor</td>
-    <td style="padding-right:20px"><button class="icon-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></button><button class="icon-btn dots-btn">\u22ee</button></td></tr>`).join('');
+  /* So'nggi hisobotlar — bu yerda avval saqlangan hisobot fayllari
+     bo'lmagani uchun ro'yxat ochiq va rostgo'y bo'lib bo'sh boshlanadi;
+     joriy ma'lumot pastdagi "Tezkor hisobotlar" tugmalari orqali
+     to'g'ridan-to'g'ri CSV holida yuklab olinadi. */
+  document.getElementById('recentReportsBody2').innerHTML =
+    `<tr><td colspan="6"><div class="empty">Hozircha saqlangan hisobot yo'q. Pastdagi tugmalar orqali joriy ma'lumotni CSV holida yuklab oling.</div></td></tr>`;
 
   const quickReps2 = [
-    { name: 'Maktablar kesimida', bg:'#EEE9FE', c:'#6C4CE0', ico:'\uD83D\uDCCA' },
-    { name: 'Maslahatchilar kesimida', bg:'#E8F1FE', c:'#2E86C8', ico:'\uD83D\uDC65' },
-    { name: "O'quvchilar kesimida", bg:'#E9F8EF', c:'#1D9E63', ico:'\uD83E\uDDD1\u200D\uD83C\uDF93' },
-    { name: 'Hududlar kesimida', bg:'#FEF4E4', c:'#E08A15', ico:'\uD83D\uDDFA' },
-    { name: 'Muammo va tavsiyalar', bg:'#FDECEB', c:'#D6473C', ico:'\u26A0' },
-    { name: 'Hisobot (Excel/PDF)', bg:'#F0EEFC', c:'#6C4CE0', ico:'\uD83D\uDCC4' },
+    { name: 'Maktablar ro\u2018yxati (CSV)', bg:'#EEE9FE', c:'#6C4CE0', ico:'\uD83D\uDCCA', fn: exportSchoolsCsv },
+    { name: 'Maslahatchilar ro\u2018yxati (CSV)', bg:'#E8F1FE', c:'#2E86C8', ico:'\uD83D\uDC65', fn: exportAdvisorsCsv },
+    { name: 'Umumiy statistika (CSV)', bg:'#E9F8EF', c:'#1D9E63', ico:'\uD83D\uDCC4', fn: exportOverviewCsv },
   ];
-  document.getElementById('quickRepBox2').innerHTML = quickReps2.map(q => `
-    <div class="quick-rep-card2" style="background:${q.bg}"><span class="ico">${q.ico}</span>
+  document.getElementById('quickRepBox2').innerHTML = quickReps2.map((q, i) => `
+    <div class="quick-rep-card2" data-qrep="${i}" style="background:${q.bg};cursor:pointer"><span class="ico">${q.ico}</span>
       <b style="color:${q.c}">${q.name}</b></div>`).join('');
+  document.querySelectorAll('#quickRepBox2 [data-qrep]').forEach(el => el.onclick = () => quickReps2[+el.dataset.qrep].fn());
 }
 document.addEventListener('click', e => {
   const tab = e.target.closest('.tab-item2');
@@ -1392,77 +1294,27 @@ document.addEventListener('click', e => {
   }
 });
 
-function gaugeSvg(pct, color){
-  const dash = pct, gap = 100 - pct;
-  return `<svg viewBox="0 0 42 42" width="110" height="110">
-    <circle cx="21" cy="21" r="17" fill="transparent" stroke="#F1F0F9" stroke-width="4"/>
-    <circle cx="21" cy="21" r="17" fill="transparent" stroke="${color}" stroke-width="4"
-      stroke-dasharray="${dash} ${gap}" stroke-dashoffset="25" transform="rotate(-90 21 21)" stroke-linecap="round"/>
-  </svg>`;
-}
-
-const MON_SCHOOLS = [
-  { name: '12-sonli maktab', region: 'Namangan / Pop', advisor: 'Aliyeva M.', pct: 92, status: 'Yaxshi' },
-  { name: '7-sonli maktab', region: 'Namangan / Pop', advisor: 'Karimov A.', pct: 87, status: 'Yaxshi' },
-  { name: '25-sonli maktab', region: 'Namangan / Chortoq', advisor: 'Ismoilova D.', pct: 76, status: "O'rtacha" },
-  { name: '11-sonli maktab', region: 'Andijon / Asaka', advisor: 'Nosirov S.', pct: 68, status: 'Muammo' },
-  { name: '3-sonli maktab', region: "Farg'ona / Qo'qon", advisor: 'Abdullayeva S.', pct: 83, status: 'Yaxshi' },
-];
-
+let MONITORING_DATA = null;
 async function loadMonitoring(){
   try {
-    const d = await apiFetch('/api/kelajak-direktor/monitoring');
-    renderMonitoringPage(d);
-  } catch (e) { console.warn(e.message); renderMonitoringPage(null); }
+    MONITORING_DATA = await apiFetch('/api/kelajak-direktor/monitoring');
+  } catch (e) { console.warn(e.message); MONITORING_DATA = null; }
+  renderMonitoringPage(MONITORING_DATA);
+  renderHomeNews();
 }
 
 function renderMonitoringPage(data){
   const kpi = data && data.kpi;
   document.getElementById('monKpiBox').innerHTML =
-    kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>', 'Jami maktablar', kpi ? kpi.school_count : 48, '2') +
-    kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', 'Faol maslahatchilar', kpi ? kpi.active_advisors : 88, '5') +
-    kpiCard('i-blue', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', "Jami o'quvchilar", kpi ? kpi.student_count.toLocaleString('ru-RU') : '24 532', '3%') +
-    kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>', "O'rtacha samaradorlik", (kpi ? kpi.avg_score_percent : 78) + '%', '6%');
+    kpiCard('i-violet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>', 'Jami maktablar', kpi ? kpi.school_count : 0) +
+    kpiCard('i-green', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', 'Faol maslahatchilar', kpi ? kpi.active_advisors : 0) +
+    kpiCard('i-blue', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', "Jami o'quvchilar", kpi ? kpi.student_count : 0) +
+    kpiCard('i-amber', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>', "O'rtacha samaradorlik", (kpi ? kpi.avg_score_percent : 0) + '%');
 
-  /* Xarita */
-  const monDots = [
-    { x: 20, y: 30, c: '#16A34A' }, { x: 35, y: 22, c: '#D6473C' }, { x: 55, y: 20, c: '#E08A15' },
-    { x: 65, y: 40, c: '#16A34A' }, { x: 33, y: 55, c: '#16A34A' }, { x: 50, y: 45, c: '#4C2CE2', big: true },
-    { x: 60, y: 55, c: '#E08A15' }, { x: 42, y: 68, c: '#16A34A' }, { x: 65, y: 72, c: '#D6473C' },
-  ];
-  let mapHtml = '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">' +
-    '<path d="M8,25 Q20,8 45,10 Q75,8 90,25 Q95,45 85,65 Q75,88 50,92 Q25,90 12,68 Q3,48 8,25 Z" fill="#DAD3F7" stroke="#C7BDF2" stroke-width="0.6"/></svg>';
-  monDots.forEach(d => { mapHtml += `<span class="map-dot" style="left:${d.x}%;top:${d.y}%;background:${d.c}${d.big?';width:16px;height:16px':''}"></span>`; });
-  mapHtml += `<div class="map-legend">
-    <div class="row"><span class="dot" style="background:#16A34A"></span>Yaxshi (35)</div>
-    <div class="row"><span class="dot" style="background:#E08A15"></span>O'rtacha (9)</div>
-    <div class="row"><span class="dot" style="background:#D6473C"></span>Muammo (4)</div>
-  </div>
-  <div class="map-zoom"><button id="mapZoomIn">+</button><button id="mapZoomOut">\u2212</button></div>`;
-  document.getElementById('monMapWrap').innerHTML = mapHtml;
-  const zin = document.getElementById('mapZoomIn'), zout = document.getElementById('mapZoomOut');
-  if (zin) zin.onclick = () => showToast("Xarita kattalashtirildi");
-  if (zout) zout.onclick = () => showToast("Xarita kichraytirildi");
-
-  /* Gauge'lar */
-  const gauges = [
-    { pct: 92, color: '#16A34A', ico: '\uD83C\uDF93', lbl: 'Darslarga qatnashish', goal: 90 },
-    { pct: 78, color: '#2E86C8', ico: '\uD83D\uDC65', lbl: 'Maslahatchi faoliyati', goal: 80 },
-    { pct: 71, color: '#E08A15', ico: '\uD83D\uDCC8', lbl: 'Tarbiyaviy ishlar', goal: 75 },
-    { pct: 85, color: '#6C4CE0', ico: '\uD83C\uDFC6', lbl: 'Loyiha va tanlovlar', goal: 80 },
-  ];
-  document.getElementById('gaugeBox').innerHTML = gauges.map(g => `
-    <div class="gauge-card">
-      <div class="gauge-wrap">${gaugeSvg(g.pct, g.color)}
-        <div class="gauge-center"><span class="ico2">${g.ico}</span><b>${g.pct}%</b></div>
-      </div>
-      <div class="lbl">${g.lbl}</div>
-      <div class="goal">Maqsad: ${g.goal}%</div>
-    </div>`).join('');
-
-  /* Maktablar monitoringi jadvali */
-  const monRows = (data && data.schools && data.schools.length) ? data.schools : MON_SCHOOLS;
-  document.getElementById('monTableBody').innerHTML = monRows.map((s, i) => {
+  /* Maktablar monitoringi jadvali — faqat haqiqiy ma'lumot, ro'yxat
+     bo'sh bo'lsa soxta namunaviy qatorlar bilan to'ldirilmaydi. */
+  const monRows = (data && data.schools) || [];
+  document.getElementById('monTableBody').innerHTML = monRows.length ? monRows.map((s, i) => {
     const pillClass = s.pct >= 85 ? 'pill-green' : s.pct >= 70 ? 'pill-amber' : 'pill-red';
     const statusColor = s.status === 'Yaxshi' ? '#16A34A' : s.status === "O'rtacha" ? '#E08A15' : '#D6473C';
     return `<tr>
@@ -1473,22 +1325,82 @@ function renderMonitoringPage(data){
       <td><span class="status-dot2" style="background:${statusColor}"></span>${s.status}</td>
       <td style="padding-right:20px"><button class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn dots-btn">\u22ee</button></td>
     </tr>`;
-  }).join('');
+  }).join('') : `<tr><td colspan="7"><div class="empty">Hozircha maktablar yo'q</div></td></tr>`;
 
-  /* So'nggi voqealar */
-  const events = (data && data.recent_events && data.recent_events.length) ? data.recent_events.map(e => ({ ico: '\u2713', bg: '#16A34A', txt: e.text, date: e.date })) : [
-    { ico: '\u23F1', bg: '#D6473C', txt: "25-sonli maktabda dars qoldirish ko\u2018paygan", date: 'Bugun, 10:24' },
-    { ico: '\uD83D\uDCDD', bg: '#2E86C8', txt: "11-sonli maktabda yangi loyiha boshlangan", date: 'Bugun, 09:15' },
-    { ico: '\u2713', bg: '#16A34A', txt: '<a href="#">7-sonli maktabda</a> tadbir muvaffaqiyatli o\u2018tkazildi', date: 'Kecha, 16:40' },
-    { ico: '\u26A0', bg: '#E08A15', txt: "3-sonli maktabda maslahatchi almashgan", date: 'Kecha, 14:30' },
-    { ico: '\u24D8', bg: '#2E86C8', txt: "12-sonli maktabda o\u2018quvchilar faolligi oshgan", date: '23.08.2025' },
-    { ico: '\u2713', bg: '#16A34A', txt: "Viloyat bo\u2018yicha hisobot yangilandi", date: '23.08.2025' },
-  ];
-  document.getElementById('eventsBox').innerHTML = events.map(e => `
-    <div class="event-row"><span class="event-ico" style="background:${e.bg}">${e.ico}</span>
-      <span class="txt">${e.txt}</span><span class="date">${e.date}</span></div>`).join('');
+  /* So'nggi voqealar — faqat haqiqiy recent_events (bazadagi so'nggi
+     yutuqlar), soxta namunaviy voqealar bilan to'ldirilmaydi. */
+  const events = (data && data.recent_events) || [];
+  document.getElementById('eventsBox').innerHTML = events.length ? events.map(e => `
+    <div class="event-row"><span class="event-ico" style="background:#16A34A">\u2713</span>
+      <span class="txt">${e.text}</span><span class="date">${e.date}</span></div>`).join('') :
+    `<div class="empty">Hozircha voqealar yo'q</div>`;
 }
-document.getElementById('downloadReportBtn3').onclick = () => showToast('Hisobot yuklanmoqda...');
+
+/* ============ CSV eksport (haqiqiy ma'lumotlardan) ============ */
+function downloadCSV(filename, header, rows){
+  const esc = v => `"${String(v === undefined || v === null ? '' : v).replace(/"/g,'""')}"`;
+  const lines = [];
+  if (header && header.length) lines.push(header.map(esc).join(','));
+  rows.forEach(r => lines.push(r.map(esc).join(',')));
+  const csv = lines.join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+function exportSchoolsCsv(){
+  if (!SCHOOLS.length) return showToast("Hozircha maktablar ma'lumoti yo'q");
+  downloadCSV('maktablar.csv', ['Maktab nomi','Tuman',"O'quvchilar soni",'Sinflar soni',"O'rtacha natija (%)",'Direktor'],
+    SCHOOLS.map(s => [s.name, s.district || '', s.student_count, s.class_count, s.avg_grade ? Math.round(s.avg_grade*10) : 0, s.director_name || '']));
+  showToast('CSV fayl yuklandi \u2713');
+}
+function exportAdvisorsCsv(){
+  if (!REAL_ADVISORS.length) return showToast("Hozircha maslahatchilar ma'lumoti yo'q");
+  downloadCSV('maslahatchilar.csv', ['F.I.Sh.','Maktab','Tuman',"O'quvchilar soni",'Samaradorlik (%)','Holat'],
+    REAL_ADVISORS.map(a => [a.full_name, a.school_name || '', a.district || '', a.student_count, a.score_percent, a.status]));
+  showToast('CSV fayl yuklandi \u2713');
+}
+function exportOverviewCsv(){
+  downloadCSV('umumiy-statistika.csv', ["Ko\u2018rsatkich", 'Qiymat'], [
+    ['Jami maktablar', OVERVIEW.school_count],
+    ["Jami o'quvchilar", OVERVIEW.student_count],
+    ["O'rtacha natija (%)", OVERVIEW.avg_grade ? Math.round(OVERVIEW.avg_grade*10) : 0],
+    ['Jami yutuqlar', OVERVIEW.total_achievements],
+    ['Maslahatchilar soni', ADV_KPI.total],
+    ['Faol maslahatchilar', ADV_KPI.active],
+  ]);
+  showToast('CSV fayl yuklandi \u2713');
+}
+function exportFullReportCsv(){
+  const rows = [
+    ['UMUMIY KO\u2018RSATKICHLAR'],
+    ['Jami maktablar', OVERVIEW.school_count],
+    ["Jami o'quvchilar", OVERVIEW.student_count],
+    ["O'rtacha natija (%)", OVERVIEW.avg_grade ? Math.round(OVERVIEW.avg_grade*10) : 0],
+    ['Maslahatchilar soni', ADV_KPI.total],
+    ['Faol maslahatchilar', ADV_KPI.active],
+    [],
+    ['MAKTABLAR'],
+    ['Maktab nomi', 'Tuman', "O'quvchilar", 'Natija (%)'],
+    ...SCHOOLS.map(s => [s.name, s.district || '', s.student_count, s.avg_grade ? Math.round(s.avg_grade*10) : 0]),
+    [],
+    ['MASLAHATCHILAR'],
+    ['F.I.Sh.', 'Maktab', 'Natija (%)', 'Holat'],
+    ...REAL_ADVISORS.map(a => [a.full_name, a.school_name || '', a.score_percent, a.status]),
+  ];
+  downloadCSV('hisobot.csv', [], rows);
+  showToast('Hisobot CSV holida yuklandi \u2713');
+}
+function exportMonitoringCsv(){
+  const rows = (MONITORING_DATA && MONITORING_DATA.schools) || [];
+  if (!rows.length) return showToast("Hozircha ma'lumot yo'q");
+  downloadCSV('monitoring.csv', ['Maktab nomi', 'Hudud', 'Maslahatchi', 'Natija (%)', 'Holat'],
+    rows.map(s => [s.name, s.region, s.advisor, s.pct, s.status]));
+  showToast('CSV fayl yuklandi \u2713');
+}
+document.getElementById('downloadReportBtn3').onclick = exportMonitoringCsv;
 
 /* ============ Direktor tayinlash ============ */
 let openSchoolMenu = null;
@@ -1612,9 +1524,9 @@ document.getElementById('bellBtn').onclick = e => { e.stopPropagation(); const p
 document.getElementById('profileBtn').onclick = e => { e.stopPropagation(); const p = document.getElementById('profilePanel'); closeAllDropdowns(p); p.classList.toggle('open'); };
 document.querySelectorAll('#profilePanel [data-view-link]').forEach(b => b.onclick = () => { switchView(b.dataset.viewLink); document.getElementById('profilePanel').classList.remove('open'); });
 
-document.getElementById('downloadReportBtn').onclick = () => showToast('Hisobot yuklanmoqda...');
+document.getElementById('downloadReportBtn').onclick = exportOverviewCsv;
 document.getElementById('addSchoolBtn').onclick = () => showToast("Yangi maktab qo'shish \u2014 bu amal admin panel orqali bajariladi.");
-document.getElementById('downloadReportBtn2').onclick = () => showToast('Hisobot yuklanmoqda...');
+document.getElementById('downloadReportBtn2').onclick = exportFullReportCsv;
 
 /* ===== Maktablar sahifasi: haqiqiy qidiruv/filtr ===== */
 document.getElementById('schoolSearchInp').addEventListener('input', function(){
@@ -1660,13 +1572,13 @@ document.addEventListener('click', e => {
   if (fs) showToast('Filtr tez orada to\u2018liq ishlaydi');
 });
 
-const SEARCH_INDEX = SAMPLE_SCHOOLS.map(s => ({ t: s.name, sub: 'Maktab \u00b7 ' + s.district, view: 'schools' }));
 const searchInp = document.getElementById('globalSearchInp');
 const searchDd = document.getElementById('searchDd');
 searchInp.addEventListener('input', () => {
   const q = searchInp.value.trim().toLowerCase();
   if (!q) { searchDd.classList.remove('open'); return; }
-  const found = SEARCH_INDEX.filter(x => x.t.toLowerCase().includes(q));
+  const searchIndex = SCHOOLS.map(s => ({ t: s.name, sub: 'Maktab \u00b7 ' + (s.district || ''), view: 'schools' }));
+  const found = searchIndex.filter(x => x.t.toLowerCase().includes(q));
   searchDd.innerHTML = found.length ? found.map(x => `<div class="dd-item" data-goto="${x.view}">${x.t}</div>`).join('') : '<div class="dd-item" style="color:var(--muted)">Hech narsa topilmadi</div>';
   searchDd.classList.add('open');
   searchDd.querySelectorAll('[data-goto]').forEach(el => el.onclick = () => { switchView(el.dataset.goto); searchInp.value=''; searchDd.classList.remove('open'); });
@@ -1806,10 +1718,10 @@ function fillSettingsProfile(u){
 
 /* Avtomatik-login: barcha o'zgaruvchilar va funksiyalar e'lon qilingandan
    KEYIN chaqiriladi — aks holda startApp() pastroqdagi const/let
-   o'zgaruvchilarga (REGION_DIST, SCHOOLS, REAL_ADVISORS va h.k.) ishga
-   tushmasdan turib murojaat qilib, "before initialization" xatosini
-   berardi va shu sabab sidebar menyu tugmalariga onclick bog'lovchi kod
-   hech qachon ishga tushmasdi. */
+   o'zgaruvchilarga (SCHOOLS, REAL_ADVISORS va h.k.) ishga tushmasdan
+   turib murojaat qilib, "before initialization" xatosini berardi va
+   shu sabab sidebar menyu tugmalariga onclick bog'lovchi kod hech
+   qachon ishga tushmasdi. */
 if (localStorage.getItem('qp_kelajak_token')) {
   startApp();
 } else {
