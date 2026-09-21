@@ -11741,18 +11741,18 @@ const CAREER_BY_SKILL = {
   'Liderlik': ['Loyiha menejeri', 'Jamoa rahbari'],
   'Tadbirkorlik': ['Startup asoschisi', 'Marketing mutaxassisi'],
 };
-const SKILL_TO_COURSE = {
-  'IT va texnologiya': ['Python dasturlash', '<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M2 20h20"/>'],
-  'Analitik fikrlash': ["Ma'lumotlar analitikasi", '<path d="M4 19V5M4 19h16"/><path d="M8 16v-5M12 16V8M16 16v-3"/>'],
-  'Matematika': ['Amaliy matematika', '<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 13h3M8 17h3"/>'],
-  'Ijodkorlik': ['Grafik dizayn (UI/UX)', '<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.2"/><circle cx="15" cy="10" r="1.2"/>'],
-  'Tabiiy fanlar': ["Tabiiy fanlar bo'yicha loyiha", '<path d="M9 3v6l-5 9a2 2 0 002 3h12a2 2 0 002-3l-5-9V3"/>'],
-  'Sport': ['Sport va jismoniy tayyorgarlik', '<circle cx="12" cy="12" r="9"/>'],
-  "San'at": ["San'at va ijod studiyasi", '<path d="M12 3a6 6 0 00-4 10.5V16h8v-2.5A6 6 0 0012 3z"/>'],
-  'Muloqot': ['Notiqlik va muloqot mahorati', '<path d="M21 12a8 8 0 01-8 8H5l-2 2V12a8 8 0 018-8h1a8 8 0 018 8z"/>'],
-  'Liderlik': ['Loyiha boshqaruvi asoslari', '<rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/>'],
-  'Tadbirkorlik': ['Startup va tadbirkorlik asoslari', '<path d="M12 3l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-1.4z"/>'],
-};
+// MUHIM (tuzatildi, ikkinchi bosqich): SKILL_TO_COURSE lug'ati ("Python
+// dasturlash", "Amaliy matematika" kabi o'ylab topilgan kurs nomlari)
+// BUTUNLAY OLIB TASHLANDI. Endi "Tavsiya etilgan kurslar" FAQAT
+// partner_courses jadvalidagi HAQIQIY hamkor o'quv markazlardan keladi
+// (Kelajak Markazi direktori yoki admin qo'shgan) — backend
+// /api/students/advice-data javobidagi courses_by_skill orqali (pastda
+// buildCourses()). Agar biror yo'nalishda hali hamkor ro'yxatga
+// olinmagan bo'lsa, o'sha yo'nalish uchun HECH QANDAY o'ylab topilgan
+// nom ko'rsatilmaydi — buildCourses() shunchaki o'sha yo'nalishni
+// tashlab ketadi, va sahifada halol "hamkor hali yo'q" xabari chiqadi.
+// Generik ikonka — provayder/kurs turi noma'lum bo'lgani uchun bitta xil belgi ishlatiladi.
+const GENERIC_COURSE_ICON = '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/>';
 const SKILL_COLOR = ['#4C2CE2','#2563EB','#10B981','#F59E0B','#EF4444','#8B5CF6','#0EA5E9','#EC4899','#14B8A6','#F97316'];
 function skillColor(name){
   const i = skills_mod_order().indexOf(name);
@@ -11771,12 +11771,35 @@ function buildProfs(){
   });
   return out;
 }
+function esc(s){ const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+function coursesHaveNeedsData(){
+  return !!((ADVICE_DATA && ADVICE_DATA.skill_needs) || []).length;
+}
 function buildCourses(){
+  // HAQIQIY hamkor kurslar — eng zaif ko'nikmalar (skill_needs) bo'yicha,
+  // backend berganicha (courses_by_skill: {ko'nikma: [{provider_name,
+  // course_name, link, contact_phone}, ...]}). Ko'nikma uchun hamkor
+  // topilmasa — shu ko'nikma butunlay tashlab ketiladi (o'ylab topilmaydi).
+  // Tuple: [oddiy_matn, ehtiyoj%, rang, ikonka, ko'nikma_nomi, havola].
+  // Havola (x[5]) bo'lsa — ro'yxat kartalarida bosiladigan qilib
+  // ko'rsatiladi (courseLabel()), CSV/jadval eksportda esa oddiy matn
+  // + havola sifatida chiqadi (HTML teg emas).
   const needs = (ADVICE_DATA && ADVICE_DATA.skill_needs) || [];
-  return needs.map(n => {
-    const c = SKILL_TO_COURSE[n.name] || [n.name, '<circle cx="12" cy="12" r="9"/>'];
-    return [c[0], n.value, skillColor(n.name), c[1], n.name];
+  const bySkill = (ADVICE_DATA && ADVICE_DATA.courses_by_skill) || {};
+  const out = [];
+  needs.forEach(n => {
+    const list = bySkill[n.name] || [];
+    list.forEach(c => {
+      const label = (c.provider_name || '') + ' — ' + (c.course_name || '');
+      out.push([label, n.value, skillColor(n.name), GENERIC_COURSE_ICON, n.name, c.link || '']);
+    });
   });
+  return out;
+}
+function courseLabel(x){
+  return x[5]
+    ? `<a href="${esc(x[5])}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">${esc(x[0])}</a>`
+    : esc(x[0]);
 }
 function buildSubj(){
   const subjects = (ADVICE_DATA && ADVICE_DATA.subjects) || [];
@@ -11955,13 +11978,15 @@ function render(){
               <span class="t">${x[0]}</span><span class="badge ${x[2]}">${x[1]} (${x[5]})</span></div>`).join('')
             : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali baho kiritilmagan \u2014 ma'lumot chiqqach shu yerda ko'rinadi.</p>`; })()) }
 
-        ${recCard('course', 'Tavsiya etilgan kurslar', "Eng zaif ko'nikmalar asosida", 'i-gr',
+        ${recCard('course', 'Tavsiya etilgan kurslar', "Eng zaif ko'nikmalar asosida \u00b7 haqiqiy hamkor o'quv markazlar", 'i-gr',
           '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/>',
           (() => { const COURSES = buildCourses(); return COURSES.length ? COURSES.slice(0, 5).map(x => `
             <div class="li"><span class="lic" style="background:${x[2]}1a;color:${x[2]}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[3]}</svg></span>
-              <span class="t">${x[0]}</span><span class="badge b-vi">${x[4]}: ${x[1]}%</span></div>`).join('')
-            : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali "Qobiliyat testi" natijalari yo'q \u2014 kurs tavsiyalari shundan keyin chiqadi.</p>`; })()) }
+              <span class="t">${courseLabel(x)}</span><span class="badge b-vi">${x[4]}: ${x[1]}%</span></div>`).join('')
+            : coursesHaveNeedsData()
+              ? `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Bu yo'nalishlar uchun hali hamkor o'quv markaz ro'yxatga olinmagan \u2014 Kelajak Markazi direktori "Hamkor o'quv markazlar" bo'limidan qo'sha oladi.</p>`
+              : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali "Qobiliyat testi" natijalari yo'q \u2014 kurs tavsiyalari shundan keyin chiqadi.</p>`; })()) }
 
         ${recCard('club', 'Tavsiya etilgan to\u2018garaklar', 'Qobiliyat va qiziqishlar asosida', 'i-am',
           '<path d="M8 4h8v5a4 4 0 01-8 0z"/><path d="M10 20h4M12 13v7"/>',
@@ -12094,8 +12119,10 @@ function render(){
           (() => { const COURSES = buildCourses(); return COURSES.length ? COURSES.slice(0, 4).map(x => `
             <div class="li"><span class="lic" style="background:${x[2]}1a;color:${x[2]}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[3]}</svg></span>
-              <span class="t">${x[0]}</span><span class="badge b-vi">${x[1]}%</span></div>`).join('')
-            : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali "Qobiliyat testi" natijalari yo'q.</p>`; })()) }
+              <span class="t">${courseLabel(x)}</span><span class="badge b-vi">${x[1]}%</span></div>`).join('')
+            : coursesHaveNeedsData()
+              ? `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Bu yo'nalishlar uchun hali hamkor o'quv markaz ro'yxatga olinmagan.</p>`
+              : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali "Qobiliyat testi" natijalari yo'q.</p>`; })()) }
 
         ${recCard(null, 'To\u2018garak va tanlovlar', 'Ishtirok etish tavsiya etiladi', 'i-am',
           '<path d="M8 4h8v5a4 4 0 01-8 0z"/><path d="M10 20h4M12 13v7"/>',
@@ -12214,8 +12241,8 @@ function openMore(key){
     showModal('Kuchaytirish tavsiya etilgan fanlar', "Baholar bo'yicha real o'rtacha",
       ['Fan','Daraja'], buildSubj().map(x => [x[0], x[1] + ' (' + x[5] + ')']));
   if (key === 'course')
-    showModal('Tavsiya etilgan kurslar', "Eng zaif ko'nikmalar asosida",
-      ['Kurs','Ehtiyoj'], buildCourses().map(x => [x[0], x[1] + '%']));
+    showModal('Tavsiya etilgan kurslar', "Eng zaif ko'nikmalar asosida · haqiqiy hamkor o'quv markazlar",
+      ['Kurs','Yo‘nalish','Ehtiyoj','Havola'], buildCourses().map(x => [x[0], x[4], x[1] + '%', x[5] || '—']));
   if (key === 'club')
     showModal("Tavsiya etilgan to'garaklar", 'Qobiliyat va qiziqishlar asosida',
       ["To'garak"], CLUBS.map(x => [x[0]]));
@@ -12240,7 +12267,7 @@ function openClass(n){
     ['Yo\u2018nalish','Tavsiya'], [
       ['Ustun yo\u2018nalish', c.focus],
       ['Asosiy taklif', c.need],
-      ['Kurs', courses.length ? courses[0][0] : "Ma'lumot yo'q"],
+      ['Kurs', courses.length ? courses[0][0] : "Hamkor o'quv markaz hali ro'yxatga olinmagan"],
       ["To'garak", CLUBS[0][0]],
       ['Tanlov', OLYMP[0][0]],
       ['Fan kuchaytirish', subj.length ? subj.slice(0, 2).map(x => x[0]).join(', ') : "Ma'lumot yo'q"],
@@ -12273,7 +12300,7 @@ document.getElementById('repBtnR').onclick = () => {
   const rows = [
     ['AI TAVSIYALAR HISOBOTI'], ['Davr', fmt(P.from) + ' – ' + fmt(P.to)], [],
     ['Kasb yo\u2018nalishi','Moslik'], ...buildProfs().map(p => [p[0], p[1] + '%']), [],
-    ['Kurs','Ehtiyoj'], ...buildCourses().map(c => [c[0], c[1] + '%']), [],
+    ['Kurs','Yo‘nalish','Ehtiyoj','Havola'], ...buildCourses().map(c => [c[0], c[4], c[1] + '%', c[5] || '']), [],
     ['Ehtiyoj','O\u2018quvchilar'], ...NEEDS.map((n, i) => [n[0], i === 0 ? KPI.need + ' nafar' : "Ma'lumot yo'q"]),
   ];
   dl(rows, 'ai_tavsiyalar.csv');
