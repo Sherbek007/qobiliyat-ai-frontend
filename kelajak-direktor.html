@@ -920,12 +920,21 @@ document.getElementById('ddLogoutBtn').onclick = () => {
 };
 
 /* Tuman nomiga qarab tashkilot nomini hosil qiladi — masalan "Pop"
-   tumani uchun "Pop tumani Kelajak markazi" (bo'sh bo'lsa umumiy nom). */
+   tumani uchun "Pop tumani Kelajak markazi" (bo'sh bo'lsa umumiy nom).
+   MUHIM (tuzatildi): ba'zi tumanlar admin tomonidan allaqachon "...
+   tuman" so'zi bilan nomlangan (masalan "Pop tuman") — bunday holda
+   yana bir marta " tumani" qo'shilsa, "Pop tuman tumani" kabi
+   takrorlanib qolar edi. Endi shunday holatda so'z takrorlanmaydi. */
+function districtLabel(district){
+  const d = (district || '').trim();
+  if (!d) return '';
+  return /tuman(i)?$/i.test(d) ? d : `${d} tumani`;
+}
 function districtOrgName(u){
-  return u && u.district ? `${u.district} tumani Kelajak markazi` : 'Kelajak Markazi';
+  return u && u.district ? `${districtLabel(u.district)} Kelajak markazi` : 'Kelajak Markazi';
 }
 function districtRoleLabel(u){
-  return u && u.district ? `${u.district} tumani Kelajak markazi direktori` : 'Kelajak Markazi direktori';
+  return u && u.district ? `${districtLabel(u.district)} Kelajak markazi direktori` : 'Kelajak Markazi direktori';
 }
 function applyDistrictBranding(u){
   const org = districtOrgName(u);
