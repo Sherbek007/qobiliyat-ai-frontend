@@ -824,31 +824,63 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
   </div>
 </div>
 
-<div class="overlay" id="assignDirModal">
+<div class="overlay" id="assignAdvModal">
   <div class="modal">
-    <h3 id="assignDirTitle">Maktab direktorini tayinlash</h3>
-    <label for="assignDirSelect">Direktor tanlang</label>
-    <select id="assignDirSelect" class="field-inp" style="width:100%"></select>
+    <h3 id="assignAdvTitle">Maktabga maslahatchi biriktirish</h3>
+    <label for="assignAdvSelect">Mavjud maslahatchini tanlang (tumaningizdagi boshqa maktabdan ko'chiriladi)</label>
+    <select id="assignAdvSelect" class="field-inp" style="width:100%"></select>
     <div class="foot">
-      <button class="btn" id="assignDirCancelBtn">Bekor qilish</button>
-      <button class="btn btn-primary" id="assignDirSaveBtn">Saqlash</button>
+      <button class="btn" id="assignAdvCancelBtn">Bekor qilish</button>
+      <button class="btn btn-primary" id="assignAdvSaveBtn">Saqlash</button>
     </div>
   </div>
 </div>
 
-<div class="overlay" id="createDirModal">
+<div class="overlay" id="createAdvModal">
   <div class="modal">
-    <h3 id="createDirTitle">Yangi maktab direktori yaratish</h3>
-    <label for="cdFullName">F.I.Sh.</label>
-    <input id="cdFullName" class="field-inp" style="width:100%" placeholder="Ism Familiya">
-    <label for="cdPhone">Telefon raqam</label>
-    <div class="phone-wrap"><span class="pfx">+998</span><input id="cdPhone" inputmode="numeric" maxlength="12" placeholder="90 123 45 67"></div>
-    <label for="cdPassword">Vaqtinchalik parol</label>
-    <div class="pass-wrap"><input id="cdPassword" type="text" placeholder="Kamida 6 ta belgi"><button type="button" class="eye" id="cdGenBtn" title="Parol yaratish">🎲</button></div>
-    <p id="createDirErr" style="color:var(--red);font-size:12.5px;margin-top:14px;padding:11px 13px;background:var(--red-soft);border-radius:var(--r-sm);display:none"></p>
+    <h3 id="createAdvTitle">Yangi maslahatchi yaratish</h3>
+    <label for="caFullName">F.I.Sh.</label>
+    <input id="caFullName" class="field-inp" style="width:100%" placeholder="Ism Familiya">
+    <label for="caPhone">Telefon raqam</label>
+    <div class="phone-wrap"><span class="pfx">+998</span><input id="caPhone" inputmode="numeric" maxlength="12" placeholder="90 123 45 67"></div>
+    <label for="caPassword">Vaqtinchalik parol</label>
+    <div class="pass-wrap"><input id="caPassword" type="text" placeholder="Kamida 6 ta belgi"><button type="button" class="eye" id="caGenBtn" title="Parol yaratish">🎲</button></div>
+    <p id="createAdvErr" style="color:var(--red);font-size:12.5px;margin-top:14px;padding:11px 13px;background:var(--red-soft);border-radius:var(--r-sm);display:none"></p>
     <div class="foot">
-      <button class="btn" id="createDirCancelBtn">Bekor qilish</button>
-      <button class="btn btn-primary" id="createDirSaveBtn">Yaratish</button>
+      <button class="btn" id="createAdvCancelBtn">Bekor qilish</button>
+      <button class="btn btn-primary" id="createAdvSaveBtn">Yaratish</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="moveAdvModal">
+  <div class="modal">
+    <h3 id="moveAdvTitle">Maslahatchini boshqa maktabga o'tkazish</h3>
+    <label for="moveAdvSelect">Maktab tanlang</label>
+    <select id="moveAdvSelect" class="field-inp" style="width:100%"></select>
+    <div class="foot">
+      <button class="btn" id="moveAdvCancelBtn">Bekor qilish</button>
+      <button class="btn btn-primary" id="moveAdvSaveBtn">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="schoolDetailModal">
+  <div class="modal">
+    <h3 id="sdTitle">Maktab ma'lumotlari</h3>
+    <div id="sdBody" style="font-size:13.5px;line-height:1.9;color:#3A3A55"></div>
+    <div class="foot">
+      <button class="btn btn-primary" id="sdCloseBtn">Yopish</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="advisorDetailModal">
+  <div class="modal">
+    <h3 id="adTitle">Maslahatchi ma'lumotlari</h3>
+    <div id="adBody" style="font-size:13.5px;line-height:1.9;color:#3A3A55"></div>
+    <div class="foot">
+      <button class="btn btn-primary" id="adCloseBtn">Yopish</button>
     </div>
   </div>
 </div>
@@ -1022,11 +1054,15 @@ let schoolFilterStatus = '';
 let schoolFilterQuery = '';
 function renderSchoolsPage(){
   const myRegion = (JSON.parse(localStorage.getItem('qp_kelajak_user') || '{}').region) || '';
-  const all = SCHOOLS.map(s => ({
-    id: s.id, name: s.name, region: myRegion, district: s.district || '\u2014', students: s.student_count,
-    advisor: s.director_name || '\u2014', pct: s.avg_grade ? Math.round(s.avg_grade*10) : 0,
-    status: (s.avg_grade ? Math.round(s.avg_grade*10) : 0) >= 70 ? 'Faol' : 'Ehtiyoj',
-  }));
+  const all = SCHOOLS.map(s => {
+    const schoolAdvisors = REAL_ADVISORS.filter(a => String(a.school_id) === String(s.id));
+    return {
+      id: s.id, name: s.name, region: myRegion, district: s.district || '\u2014', students: s.student_count,
+      advisor: schoolAdvisors.length ? schoolAdvisors.map(a => a.full_name).join(', ') : 'Biriktirilmagan',
+      pct: s.avg_grade ? Math.round(s.avg_grade*10) : 0,
+      status: (s.avg_grade ? Math.round(s.avg_grade*10) : 0) >= 70 ? 'Faol' : 'Ehtiyoj',
+    };
+  });
 
   const activeCount = all.filter(s => s.status === 'Faol').length;
   const needCount = all.filter(s => s.status === 'Ehtiyoj').length;
@@ -1057,10 +1093,10 @@ function renderSchoolsPage(){
       <td>${s.region}</td><td>${s.district}</td><td>${s.students}</td><td>${s.advisor}</td>
       <td><span class="idx-pill ${pillClass}">${s.pct}%</span></td>
       <td><span class="status-dot2" style="background:${statusColor}"></span>${s.status}</td>
-      <td style="padding-right:20px"><button class="icon-btn" data-view-school="${i}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn dots-btn" data-school-id="${s.id || ''}" data-school-name="${s.name}">\u22ee</button></td>
+      <td style="padding-right:20px"><button class="icon-btn" data-view-school="${s.id || ''}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn dots-btn" data-school-id="${s.id || ''}" data-school-name="${s.name}">\u22ee</button></td>
     </tr>`;
   }).join('') : `<tr><td colspan="9"><div class="empty">Hech narsa topilmadi</div></td></tr>`;
-  document.querySelectorAll('[data-view-school]').forEach(b => b.onclick = () => showToast(filtered[+b.dataset.viewSchool].name + " ma'lumotlari"));
+  document.querySelectorAll('#schoolsFullBody [data-view-school]').forEach(b => b.onclick = () => openSchoolDetail(b.dataset.viewSchool));
   document.querySelectorAll('#schoolsFullBody .dots-btn').forEach(b => b.onclick = e => openSchoolDotsMenu(e, b.dataset.schoolId, b.dataset.schoolName));
 
   /* Maktablar holati taqsimoti (haqiqiy) */
@@ -1153,7 +1189,7 @@ function renderAdvisorsKpis(){
 }
 function renderAdvisorsList(){
   const list = REAL_ADVISORS.map(a => ({
-    name: a.full_name, school: a.school_name || '\u2014', district: a.district || '\u2014',
+    id: a.id, name: a.full_name, school: a.school_name || '\u2014', district: a.district || '\u2014',
     students: a.student_count, pct: a.score_percent, status: a.status,
   }));
 
@@ -1177,10 +1213,11 @@ function renderAdvisorsList(){
       <td>${a.school}</td><td>${a.district}</td><td>${a.students}</td>
       <td><span class="idx-pill ${pillClass}">${a.pct}%</span></td>
       <td><span class="status-dot2" style="background:${statusColor}"></span>${a.status}</td>
-      <td style="padding-right:20px"><button class="icon-btn" data-view-advisor="${i}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn dots-btn">⋮</button></td>
+      <td style="padding-right:20px"><button class="icon-btn" data-advisor-id="${a.id || ''}" data-advisor-view="1"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn dots-btn" data-advisor-id="${a.id || ''}" data-advisor-name="${a.name}">⋮</button></td>
     </tr>`;
   }).join('') : `<tr><td colspan="8"><div class="empty">Hech narsa topilmadi</div></td></tr>`;
-  document.querySelectorAll('[data-view-advisor]').forEach(b => b.onclick = () => showToast(filtered[+b.dataset.viewAdvisor].name + " ma'lumotlari"));
+  document.querySelectorAll('#advisorsFullBody [data-advisor-view]').forEach(b => b.onclick = () => openAdvisorDetail(b.dataset.advisorId));
+  document.querySelectorAll('#advisorsFullBody .dots-btn').forEach(b => b.onclick = e => openAdvisorDotsMenu(e, b.dataset.advisorId, b.dataset.advisorName));
 }
 
 /* Maslahatchilar sahifasidagi yon kartochkalar \u2014 hammasi haqiqiy
@@ -1236,6 +1273,7 @@ async function loadAdvisorsData(){
   renderAdvisorsKpis();
   renderAdvisorsList();
   renderAdvisorsSideCards();
+  renderSchoolsPage();
   renderReportsAdvisorsTop5();
 }
 
@@ -1332,9 +1370,11 @@ function renderMonitoringPage(data){
       <td>${s.region}</td><td>${s.advisor}</td>
       <td><span class="idx-pill ${pillClass}">${s.pct}%</span></td>
       <td><span class="status-dot2" style="background:${statusColor}"></span>${s.status}</td>
-      <td style="padding-right:20px"><button class="icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn dots-btn">\u22ee</button></td>
+      <td style="padding-right:20px"><button class="icon-btn" data-mon-view="${s.id || ''}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn dots-btn" data-school-id="${s.id || ''}" data-school-name="${s.name}">\u22ee</button></td>
     </tr>`;
   }).join('') : `<tr><td colspan="7"><div class="empty">Hozircha maktablar yo'q</div></td></tr>`;
+  document.querySelectorAll('#monTableBody [data-mon-view]').forEach(b => b.onclick = () => openSchoolDetail(b.dataset.monView));
+  document.querySelectorAll('#monTableBody .dots-btn').forEach(b => b.onclick = e => openSchoolDotsMenu(e, b.dataset.schoolId, b.dataset.schoolName));
 
   /* So'nggi voqealar — faqat haqiqiy recent_events (bazadagi so'nggi
      yutuqlar), soxta namunaviy voqealar bilan to'ldirilmaydi. */
@@ -1411,7 +1451,10 @@ function exportMonitoringCsv(){
 }
 document.getElementById('downloadReportBtn3').onclick = exportMonitoringCsv;
 
-/* ============ Direktor tayinlash ============ */
+/* ============ Maktab: ma'lumot ko'rish + maslahatchi biriktirish ============
+   MUHIM: Kelajak Markazi direktori maktab direktorini tayinlash/yaratish
+   huquqiga EGA EMAS (bu administratsiya vakolatida) — uning yagona
+   tahrirlash huquqi maslahatchilarni maktablarga biriktirish. */
 let openSchoolMenu = null;
 function openSchoolDotsMenu(e, schoolId, schoolName){
   e.stopPropagation();
@@ -1424,15 +1467,15 @@ function openSchoolDotsMenu(e, schoolId, schoolName){
   menu.style.right = (window.innerWidth - rect.right) + 'px';
   menu.innerHTML = schoolId
     ? `<div class="dd-item" data-act="view">\uD83D\uDC41 Ma'lumotlarini ko'rish</div>
-       <div class="dd-item" data-act="assign">\uD83D\uDC64 Mavjud direktorni tayinlash</div>
-       <div class="dd-item" data-act="create">\u2795 Yangi direktor yaratish</div>`
-    : `<div class="dd-item" style="color:var(--muted)">Bu namunaviy maktab \u2014 amal yo'q</div>`;
+       <div class="dd-item" data-act="assign">\uD83D\uDC64 Mavjud maslahatchini tayinlash</div>
+       <div class="dd-item" data-act="create">\u2795 Yangi maslahatchi yaratish</div>`
+    : `<div class="dd-item" style="color:var(--muted)">Bu maktab uchun amal yo'q</div>`;
   document.body.appendChild(menu);
   openSchoolMenu = menu;
   menu.querySelectorAll('[data-act]').forEach(item => item.onclick = () => {
-    if (item.dataset.act === 'assign') openAssignDirModal(schoolId, schoolName);
-    else if (item.dataset.act === 'create') openCreateDirModal(schoolId, schoolName);
-    else showToast(schoolName + " ma'lumotlari");
+    if (item.dataset.act === 'assign') openAssignAdvModal(schoolId, schoolName);
+    else if (item.dataset.act === 'create') openCreateAdvModal(schoolId, schoolName);
+    else openSchoolDetail(schoolId);
     menu.remove(); openSchoolMenu = null;
   });
 }
@@ -1440,82 +1483,168 @@ document.addEventListener('click', e => {
   if (openSchoolMenu && !e.target.closest('.dd-panel')) { openSchoolMenu.remove(); openSchoolMenu = null; }
 });
 
-const assignDirModal = document.getElementById('assignDirModal');
-let assignDirSchoolId = null;
-async function openAssignDirModal(schoolId, schoolName){
-  assignDirSchoolId = schoolId;
-  document.getElementById('assignDirTitle').textContent = schoolName + ' \u2014 direktor tayinlash';
-  try {
-    const res = await apiFetch('/api/kelajak-direktor/directors');
-    const list = res.directors || [];
-    document.getElementById('assignDirSelect').innerHTML = list.length
-      ? list.map(d => `<option value="${d.id}">${d.full_name}</option>`).join('')
-      : '<option value="">Bu hududda bo\u2018sh direktor hisobi topilmadi</option>';
-    assignDirModal.classList.add('open');
-  } catch (e) { showToast(e.message || 'Xatolik yuz berdi'); }
+/* ===== Maktab ma'lumotlari (real, o'qish uchun) ===== */
+const schoolDetailModal = document.getElementById('schoolDetailModal');
+function openSchoolDetail(schoolId){
+  const s = SCHOOLS.find(x => String(x.id) === String(schoolId));
+  if (!s) { showToast("Maktab ma'lumoti topilmadi"); return; }
+  document.getElementById('sdTitle').textContent = s.name;
+  const pct = s.avg_grade ? Math.round(s.avg_grade*10) : 0;
+  const advisors = REAL_ADVISORS.filter(a => String(a.school_id) === String(s.id));
+  document.getElementById('sdBody').innerHTML = `
+    <div><b>Tuman:</b> ${s.district || '\u2014'}</div>
+    <div><b>O'quvchilar soni:</b> ${s.student_count}</div>
+    <div><b>Sinflar soni:</b> ${s.class_count}</div>
+    <div><b>O'rtacha natija:</b> ${pct}%</div>
+    <div><b>Maktab direktori:</b> ${s.director_name || "Hali tayinlanmagan"}</div>
+    <div style="margin-top:8px"><b>Biriktirilgan maslahatchilar (${advisors.length}):</b></div>
+    ${advisors.length ? '<ul style="margin:4px 0 0 18px;padding:0">' + advisors.map(a => `<li>${a.full_name} \u2014 ${a.score_percent}% (${a.status})</li>`).join('') + '</ul>' : '<div style="color:var(--muted)">Hali maslahatchi biriktirilmagan</div>'}
+  `;
+  schoolDetailModal.classList.add('open');
 }
-document.getElementById('assignDirCancelBtn').onclick = () => assignDirModal.classList.remove('open');
-document.getElementById('assignDirSaveBtn').onclick = async () => {
-  const dirId = +document.getElementById('assignDirSelect').value;
-  if (!dirId) return;
+document.getElementById('sdCloseBtn').onclick = () => schoolDetailModal.classList.remove('open');
+
+/* ===== Mavjud maslahatchini shu maktabga ko'chirish ===== */
+const assignAdvModal = document.getElementById('assignAdvModal');
+let assignAdvSchoolId = null;
+function openAssignAdvModal(schoolId, schoolName){
+  assignAdvSchoolId = schoolId;
+  document.getElementById('assignAdvTitle').textContent = schoolName + ' \u2014 maslahatchi biriktirish';
+  const candidates = REAL_ADVISORS.filter(a => String(a.school_id) !== String(schoolId));
+  document.getElementById('assignAdvSelect').innerHTML = candidates.length
+    ? candidates.map(a => `<option value="${a.id}">${a.full_name} (hozir: ${a.school_name || "biriktirilmagan"})</option>`).join('')
+    : '<option value="">Tumaningizda ko\u2018chirish mumkin bo\u2018lgan boshqa maslahatchi yo\u2018q</option>';
+  assignAdvModal.classList.add('open');
+}
+document.getElementById('assignAdvCancelBtn').onclick = () => assignAdvModal.classList.remove('open');
+document.getElementById('assignAdvSaveBtn').onclick = async () => {
+  const advId = +document.getElementById('assignAdvSelect').value;
+  if (!advId) return;
   try {
-    await apiFetch(`/api/kelajak-direktor/schools/${assignDirSchoolId}/director`, {
-      method: 'PATCH', body: JSON.stringify({ director_id: dirId }),
+    await apiFetch(`/api/kelajak-direktor/schools/${assignAdvSchoolId}/advisor`, {
+      method: 'PATCH', body: JSON.stringify({ advisor_id: advId }),
     });
-    assignDirModal.classList.remove('open');
-    showToast('Direktor tayinlandi \u2713');
-    loadSchools();
+    assignAdvModal.classList.remove('open');
+    showToast('Maslahatchi biriktirildi \u2713');
+    loadSchools(); loadAdvisorsData();
   } catch (e) { showToast(e.message || 'Xatolik yuz berdi'); }
 };
 
-/* ===== Yangi direktor yaratish (POST /api/kelajak-direktor/directors) ===== */
-const createDirModal = document.getElementById('createDirModal');
-const cdPhoneInput = document.getElementById('cdPhone');
-bindPhoneMask(cdPhoneInput);
-let createDirSchoolId = null;
+/* ===== Yangi maslahatchi yaratish (POST /api/kelajak-direktor/advisors) ===== */
+const createAdvModal = document.getElementById('createAdvModal');
+const caPhoneInput = document.getElementById('caPhone');
+bindPhoneMask(caPhoneInput);
+let createAdvSchoolId = null;
 function genTempPass(){
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
   let out = '';
   for (let i = 0; i < 8; i++) out += chars[Math.floor(Math.random() * chars.length)];
   return out;
 }
-function showCreateDirErr(msg){
-  const el = document.getElementById('createDirErr');
+function showCreateAdvErr(msg){
+  const el = document.getElementById('createAdvErr');
   el.textContent = msg; el.style.display = 'block';
 }
-function openCreateDirModal(schoolId, schoolName){
-  createDirSchoolId = schoolId;
-  document.getElementById('createDirTitle').textContent = schoolName + ' \u2014 yangi direktor yaratish';
-  document.getElementById('cdFullName').value = '';
-  cdPhoneInput.value = '';
-  document.getElementById('cdPassword').value = genTempPass();
-  document.getElementById('createDirErr').style.display = 'none';
-  createDirModal.classList.add('open');
+function openCreateAdvModal(schoolId, schoolName){
+  createAdvSchoolId = schoolId;
+  document.getElementById('createAdvTitle').textContent = schoolName + ' \u2014 yangi maslahatchi yaratish';
+  document.getElementById('caFullName').value = '';
+  caPhoneInput.value = '';
+  document.getElementById('caPassword').value = genTempPass();
+  document.getElementById('createAdvErr').style.display = 'none';
+  createAdvModal.classList.add('open');
 }
-document.getElementById('cdGenBtn').onclick = () => { document.getElementById('cdPassword').value = genTempPass(); };
-document.getElementById('createDirCancelBtn').onclick = () => createDirModal.classList.remove('open');
-document.getElementById('createDirSaveBtn').onclick = async () => {
-  document.getElementById('createDirErr').style.display = 'none';
-  const fullName = document.getElementById('cdFullName').value.trim();
-  const password = document.getElementById('cdPassword').value.trim();
-  if (!fullName) return showCreateDirErr("F.I.Sh.ni kiriting");
-  if (!phoneValid(cdPhoneInput)) return showCreateDirErr("Telefon raqamni to'g'ri kiriting");
-  if (password.length < 6) return showCreateDirErr("Parol kamida 6 ta belgidan iborat bo'lsin");
-  const btn = document.getElementById('createDirSaveBtn');
+document.getElementById('caGenBtn').onclick = () => { document.getElementById('caPassword').value = genTempPass(); };
+document.getElementById('createAdvCancelBtn').onclick = () => createAdvModal.classList.remove('open');
+document.getElementById('createAdvSaveBtn').onclick = async () => {
+  document.getElementById('createAdvErr').style.display = 'none';
+  const fullName = document.getElementById('caFullName').value.trim();
+  const password = document.getElementById('caPassword').value.trim();
+  if (!fullName) return showCreateAdvErr("F.I.Sh.ni kiriting");
+  if (!phoneValid(caPhoneInput)) return showCreateAdvErr("Telefon raqamni to'g'ri kiriting");
+  if (password.length < 6) return showCreateAdvErr("Parol kamida 6 ta belgidan iborat bo'lsin");
+  const btn = document.getElementById('createAdvSaveBtn');
   btn.disabled = true; btn.textContent = 'Yaratilmoqda...';
   try {
-    await apiFetch('/api/kelajak-direktor/directors', {
+    await apiFetch('/api/kelajak-direktor/advisors', {
       method: 'POST',
-      body: JSON.stringify({ full_name: fullName, phone: fullPhone(cdPhoneInput), password, school_id: createDirSchoolId }),
+      body: JSON.stringify({ full_name: fullName, phone: fullPhone(caPhoneInput), password, school_id: createAdvSchoolId }),
     });
-    createDirModal.classList.remove('open');
-    showToast(`Yangi direktor yaratildi \u2713 (parol: ${password})`);
-    loadSchools();
+    createAdvModal.classList.remove('open');
+    showToast(`Yangi maslahatchi yaratildi \u2713 (parol: ${password})`);
+    loadSchools(); loadAdvisorsData();
   } catch (e) {
-    showCreateDirErr(e.message || 'Xatolik yuz berdi');
+    showCreateAdvErr(e.message || 'Xatolik yuz berdi');
   } finally {
     btn.disabled = false; btn.textContent = 'Yaratish';
   }
+};
+
+/* ============ Maslahatchi: ma'lumot ko'rish + boshqa maktabga o'tkazish ============ */
+let openAdvisorMenu = null;
+function openAdvisorDotsMenu(e, advisorId, advisorName){
+  e.stopPropagation();
+  if (openAdvisorMenu) { openAdvisorMenu.remove(); openAdvisorMenu = null; }
+  const menu = document.createElement('div');
+  menu.className = 'dd-panel open';
+  menu.style.position = 'fixed';
+  const rect = e.target.closest('button').getBoundingClientRect();
+  menu.style.top = (rect.bottom + 4) + 'px';
+  menu.style.right = (window.innerWidth - rect.right) + 'px';
+  menu.innerHTML = `<div class="dd-item" data-act="view">\uD83D\uDC41 Ma'lumotlarini ko'rish</div>
+     <div class="dd-item" data-act="move">\uD83D\uDD00 Boshqa maktabga o'tkazish</div>`;
+  document.body.appendChild(menu);
+  openAdvisorMenu = menu;
+  menu.querySelectorAll('[data-act]').forEach(item => item.onclick = () => {
+    if (item.dataset.act === 'move') openMoveAdvModal(advisorId, advisorName);
+    else openAdvisorDetail(advisorId);
+    menu.remove(); openAdvisorMenu = null;
+  });
+}
+document.addEventListener('click', e => {
+  if (openAdvisorMenu && !e.target.closest('.dd-panel')) { openAdvisorMenu.remove(); openAdvisorMenu = null; }
+});
+
+const advisorDetailModal = document.getElementById('advisorDetailModal');
+function openAdvisorDetail(advisorId){
+  const a = REAL_ADVISORS.find(x => String(x.id) === String(advisorId));
+  if (!a) { showToast("Maslahatchi ma'lumoti topilmadi"); return; }
+  document.getElementById('adTitle').textContent = a.full_name;
+  document.getElementById('adBody').innerHTML = `
+    <div><b>Maktab:</b> ${a.school_name || "Biriktirilmagan"}</div>
+    <div><b>Tuman:</b> ${a.district || '\u2014'}</div>
+    <div><b>O'quvchilar soni:</b> ${a.student_count}</div>
+    <div><b>Samaradorlik:</b> ${a.score_percent}%</div>
+    <div><b>Holat:</b> ${a.status}</div>
+  `;
+  advisorDetailModal.classList.add('open');
+}
+document.getElementById('adCloseBtn').onclick = () => advisorDetailModal.classList.remove('open');
+
+const moveAdvModal = document.getElementById('moveAdvModal');
+let moveAdvAdvisorId = null;
+function openMoveAdvModal(advisorId, advisorName){
+  moveAdvAdvisorId = advisorId;
+  const current = REAL_ADVISORS.find(x => String(x.id) === String(advisorId));
+  document.getElementById('moveAdvTitle').textContent = advisorName + ' \u2014 boshqa maktabga o\u2018tkazish';
+  const candidates = SCHOOLS.filter(s => !current || String(s.id) !== String(current.school_id));
+  document.getElementById('moveAdvSelect').innerHTML = candidates.length
+    ? candidates.map(s => `<option value="${s.id}">${s.name}</option>`).join('')
+    : '<option value="">Tumaningizda boshqa maktab yo\u2018q</option>';
+  moveAdvModal.classList.add('open');
+}
+document.getElementById('moveAdvCancelBtn').onclick = () => moveAdvModal.classList.remove('open');
+document.getElementById('moveAdvSaveBtn').onclick = async () => {
+  const schoolId = +document.getElementById('moveAdvSelect').value;
+  if (!schoolId) return;
+  try {
+    await apiFetch(`/api/kelajak-direktor/schools/${schoolId}/advisor`, {
+      method: 'PATCH', body: JSON.stringify({ advisor_id: moveAdvAdvisorId }),
+    });
+    moveAdvModal.classList.remove('open');
+    showToast('Maslahatchi ko\u2018chirildi \u2713');
+    loadSchools(); loadAdvisorsData();
+  } catch (e) { showToast(e.message || 'Xatolik yuz berdi'); }
 };
 
 function showToast(msg){
