@@ -398,10 +398,6 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M18 17V9M13 17V5M8 17v-4"/></svg>
           Monitoring
         </button>
-        <button class="nav-item" data-view="courses">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>
-          Hamkor o'quv markazlar
-        </button>
         <button class="nav-item" data-view="settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
           Sozlamalar
@@ -728,25 +724,6 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
           </div>
         </div>
 
-        <!-- ============ HAMKOR O'QUV MARKAZLAR ============ -->
-        <div id="view-courses" style="display:none">
-          <div class="crumb">Bosh sahifa &gt; <b>Hamkor o'quv markazlar</b></div>
-          <div class="page-head-row">
-            <div><h1 style="font-size:23px;font-weight:800">Hamkor o'quv markazlar</h1>
-              <p style="color:var(--muted);font-size:13px;margin-top:5px">Bu yerga qo'shilgan haqiqiy kurslar maslahatchi panelidagi "AI tavsiyalar &rarr; Tavsiya etilgan kurslar" bo'limida, tegishli ko'nikma bo'yicha eng zaif o'quvchilarga avtomatik ko'rsatiladi.</p></div>
-            <div style="display:flex;gap:10px;flex-shrink:0">
-              <button class="btn btn-primary" id="addCourseBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-right:6px"><path d="M12 5v14M5 12h14"/></svg>Yangi kurs qo'shish</button>
-            </div>
-          </div>
-
-          <div class="card" style="padding:0">
-            <table>
-              <thead><tr><th style="padding-left:20px">Hamkor tashkilot</th><th>Kurs nomi</th><th>Yo'nalish (ko'nikma)</th><th>Aloqa</th><th>Holat</th><th style="padding-right:20px">Amallar</th></tr></thead>
-              <tbody id="coursesBody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Yuklanmoqda...</td></tr></tbody>
-            </table>
-          </div>
-        </div>
-
         <!-- ============ SOZLAMALAR ============ -->
         <div id="view-settings" style="display:none">
           <div class="crumb2"><b data-view-link="home">Bosh sahifa</b> &rsaquo; Sozlamalar</div>
@@ -912,33 +889,6 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
   </div>
 </div>
 
-<div class="overlay" id="courseModal">
-  <div class="modal">
-    <h3 id="courseModalTitle">Yangi hamkor kurs qo'shish</h3>
-    <label for="cProvider">Hamkor tashkilot (o'quv markaz) nomi</label>
-    <input id="cProvider" class="field-inp" style="width:100%" placeholder="Masalan: “IT Park Academy”">
-    <label for="cName">Kurs nomi</label>
-    <input id="cName" class="field-inp" style="width:100%" placeholder="Masalan: Python dasturlash (boshlang'ich)">
-    <label for="cSkill">Yo'nalish (ko'nikma)</label>
-    <select id="cSkill" class="field-inp" style="width:100%"></select>
-    <label for="cDesc">Tavsif (ixtiyoriy)</label>
-    <input id="cDesc" class="field-inp" style="width:100%" placeholder="Qisqacha tavsif">
-    <label for="cPhone">Aloqa telefoni (ixtiyoriy)</label>
-    <div class="phone-wrap"><span class="pfx">+998</span><input id="cPhone" inputmode="numeric" maxlength="12" placeholder="90 123 45 67"></div>
-    <label for="cAddress">Manzil (ixtiyoriy)</label>
-    <input id="cAddress" class="field-inp" style="width:100%" placeholder="Tuman, ko'cha">
-    <label for="cLink">Havola (ixtiyoriy)</label>
-    <input id="cLink" class="field-inp" style="width:100%" placeholder="https://...">
-    <label style="display:flex;align-items:center;gap:8px;margin-top:14px;cursor:pointer">
-      <input type="checkbox" id="cActive" checked style="width:16px;height:16px"> Faol (maslahatchi panelida ko'rinadi)
-    </label>
-    <p id="courseModalErr" style="color:var(--red);font-size:12.5px;margin-top:14px;padding:11px 13px;background:var(--red-soft);border-radius:var(--r-sm);display:none"></p>
-    <div class="foot">
-      <button class="btn" id="courseModalCancelBtn">Bekor qilish</button>
-      <button class="btn btn-primary" id="courseModalSaveBtn">Saqlash</button>
-    </div>
-  </div>
-</div>
 
 <div class="overlay" id="editProfileModal">
   <div class="modal">
@@ -1046,10 +996,9 @@ document.querySelectorAll('.nav-item[data-view]').forEach(b => b.onclick = () =>
 document.querySelectorAll('[data-view-link]').forEach(b => b.onclick = () => switchView(b.dataset.viewLink));
 function switchView(view){
   document.querySelectorAll('.nav-item[data-view]').forEach(x => x.classList.toggle('active', x.dataset.view === view));
-  ['home','schools','advisors','reports','monitoring','courses','settings'].forEach(v => {
+  ['home','schools','advisors','reports','monitoring','settings'].forEach(v => {
     document.getElementById('view-' + v).style.display = v === view ? 'block' : 'none';
   });
-  if (view === 'courses' && !COURSES_LOADED) loadCourses();
 }
 
 function kpiCard(icoClass, iconSvg, label, value, delta){
@@ -1647,121 +1596,6 @@ document.getElementById('createDirSaveBtn').onclick = async () => {
     btn.disabled = false; btn.textContent = 'Yaratish';
   }
 };
-
-/* ===== Hamkor o'quv markazlar (partner_courses) =====
-   MUHIM: ilgari maslahatchi panelidagi "Tavsiya etilgan kurslar" kod
-   ichida qattiq yozilgan (o'ylab topilgan) kurs nomlaridan iborat edi.
-   Endi bu yerda HAQIQIY hamkor tashkilotlar/kurslar ro'yxati saqlanadi
-   (backend: /api/courses) — maslahatchi panelidagi AI tavsiyalar sahifasi
-   shu ro'yxatdan, tegishli ko'nikma bo'yicha o'qiydi. */
-const SKILL_OPTIONS = ['IT va texnologiya','Analitik fikrlash','Matematika','Ijodkorlik','Tabiiy fanlar','Sport',"San'at",'Muloqot','Liderlik','Tadbirkorlik'];
-document.getElementById('cSkill').innerHTML = SKILL_OPTIONS.map(s => `<option value="${s}">${s}</option>`).join('');
-
-let COURSES = [];
-let COURSES_LOADED = false;
-let editingCourseId = null;
-const courseModal = document.getElementById('courseModal');
-const cPhoneInput = document.getElementById('cPhone');
-bindPhoneMask(cPhoneInput);
-
-async function loadCourses(){
-  const body = document.getElementById('coursesBody');
-  body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Yuklanmoqda...</td></tr>';
-  try {
-    COURSES = await apiFetch('/api/courses?include_inactive=true');
-    COURSES_LOADED = true;
-  } catch (e) {
-    body.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--red);padding:24px">${e.message || 'Xatolik yuz berdi'}</td></tr>`;
-    return;
-  }
-  renderCoursesTable();
-}
-
-function renderCoursesTable(){
-  const body = document.getElementById('coursesBody');
-  if (!COURSES.length) {
-    body.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Hali birorta hamkor kurs qo'shilmagan. "Yangi kurs qo'shish" tugmasi orqali qo'shing.</td></tr>`;
-    return;
-  }
-  body.innerHTML = COURSES.map(c => `
-    <tr>
-      <td style="padding-left:20px">${c.provider_name}</td>
-      <td>${c.course_name}</td>
-      <td>${c.skill_category}</td>
-      <td>${[c.contact_phone, c.contact_address].filter(Boolean).join(' · ') || '—'}${c.link ? ` · <a href="${c.link}" target="_blank" rel="noopener" style="color:var(--primary)">havola</a>` : ''}</td>
-      <td><span class="status-dot2" style="background:${c.is_active ? '#16A34A' : '#9997B6'}"></span>${c.is_active ? 'Faol' : "Nofaol"}</td>
-      <td style="padding-right:20px;white-space:nowrap">
-        <button class="btn" data-edit="${c.id}" style="padding:5px 10px;font-size:12px">Tahrirlash</button>
-        <button class="btn" data-del="${c.id}" style="padding:5px 10px;font-size:12px;color:var(--red)">O'chirish</button>
-      </td>
-    </tr>`).join('');
-  body.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openCourseModal(+b.dataset.edit));
-  body.querySelectorAll('[data-del]').forEach(b => b.onclick = () => deleteCourse(+b.dataset.del));
-}
-
-function showCourseErr(msg){
-  const el = document.getElementById('courseModalErr');
-  el.textContent = msg; el.style.display = 'block';
-}
-function openCourseModal(id){
-  editingCourseId = id || null;
-  const c = id ? COURSES.find(x => x.id === id) : null;
-  document.getElementById('courseModalTitle').textContent = c ? "Kursni tahrirlash" : "Yangi hamkor kurs qo'shish";
-  document.getElementById('cProvider').value = c ? c.provider_name : '';
-  document.getElementById('cName').value = c ? c.course_name : '';
-  document.getElementById('cSkill').value = c ? c.skill_category : SKILL_OPTIONS[0];
-  document.getElementById('cDesc').value = c ? (c.description || '') : '';
-  cPhoneInput.value = c && c.contact_phone ? c.contact_phone.replace('+998', '').trim() : '';
-  document.getElementById('cAddress').value = c ? (c.contact_address || '') : '';
-  document.getElementById('cLink').value = c ? (c.link || '') : '';
-  document.getElementById('cActive').checked = c ? !!c.is_active : true;
-  document.getElementById('courseModalErr').style.display = 'none';
-  courseModal.classList.add('open');
-}
-document.getElementById('addCourseBtn').onclick = () => openCourseModal(null);
-document.getElementById('courseModalCancelBtn').onclick = () => courseModal.classList.remove('open');
-document.getElementById('courseModalSaveBtn').onclick = async () => {
-  document.getElementById('courseModalErr').style.display = 'none';
-  const providerName = document.getElementById('cProvider').value.trim();
-  const courseName = document.getElementById('cName').value.trim();
-  if (!providerName) return showCourseErr("Hamkor tashkilot nomini kiriting");
-  if (!courseName) return showCourseErr("Kurs nomini kiriting");
-  const payload = {
-    provider_name: providerName,
-    course_name: courseName,
-    skill_category: document.getElementById('cSkill').value,
-    description: document.getElementById('cDesc').value.trim() || null,
-    contact_phone: phoneValid(cPhoneInput) ? fullPhone(cPhoneInput) : null,
-    contact_address: document.getElementById('cAddress').value.trim() || null,
-    link: document.getElementById('cLink').value.trim() || null,
-    is_active: document.getElementById('cActive').checked,
-  };
-  const btn = document.getElementById('courseModalSaveBtn');
-  btn.disabled = true; btn.textContent = 'Saqlanmoqda...';
-  try {
-    if (editingCourseId) {
-      await apiFetch(`/api/courses/${editingCourseId}`, { method: 'PATCH', body: JSON.stringify(payload) });
-    } else {
-      await apiFetch('/api/courses', { method: 'POST', body: JSON.stringify(payload) });
-    }
-    courseModal.classList.remove('open');
-    showToast(editingCourseId ? 'Kurs yangilandi ✓' : "Kurs qo'shildi ✓");
-    loadCourses();
-  } catch (e) {
-    showCourseErr(e.message || 'Xatolik yuz berdi');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Saqlash';
-  }
-};
-async function deleteCourse(id){
-  const c = COURSES.find(x => x.id === id);
-  if (!c || !confirm(`"${c.provider_name} — ${c.course_name}" kursini o'chirmoqchimisiz?`)) return;
-  try {
-    await apiFetch(`/api/courses/${id}`, { method: 'DELETE' });
-    showToast("Kurs o'chirildi");
-    loadCourses();
-  } catch (e) { showToast(e.message || 'Xatolik yuz berdi'); }
-}
 
 function showToast(msg){
   const box = document.getElementById('toastBox');

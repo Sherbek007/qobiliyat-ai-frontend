@@ -278,6 +278,25 @@ tr:last-child td{border-bottom:none}
     </div>
     <div class="field"><label>Tavsif</label><input id="oppDesc" placeholder="Qisqacha tavsif (ixtiyoriy)"></div>
     <div class="field">
+      <label>Qaysi qobiliyatga tegishli <small style="color:var(--muted);font-weight:400">(ixtiyoriy — "AI tavsiyalar" sahifasida shu ko'nikma bo'yicha ko'rsatiladi)</small></label>
+      <select id="oppSkill">
+        <option value="">— tanlanmagan —</option>
+        <option value="IT va texnologiya">IT va texnologiya</option>
+        <option value="Analitik fikrlash">Analitik fikrlash</option>
+        <option value="Matematika">Matematika</option>
+        <option value="Ijodkorlik">Ijodkorlik</option>
+        <option value="Tabiiy fanlar">Tabiiy fanlar</option>
+        <option value="Sport">Sport</option>
+        <option value="San'at">San'at</option>
+        <option value="Muloqot">Muloqot</option>
+        <option value="Liderlik">Liderlik</option>
+        <option value="Tadbirkorlik">Tadbirkorlik</option>
+      </select>
+    </div>
+    <div class="field"><label>Aloqa telefoni <small style="color:var(--muted);font-weight:400">(ixtiyoriy)</small></label><input id="oppPhone" placeholder="+998 90 123 45 67"></div>
+    <div class="field"><label>Manzil <small style="color:var(--muted);font-weight:400">(ixtiyoriy)</small></label><input id="oppAddress" placeholder="Masalan: Pop tumani, ..."></div>
+    <div class="field"><label>Havola <small style="color:var(--muted);font-weight:400">(ixtiyoriy — sayt/Telegram va h.k.)</small></label><input id="oppLink" placeholder="https://..."></div>
+    <div class="field">
       <label>Logotip <small style="color:var(--muted);font-weight:400">(ixtiyoriy)</small></label>
       <div style="display:flex;align-items:center;gap:12px">
         <div id="oppLogoBox" style="width:56px;height:56px;border-radius:12px;background:var(--bg,#F5F5FA);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid var(--line,#E9E8F4)">
@@ -1117,6 +1136,10 @@ function openOppModal(id){
   document.getElementById('oppName').value = o ? o.name : '';
   document.getElementById('oppType').value = o ? o.type : 'kurs';
   document.getElementById('oppDesc').value = o ? (o.description || '') : '';
+  document.getElementById('oppSkill').value = o ? (o.skill_category || '') : '';
+  document.getElementById('oppPhone').value = o ? (o.contact_phone || '') : '';
+  document.getElementById('oppAddress').value = o ? (o.contact_address || '') : '';
+  document.getElementById('oppLink').value = o ? (o.link || '') : '';
   currentOppLogo = o ? (o.logo || null) : null;
   currentOppImages = o && Array.isArray(o.images) ? o.images.slice(0, 2) : [];
   renderOppLogoBox();
@@ -1137,6 +1160,10 @@ document.getElementById('saveOppBtn').onclick = async () => {
   const payload = {
     name, type: document.getElementById('oppType').value,
     description: document.getElementById('oppDesc').value.trim() || null,
+    skill_category: document.getElementById('oppSkill').value || null,
+    contact_phone: document.getElementById('oppPhone').value.trim() || null,
+    contact_address: document.getElementById('oppAddress').value.trim() || null,
+    link: document.getElementById('oppLink').value.trim() || null,
     logo: currentOppLogo,
     images: currentOppImages,
     online,

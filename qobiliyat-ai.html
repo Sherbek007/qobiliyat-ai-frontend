@@ -4757,7 +4757,7 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
               </div>
 
               <div class="qr">
-                <svg id="qr" width="150" height="150" viewBox="0 0 29 29" shape-rendering="crispEdges"></svg>
+                <div id="qr" style="width:150px;height:150px;margin:0 auto;display:flex;align-items:center;justify-content:center"></div>
                 <small>QR orqali kirish</small>
               </div>
             </div>
@@ -8384,6 +8384,7 @@ finish.onclick = async () => {
     studentAdded = true;
     step = 5;
     render();
+    drawQR(created.student.login, created.temporary_password);
 
     const newId = created.student.id;
     const warnings = [];
@@ -8441,6 +8442,20 @@ function studentSummary(){
   };
 }
 
+// MUHIM (tuzatildi): ilgari yuklab olinadigan kirish ma'lumotlari faylida
+// maktab nomi HAR DOIM "12-sonli umumiy o'rta ta'lim maktabi" bo'lib
+// qattiq yozilgan edi — kim ishlatmasin, hech qanday haqiqiy maktabga
+// tegishli emas edi. Endi tizimga kirgan maslahatchining o'zining haqiqiy
+// maktabi (/api/auth/me -> school_name) ishlatiladi.
+let REAL_SCHOOL_NAME = null;
+(async function loadRealSchoolName(){
+  if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
+  try {
+    const me = await apiFetch('/api/auth/me');
+    REAL_SCHOOL_NAME = (me && me.school_name) || null;
+  } catch (err) { /* jim: pastda halol "ko'rsatilmagan" holatiga tushadi */ }
+})();
+
 document.getElementById('downloadBtn').onclick = () => {
   const d = studentSummary();
   const txt = [
@@ -8457,7 +8472,7 @@ document.getElementById('downloadBtn').onclick = () => {
     'LOGIN (8 xonali):   ' + d.login,
     'VAQTINCHALIK PAROL: ' + d.pass,
     '', "Birinchi kirishda parolni o'zgartirish shart.",
-    '', 'Maktab: 12-sonli umumiy o\'rta ta\'lim maktabi',
+    '', 'Maktab: ' + (REAL_SCHOOL_NAME || "ko'rsatilmagan"),
     'Sana:   ' + new Date().toLocaleDateString('uz-UZ'),
   ].join('\n');
 
@@ -8477,26 +8492,41 @@ document.getElementById('toProfileBtn').onclick = () => {
   if (typeof showView === 'function') showView('list');
 };
 
-/* ============ QR kod (namuna) ============ */
-(function drawQR(){
-  const svg = document.getElementById('qr');
-  const N = 29;
-  let seed = 20260128;
-  const rnd = () => (seed = seed * 1103515245 % 2147483648) / 2147483648;
-  let out = '<rect width="29" height="29" fill="#fff"/>';
-  const finder = (x, y) =>
-    `<rect x="${x}" y="${y}" width="7" height="7" fill="#171543"/>
-     <rect x="${x+1}" y="${y+1}" width="5" height="5" fill="#fff"/>
-     <rect x="${x+2}" y="${y+2}" width="3" height="3" fill="#171543"/>`;
-  const inFinder = (x, y) =>
-    (x < 8 && y < 8) || (x > 20 && y < 8) || (x < 8 && y > 20);
-  for (let y = 0; y < N; y++)
-    for (let x = 0; x < N; x++)
-      if (!inFinder(x, y) && rnd() > 0.52)
-        out += `<rect x="${x}" y="${y}" width="1" height="1" fill="#171543"/>`;
-  out += finder(0,0) + finder(22,0) + finder(0,22);
-  svg.innerHTML = out;
-})();
+/* ============ QR kod ============ */
+// MUHIM (tuzatildi): ilgari bu yerda tasodifiy nuqtalardan "QR ko'rinishli"
+// rasm chizilardi — hech narsani kodlamasdi, skanerlansa hech qanday
+// ma'lumot chiqmasdi (o'zining izohida ham "namuna" deb yozilgan edi).
+// Endi haqiqiy QR kutubxona (qrcodejs, cdnjs) orqali, o'quvchining HAQIQIY
+// (backend tasdiqlagan) login/parolini o'zida saqlaydigan qilib chiziladi.
+// Shuning uchun bu funksiya sahifa ochilganda emas, faqat finish.onclick
+// backenddan haqiqiy login/parolni olgandan keyin chaqiriladi (pastda).
+let _qrLibPromise = null;
+function loadQrLib(){
+  if (window.QRCode) return Promise.resolve();
+  if (_qrLibPromise) return _qrLibPromise;
+  _qrLibPromise = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    s.onload = resolve;
+    s.onerror = () => { _qrLibPromise = null; reject(new Error('QR kutubxona yuklanmadi')); };
+    document.head.appendChild(s);
+  });
+  return _qrLibPromise;
+}
+async function drawQR(login, pass){
+  const el = document.getElementById('qr');
+  if (!el) return;
+  el.innerHTML = '';
+  try {
+    await loadQrLib();
+    new QRCode(el, {
+      text: `Qobiliyat Portfolisi AI\nLogin: ${login}\nParol: ${pass}`,
+      width: 150, height: 150, correctLevel: QRCode.CorrectLevel.M,
+    });
+  } catch (err) {
+    el.innerHTML = '<small style="color:var(--muted);font-size:11px;line-height:1.4;padding:0 6px">QR kod yuklanmadi — login/parolni qo‘lda kiriting</small>';
+  }
+}
 
 /* ============ Sinflar ro'yxatini sinxronlash ============ */
 function syncClassList(names){
@@ -11777,9 +11807,11 @@ function coursesHaveNeedsData(){
 }
 function buildCourses(){
   // HAQIQIY hamkor kurslar — eng zaif ko'nikmalar (skill_needs) bo'yicha,
-  // backend berganicha (courses_by_skill: {ko'nikma: [{provider_name,
-  // course_name, link, contact_phone}, ...]}). Ko'nikma uchun hamkor
-  // topilmasa — shu ko'nikma butunlay tashlab ketiladi (o'ylab topilmaydi).
+  // backend berganicha (courses_by_skill: {ko'nikma: [{name, type, link,
+  // contact_phone, contact_address, location}, ...]} — bittalik Opportunity
+  // jadvalidan, admin "Kurs/imkoniyat qo'shish" orqali kiritadi). Ko'nikma
+  // uchun hamkor topilmasa — shu ko'nikma butunlay tashlab ketiladi (o'ylab
+  // topilmaydi).
   // Tuple: [oddiy_matn, ehtiyoj%, rang, ikonka, ko'nikma_nomi, havola].
   // Havola (x[5]) bo'lsa — ro'yxat kartalarida bosiladigan qilib
   // ko'rsatiladi (courseLabel()), CSV/jadval eksportda esa oddiy matn
@@ -11790,7 +11822,7 @@ function buildCourses(){
   needs.forEach(n => {
     const list = bySkill[n.name] || [];
     list.forEach(c => {
-      const label = (c.provider_name || '') + ' — ' + (c.course_name || '');
+      const label = c.name + (c.location ? ' — ' + c.location : '');
       out.push([label, n.value, skillColor(n.name), GENERIC_COURSE_ICON, n.name, c.link || '']);
     });
   });
@@ -11800,6 +11832,42 @@ function courseLabel(x){
   return x[5]
     ? `<a href="${esc(x[5])}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">${esc(x[0])}</a>`
     : esc(x[0]);
+}
+// GENERIC_CLUB_ICON / GENERIC_OLYMP_ICON — xuddi kurslar kabi: har bir
+// to'garak/olimpiada Opportunity yozuvi turlicha bo'lgani uchun bitta xil
+// belgi ishlatiladi (haqiqiy provayder ikonkalari katalogi yo'q).
+const GENERIC_CLUB_ICON = '<path d="M8 4h8v5a4 4 0 01-8 0z"/><path d="M10 20h4M12 13v7"/>';
+const GENERIC_OLYMP_ICON = '<path d="M12 3l2.7 5.6 6.3.9-4.5 4.4 1 6.1L12 17l-5.5 3 1-6.1L3 9.5l6.3-.9z"/>';
+function hasNeedsData(){ return coursesHaveNeedsData(); }
+function buildClubs(){
+  // MUHIM (birlashtirildi): ilgari bu yerda 6 ta to'garak nomi HAR DOIM
+  // qattiq yozilgan edi (haqiqiy sinf/tuman/maktabga bog'liq emas). Endi
+  // xuddi kurslar kabi — HAQIQIY Opportunity yozuvlaridan (type='togarak'),
+  // eng zaif ko'nikmalar bo'yicha.
+  const needs = (ADVICE_DATA && ADVICE_DATA.skill_needs) || [];
+  const bySkill = (ADVICE_DATA && ADVICE_DATA.clubs_by_skill) || {};
+  const out = [];
+  needs.forEach(n => {
+    (bySkill[n.name] || []).forEach(c => {
+      const label = c.name + (c.location ? ' — ' + c.location : '');
+      out.push([label, n.value, skillColor(n.name), GENERIC_CLUB_ICON, n.name, c.link || '']);
+    });
+  });
+  return out;
+}
+function buildOlympiads(){
+  // MUHIM (birlashtirildi): ilgari 6 ta olimpiada/tanlov nomi qattiq
+  // yozilgan edi. Endi Opportunity'dan (type='olimpiada' yoki 'tanlov').
+  const needs = (ADVICE_DATA && ADVICE_DATA.skill_needs) || [];
+  const bySkill = (ADVICE_DATA && ADVICE_DATA.olympiads_by_skill) || {};
+  const out = [];
+  needs.forEach(n => {
+    (bySkill[n.name] || []).forEach(c => {
+      const label = c.name + (c.location ? ' — ' + c.location : '');
+      out.push([label, n.value, skillColor(n.name), GENERIC_OLYMP_ICON, n.name, c.link || '']);
+    });
+  });
+  return out;
 }
 function buildSubj(){
   const subjects = (ADVICE_DATA && ADVICE_DATA.subjects) || [];
@@ -11817,46 +11885,32 @@ function buildSubj(){
   return subjects.map(s => [s.name, s.level, cls[s.level] || 'b-mid', '#4C2CE2', icons[s.name] || '<circle cx="12" cy="12" r="9"/>', s.avg]);
 }
 
-const CLUBS = [
-  ['Robototexnika to\u2018garagi','#4C2CE2','<rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.2"/><circle cx="15" cy="13" r="1.2"/>'],
-  ['Dasturlash to\u2018garagi','#2563EB','<path d="M8 9l-3 3 3 3M16 9l3 3-3 3M13 6l-2 12"/>'],
-  ['Matematika klubi','#10B981','<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 13h3M8 17h3"/>'],
-  ['Ingliz tili speaking club','#F59E0B','<path d="M21 12a8 8 0 01-8 8H5l-2 2V12a8 8 0 018-8h1a8 8 0 018 8z"/>'],
-  ['Mantiq va shaxmat to\u2018garagi','#EC4899','<path d="M8 4h8v5a4 4 0 01-8 0z"/><path d="M10 20h4M12 13v7"/>'],
-  ['Yosh tadqiqotchilar klubi','#14B8A6','<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'],
-];
-
-const OLYMP = [
-  ['Informatika olimpiadasi','#4C2CE2','<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M2 20h20"/>'],
-  ['Matematika olimpiadasi','#2563EB','<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 13h3"/>'],
-  ["Startup g'oyalar tanlovi",'#F59E0B','<path d="M12 3l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-1.4z"/>'],
-  ['Robototexnika musobaqasi','#10B981','<rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/>'],
-  ['Ingliz tili olimpiadasi','#EC4899','<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18"/>'],
-  ['Fizika olimpiadasi','#8B5CF6','<circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="9" ry="4"/>'],
-];
-
-const NEEDS = [
-  ["Akademik qo'llab-quvvatlash kerak", 17, 'i-bl','<path d="M12 3l9 5v8l-9 5-9-5V8z"/><path d="M12 12v5"/>'],
-  ['Motivatsiya va faollikni oshirish kerak', 14, 'i-am','<path d="M12 3l2.7 5.6 6.3.9-4.5 4.4 1 6.1L12 17l-5.5 3 1-6.1L3 9.5l6.3-.9z"/>'],
-  ["Nutq va muloqot ko'nikmasi", 12, 'i-pu','<path d="M21 12a8 8 0 01-8 8H5l-2 2V12a8 8 0 018-8h1a8 8 0 018 8z"/>'],
-  ["Vaqtni boshqarish ko'nikmasi", 9, 'i-rd','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'],
-  ["Ijodiy fikrlashni rivojlantirish", 8, 'i-gr','<path d="M12 3l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-1.4z"/>'],
-];
-
-const ROAD = [
-  { t:'1-bosqich', d:'0–3 oy', c:'st1', tc:'c1',
-    items:['Asosiy dasturlash (Python)','Algoritmlar asoslari','Matematika kuchaytirish'],
-    res:'Asoslar mustahkamlanadi' },
-  { t:'2-bosqich', d:'3–6 oy', c:'st2', tc:'c2',
-    items:['Web dasturlash',"Ma'lumotlar tuzilmalari",'Loyihalar ustida ishlash'],
-    res:"Amaliy ko'nikmalar rivojlanadi" },
-  { t:'3-bosqich', d:'6–12 oy', c:'st3', tc:'c3',
-    items:['AI va ML asoslari','Mustaqil loyiha yaratish','Tanlovlarda ishtirok'],
-    res:"Professional yo'nalish boshlanadi" },
-  { t:'4-bosqich', d:'12+ oy', c:'st4', tc:'c4',
-    items:['Mutaxassislikka chuqurlashish','Portfolio yaratish','Karyera sari qadam'],
-    res:"Kasbga yo'naltirish" },
-];
+// MUHIM (tuzatildi): ilgari NEEDS'da 5 ta "individual ehtiyoj" uchun
+// har doim bir xil o'ylab topilgan foizlar (17%, 14%, 12%, 9%, 8%)
+// ko'rsatilardi va faqat birinchisi (index 0) haqiqiy sondan foydalanardi
+// (KPI.need), qolganlari doim "Ma'lumot yo'q" edi. Endi backend
+// /api/students/insights'da HAQIQIY hisoblanadigan yana ikkita
+// kategoriya bor ("creative" — Ijodkorlik ko'nikmasi past, "communication"
+// — Muloqot ko'nikmasi past, xuddi Qobiliyat xaritasi bilan bir xil
+// YAGONA MANBA — skills.py), shular ham haqiqiy son bilan ko'rsatiladi.
+// "Motivatsiya" va "Vaqtni boshqarish" hozircha to'g'ridan-to'g'ri
+// o'lchay oladigan haqiqiy ma'lumot yo'qligi sababli "Ma'lumot yo'q"
+// bo'lib qolaveradi — bu o'ylab chiqarilmaydi.
+function buildNeeds(){
+  const KPI = kpiNow();
+  return [
+    { label: "Akademik qo'llab-quvvatlash kerak", hasData: true, count: KPI.need,
+      cls: 'i-bl', path: '<path d="M12 3l9 5v8l-9 5-9-5V8z"/><path d="M12 12v5"/>' },
+    { label: 'Motivatsiya va faollikni oshirish kerak', hasData: false, count: 0,
+      cls: 'i-am', path: '<path d="M12 3l2.7 5.6 6.3.9-4.5 4.4 1 6.1L12 17l-5.5 3 1-6.1L3 9.5l6.3-.9z"/>' },
+    { label: "Nutq va muloqot ko'nikmasi", hasData: KPI.communicationHasData, count: KPI.communication,
+      cls: 'i-pu', path: '<path d="M21 12a8 8 0 01-8 8H5l-2 2V12a8 8 0 018-8h1a8 8 0 018 8z"/>' },
+    { label: "Vaqtni boshqarish ko'nikmasi", hasData: false, count: 0,
+      cls: 'i-rd', path: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' },
+    { label: "Ijodiy fikrlashni rivojlantirish", hasData: KPI.creativeHasData, count: KPI.creative,
+      cls: 'i-gr', path: '<path d="M12 3l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-1.4z"/>' },
+  ];
+}
 
 let STUDENTS = [];
 let CLASS_REC = [];
@@ -11914,6 +11968,10 @@ async function loadAdviceData(){
       total: (stats && stats.total) || 0,
       high: (insightsData && insightsData.high && insightsData.high.has_data) ? insightsData.high.count : 0,
       need: (insightsData && insightsData.help && insightsData.help.has_data) ? insightsData.help.count : 0,
+      creative: (insightsData && insightsData.creative && insightsData.creative.has_data) ? insightsData.creative.count : 0,
+      creativeHasData: !!(insightsData && insightsData.creative && insightsData.creative.has_data),
+      communication: (insightsData && insightsData.communication && insightsData.communication.has_data) ? insightsData.communication.count : 0,
+      communicationHasData: !!(insightsData && insightsData.communication && insightsData.communication.has_data),
       topSkillName, topSkillVal,
       strongCount: withData.filter(s => s.value >= 80).length,
     };
@@ -11924,7 +11982,11 @@ async function loadAdviceData(){
 }
 
 function kpiNow(){
-  return ADVICE_KPI || { total: 0, high: 0, need: 0, topSkillName: '\u2014', topSkillVal: 0, strongCount: 0 };
+  return ADVICE_KPI || {
+    total: 0, high: 0, need: 0,
+    creative: 0, creativeHasData: false, communication: 0, communicationHasData: false,
+    topSkillName: '\u2014', topSkillVal: 0, strongCount: 0,
+  };
 }
 
 const ini = n => n.split(' ').filter(Boolean).slice(0,2).map(w => w[0]).join('').toUpperCase();
@@ -11988,39 +12050,41 @@ function render(){
               ? `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Bu yo'nalishlar uchun hali hamkor o'quv markaz ro'yxatga olinmagan \u2014 Kelajak Markazi direktori "Hamkor o'quv markazlar" bo'limidan qo'sha oladi.</p>`
               : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali "Qobiliyat testi" natijalari yo'q \u2014 kurs tavsiyalari shundan keyin chiqadi.</p>`; })()) }
 
-        ${recCard('club', 'Tavsiya etilgan to\u2018garaklar', 'Qobiliyat va qiziqishlar asosida', 'i-am',
+        ${recCard('club', 'Tavsiya etilgan to\u2018garaklar', 'Qobiliyat va qiziqishlar asosida \u00b7 haqiqiy hamkor to\u2018garaklar', 'i-am',
           '<path d="M8 4h8v5a4 4 0 01-8 0z"/><path d="M10 20h4M12 13v7"/>',
-          CLUBS.slice(0, 5).map(x => `
-            <div class="li"><span class="lic" style="background:${x[1]}1a;color:${x[1]}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[2]}</svg></span>
-              <span class="t">${x[0]}</span></div>`).join(''))}
+          (() => { const CLUBS_L = buildClubs(); return CLUBS_L.length ? CLUBS_L.slice(0, 5).map(x => `
+            <div class="li"><span class="lic" style="background:${x[2]}1a;color:${x[2]}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[3]}</svg></span>
+              <span class="t">${courseLabel(x)}</span></div>`).join('')
+            : hasNeedsData()
+              ? `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Bu yo'nalishlar uchun hali to'garak ro'yxatga olinmagan.</p>`
+              : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali "Qobiliyat testi" natijalari yo'q \u2014 to'garak tavsiyalari shundan keyin chiqadi.</p>`; })()) }
 
-        ${recCard('olymp', 'Tavsiya etilgan olimpiada va tanlovlar', 'Ishtirok etish tavsiya etiladi', 'i-pu',
+        ${recCard('olymp', 'Tavsiya etilgan olimpiada va tanlovlar', "Ishtirok etish tavsiya etiladi \u00b7 haqiqiy tanlovlar", 'i-pu',
           '<path d="M12 3l2.7 5.6 6.3.9-4.5 4.4 1 6.1L12 17l-5.5 3 1-6.1L3 9.5l6.3-.9z"/>',
-          OLYMP.slice(0, 5).map(x => `
-            <div class="li"><span class="lic" style="background:${x[1]}1a;color:${x[1]}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[2]}</svg></span>
-              <span class="t">${x[0]}</span></div>`).join(''))}
+          (() => { const OLYMP_L = buildOlympiads(); return OLYMP_L.length ? OLYMP_L.slice(0, 5).map(x => `
+            <div class="li"><span class="lic" style="background:${x[2]}1a;color:${x[2]}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[3]}</svg></span>
+              <span class="t">${courseLabel(x)}</span></div>`).join('')
+            : hasNeedsData()
+              ? `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Bu yo'nalishlar uchun hali olimpiada/tanlov ro'yxatga olinmagan.</p>`
+              : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali "Qobiliyat testi" natijalari yo'q \u2014 tanlov tavsiyalari shundan keyin chiqadi.</p>`; })()) }
       </div>
 
       <div class="bottom">
         <div class="card">
-          <div class="card-h"><b>Qobiliyatlarga mos rivojlanish yo'l xaritasi (umumiy)</b>
-            <small>Asosiy yo'nalish: ${KPI.topSkillName}</small></div>
+          <div class="card-h"><b>Rivojlanish yo'l xaritasi</b>
+            <small>Har bir o'quvchi uchun AI tomonidan shaxsiy tuziladi</small></div>
           <div class="card-b">
-            <div class="road">
-              ${ROAD.map((r, i) => `
-                <div class="stage">
-                  <div class="sh"><span class="num ${r.c}">${i + 1}</span>
-                    <span><b class="${r.tc}">${r.t}</b> <small>(${r.d})</small></span></div>
-                  <ul>${r.items.map(t => `<li><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>${t}</li>`).join('')}</ul>
-                  <div class="res"><small class="${r.tc}">Kutilayotgan natija:</small><p>${r.res}</p></div>
-                  ${i < 3 ? '<span class="arw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>' : ''}
-                </div>`).join('')}
-            </div>
+            <p style="font-size:13px;line-height:1.6;color:var(--muted);padding:4px 0 6px">
+              Hammaga bir xil umumiy reja o'rniga — har bir o'quvchi uchun uning
+              haqiqiy baholari, qobiliyat natijalari va yutuqlari asosida AI
+              alohida, shaxsiylashtirilgan rivojlanish yo'l xaritasini tuzadi.
+              Asosiy yo'nalish (maktab bo'yicha): <b>${KPI.topSkillName}</b>.
+            </p>
           </div>
           <div class="card-f">
-            <button class="more" data-more="road">To'liq yo'l xaritasini ko'rish
+            <button class="more" data-go="roadmap">O'quvchi yo'l xaritasini ochish
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </button>
           </div>
@@ -12030,10 +12094,10 @@ function render(){
           <div class="card-h"><b>AI aniqlagan individual ehtiyojlar</b>
             <small>O'quvchilarda ko'proq e'tibor talab qiladigan sohalar</small></div>
           <div class="card-b">
-            ${NEEDS.map((x, i) => `
-              <div class="need"><span class="nic ${x[2]}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[3]}</svg></span>
-                <span class="t">${x[0]}</span><span class="n">${i === 0 ? KPI.need + ' nafar' : "Ma'lumot yo'q"}</span></div>`).join('')}
+            ${buildNeeds().map(x => `
+              <div class="need"><span class="nic ${x.cls}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x.path}</svg></span>
+                <span class="t">${x.label}</span><span class="n">${x.hasData ? x.count + ' nafar' : "Ma'lumot yo'q"}</span></div>`).join('')}
           </div>
           <div class="card-f">
             <button class="more" data-more="needs">Batafsil ro'yxatni ko'rish
@@ -12126,10 +12190,11 @@ function render(){
 
         ${recCard(null, 'To\u2018garak va tanlovlar', 'Ishtirok etish tavsiya etiladi', 'i-am',
           '<path d="M8 4h8v5a4 4 0 01-8 0z"/><path d="M10 20h4M12 13v7"/>',
-          [...CLUBS.slice(0, 2), ...OLYMP.slice(0, 2)].map(x => `
-            <div class="li"><span class="lic" style="background:${x[1]}1a;color:${x[1]}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[2]}</svg></span>
-              <span class="t">${x[0]}</span></div>`).join(''))}
+          (() => { const mix = [...buildClubs().slice(0, 2), ...buildOlympiads().slice(0, 2)]; return mix.length ? mix.map(x => `
+            <div class="li"><span class="lic" style="background:${x[2]}1a;color:${x[2]}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${x[3]}</svg></span>
+              <span class="t">${courseLabel(x)}</span></div>`).join('')
+            : `<p style="font-size:12.5px;color:var(--muted);padding:6px 0">Hali ma'lumot yo'q.</p>`; })())}
 
         <div class="ai-sum" id="aiSumBox">
           <div class="t"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.3"/><circle cx="15" cy="13" r="1.3"/></svg></span>
@@ -12244,32 +12309,26 @@ function openMore(key){
     showModal('Tavsiya etilgan kurslar', "Eng zaif ko'nikmalar asosida · haqiqiy hamkor o'quv markazlar",
       ['Kurs','Yo‘nalish','Ehtiyoj','Havola'], buildCourses().map(x => [x[0], x[4], x[1] + '%', x[5] || '—']));
   if (key === 'club')
-    showModal("Tavsiya etilgan to'garaklar", 'Qobiliyat va qiziqishlar asosida',
-      ["To'garak"], CLUBS.map(x => [x[0]]));
+    showModal("Tavsiya etilgan to'garaklar", 'Qobiliyat va qiziqishlar asosida \u00b7 haqiqiy hamkor to\u2018garaklar',
+      ["To'garak",'Yo\u2018nalish','Havola'], buildClubs().map(x => [x[0], x[4], x[5] || '\u2014']));
   if (key === 'olymp')
-    showModal('Tavsiya etilgan olimpiada va tanlovlar', 'Ishtirok etish tavsiya etiladi',
-      ['Tanlov'], OLYMP.map(x => [x[0]]));
+    showModal('Tavsiya etilgan olimpiada va tanlovlar', 'Ishtirok etish tavsiya etiladi \u00b7 haqiqiy tanlovlar',
+      ['Tanlov','Yo\u2018nalish','Havola'], buildOlympiads().map(x => [x[0], x[4], x[5] || '\u2014']));
   if (key === 'needs')
     showModal('AI aniqlagan individual ehtiyojlar', "O'quvchilar soni bo'yicha",
-      ['Ehtiyoj','O\u2018quvchilar'], NEEDS.map((x, i) => [x[0], i === 0 ? KPI.need + ' nafar' : "Ma'lumot yo'q"]));
-  if (key === 'road') {
-    const rows = [];
-    ROAD.forEach((r, i) => r.items.forEach(t => rows.push([r.t + ' (' + r.d + ')', t, r.res])));
-    showModal("To'liq rivojlanish yo'l xaritasi", 'Asosiy yo\u2018nalish: ' + KPI.topSkillName,
-      ['Bosqich','Vazifa','Kutilayotgan natija'], rows);
-  }
+      ['Ehtiyoj','O\u2018quvchilar'], buildNeeds().map(x => [x.label, x.hasData ? x.count + ' nafar' : "Ma'lumot yo'q"]));
 }
 
 function openClass(n){
   const c = CLASS_REC.find(x => x.n === n);
-  const courses = buildCourses(), subj = buildSubj();
+  const courses = buildCourses(), subj = buildSubj(), clubs = buildClubs(), olymps = buildOlympiads();
   showModal(c.n + ' sinfi uchun tavsiyalar', c.cnt + " nafar o'quvchi · Qobiliyat indeksi " + c.idx + '%',
     ['Yo\u2018nalish','Tavsiya'], [
       ['Ustun yo\u2018nalish', c.focus],
       ['Asosiy taklif', c.need],
       ['Kurs', courses.length ? courses[0][0] : "Hamkor o'quv markaz hali ro'yxatga olinmagan"],
-      ["To'garak", CLUBS[0][0]],
-      ['Tanlov', OLYMP[0][0]],
+      ["To'garak", clubs.length ? clubs[0][0] : "Hali to'garak ro'yxatga olinmagan"],
+      ['Tanlov', olymps.length ? olymps[0][0] : "Hali tanlov ro'yxatga olinmagan"],
       ['Fan kuchaytirish', subj.length ? subj.slice(0, 2).map(x => x[0]).join(', ') : "Ma'lumot yo'q"],
     ]);
 }
@@ -12301,7 +12360,9 @@ document.getElementById('repBtnR').onclick = () => {
     ['AI TAVSIYALAR HISOBOTI'], ['Davr', fmt(P.from) + ' – ' + fmt(P.to)], [],
     ['Kasb yo\u2018nalishi','Moslik'], ...buildProfs().map(p => [p[0], p[1] + '%']), [],
     ['Kurs','Yo‘nalish','Ehtiyoj','Havola'], ...buildCourses().map(c => [c[0], c[4], c[1] + '%', c[5] || '']), [],
-    ['Ehtiyoj','O\u2018quvchilar'], ...NEEDS.map((n, i) => [n[0], i === 0 ? KPI.need + ' nafar' : "Ma'lumot yo'q"]),
+    ["To'garak",'Yo‘nalish','Havola'], ...buildClubs().map(c => [c[0], c[4], c[5] || '']), [],
+    ['Tanlov','Yo‘nalish','Havola'], ...buildOlympiads().map(c => [c[0], c[4], c[5] || '']), [],
+    ['Ehtiyoj','O‘quvchilar'], ...buildNeeds().map(n => [n.label, n.hasData ? n.count + ' nafar' : "Ma'lumot yo'q"]),
   ];
   dl(rows, 'ai_tavsiyalar.csv');
 };
@@ -14323,9 +14384,6 @@ const TEMPLATES = [
     icon:'<rect x="4" y="7" width="16" height="13" rx="4"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.2"/><circle cx="15" cy="13" r="1.2"/>' },
 ];
 
-const CLSL = ['8-A','8-B','9-A','9-B','10-A','10-B','11-A','11-B'];
-const NAMES = ['Ismoilov Behruz','Karimova Dilnoza','Xudoyberdiyev Asilbek','Tursunova Madina','Abdurahmonov Muhammad',
-  'Rasulov Dilshodbek','Sobirova Malika','Qodirov Islombek','Yusupova Zilola','Mirzayev Sardorbek'];
 
 const iso = d => d.toISOString().slice(0, 10);
 const TODAY = new Date(), TODAY_ISO = iso(TODAY);
@@ -14400,9 +14458,17 @@ function drawForm(){
           </div>
         </div>
         ${needsCls ? `<div class="field"><label>Sinf</label>
-          <select class="inp" id="clsSel">${REAL_CLASSES ? REAL_CLASSES.map(c => `<option value="${c.id}">${c.name}</option>`).join('') : CLSL.map(c => `<option>${c}</option>`).join('')}</select></div>` : ''}
+          ${REAL_CLASSES
+            ? (REAL_CLASSES.length
+                ? `<select class="inp" id="clsSel">${REAL_CLASSES.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}</select>`
+                : `<select class="inp" id="clsSel" disabled><option>Hozircha sinf yo'q</option></select>`)
+            : `<select class="inp" id="clsSel" disabled><option>Yuklanmoqda…</option></select>`}</div>` : ''}
         ${needsStu ? `<div class="field"><label>O'quvchi</label>
-          <select class="inp" id="rpStuSel">${REAL_STUDENTS ? REAL_STUDENTS.map(s => `<option value="${s.id}">${s.cls} — ${s.name}</option>`).join('') : [...NAMES.keys()].sort((a,b)=>{const c=CLSL.indexOf(CLSL[a%CLSL.length])-CLSL.indexOf(CLSL[b%CLSL.length]);return c!==0?c:NAMES[a].localeCompare(NAMES[b],'uz');}).map(i => `<option value="${i}">${CLSL[i % CLSL.length]} — ${NAMES[i]}</option>`).join('')}</select></div>` : ''}
+          ${REAL_STUDENTS
+            ? (REAL_STUDENTS.length
+                ? `<select class="inp" id="rpStuSel">${REAL_STUDENTS.map(s => `<option value="${s.id}">${s.cls} — ${s.name}</option>`).join('')}</select>`
+                : `<select class="inp" id="rpStuSel" disabled><option>Hozircha o'quvchi yo'q</option></select>`)
+            : `<select class="inp" id="rpStuSel" disabled><option>Yuklanmoqda…</option></select>`}</div>` : ''}
         ${needsTest ? `<div class="field"><label>Test</label>
           <select class="inp" id="testSel">${REAL_TESTS && REAL_TESTS.length ? REAL_TESTS.map(t => `<option value="${t.id}">${t.name}</option>`).join('') : '<option value="">Testlar topilmadi</option>'}</select></div>` : ''}
         <div class="field">
@@ -14426,7 +14492,15 @@ function drawForm(){
   document.querySelectorAll('#reportsView #rangeBox .pill').forEach(b => b.onclick = () => { document.querySelectorAll('#reportsView #rangeBox .pill').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); });
   document.querySelectorAll('#reportsView #fmtBox .pill').forEach(b => b.onclick = () => { document.querySelectorAll('#reportsView #fmtBox .pill').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); });
   document.querySelectorAll('#reportsView #sectBox .chk').forEach(c => c.onclick = () => c.classList.toggle('on'));
-  document.getElementById('genGo').onclick = runGenerate;
+  document.getElementById('genGo').onclick = () => {
+    // MUHIM (tuzatildi): ilgari REAL_STUDENTS/REAL_CLASSES hali
+    // yuklanmagan bo'lsa (tez bosilganda), soxta NAMES/CLSL ro'yxatidan
+    // ism/sinf chiqib ketardi. Endi shu holatda generatsiya boshlanmaydi
+    // — tanlov ro'yxati hali yuklanmoqda bo'lsa ogohlantirib to'xtatiladi.
+    if (needsCls && !(REAL_CLASSES && REAL_CLASSES.length)) return alert("Sinflar ro'yxati hali yuklanmoqda, biroz kuting.");
+    if (needsStu && !(REAL_STUDENTS && REAL_STUDENTS.length)) return alert("O'quvchilar ro'yxati hali yuklanmoqda, biroz kuting.");
+    runGenerate();
+  };
   document.getElementById('formBox').scrollIntoView({ behavior:'smooth', block:'nearest' });
 }
 
@@ -14469,11 +14543,11 @@ async function showResult(){
   let label = t.name;
   if (tplId === 'sinf') {
     const clsEl = document.getElementById('clsSel');
-    label += ' — ' + (REAL_CLASSES ? clsEl.options[clsEl.selectedIndex].textContent : clsEl.value);
+    label += ' — ' + clsEl.options[clsEl.selectedIndex].textContent;
   }
   if (tplId === 'stu') {
     const stuEl = document.getElementById('rpStuSel');
-    label += ' — ' + (REAL_STUDENTS ? REAL_STUDENTS.find(s => s.id === +stuEl.value)?.name : NAMES[+stuEl.value]);
+    label += ' — ' + (REAL_STUDENTS.find(s => s.id === +stuEl.value)?.name || '');
   }
   if (tplId === 'test') {
     const testEl = document.getElementById('testSel');
@@ -14702,6 +14776,10 @@ async function preloadReportRefs(){
     REAL_STUDENTS = (students || []).map(s => ({ id: s.id, name: s.full_name, cls: clsById[s.class_id] || '\u2014' }))
       .sort((a, b) => a.cls.localeCompare(b.cls) || a.name.localeCompare(b.name, 'uz'));
     REAL_TESTS = tests || [];
+    // Forma ochiq va hali "Yuklanmoqda..." holatida bo'lsa — endi
+    // haqiqiy ma'lumot kelgani uchun qayta chizamiz (foydalanuvchi
+    // formani qayta ochmasa ham sinf/o'quvchi tanlovi to'ldiriladi).
+    if (tplId && document.getElementById('formBox') && document.getElementById('formBox').innerHTML.trim()) drawForm();
   } catch (err) {
     console.warn("Sinf/o'quvchi/test ro'yxatini yuklab bo'lmadi:", err.message);
   }
@@ -14905,10 +14983,15 @@ let activeTab = 'profil';
 
 const _savedUser = (() => { try { return JSON.parse(localStorage.getItem('qp_user') || 'null'); } catch(e) { return null; } })();
 const SET = {
+  // MUHIM (tuzatildi): ilgari email va maktab HAR DOIM qattiq yozilgan
+  // ("abdulaziz.jurayev@maktab.uz", "25-son...") edi — hech kimniki
+  // haqiqiy emas edi. Endi (a) login javobidagi saqlangan qiymat bo'lsa
+  // shu ishlatiladi, (b) sahifa ochilganda pastdagi refreshRealProfile()
+  // /api/auth/me'dan haqiqiy qiymatni olib SET'ni yangilaydi.
   name: _savedUser ? _savedUser.full_name : 'Abdulaziz Jurayev',
   phone: _savedUser ? _savedUser.phone.replace('+998', '+998 ') : '+998 90 123 45 67',
-  email:'abdulaziz.jurayev@maktab.uz', photo: _savedUser ? (_savedUser.photo || null) : null,
-  role: _savedUser ? _savedUser.role : 'Maslahatchi', school:"25-son umumiy o'rta ta'lim maktabi",
+  email: (_savedUser && _savedUser.email) || '', photo: _savedUser ? (_savedUser.photo || null) : null,
+  role: _savedUser ? _savedUser.role : 'Maslahatchi', school: (_savedUser && _savedUser.school_name) || '',
   lang: localStorage.getItem('qp_lang') || "O'zbek tili (lotin)",
   theme: localStorage.getItem('qp_theme') || 'Yorug\u2018',
   notif: Object.assign({ ai:true, test:true, yutuq:true, ogohl:true, tizim:false, email:true },
@@ -14970,14 +15053,14 @@ function profilHTML(){
         </div>
         <div class="two">
           <div class="field"><label>Email</label>
-            <input class="inp" id="pEmail" type="email" value="${SET.email}">
+            <input class="inp" id="pEmail" type="email" value="${SET.email}" placeholder="email@maktab.uz">
             <span class="hint" id="emailHint"></span></div>
           <div class="field"><label>Lavozim</label>
             <input class="inp" value="${SET.role}" disabled>
             <span class="hint">Lavozimni faqat administrator o'zgartira oladi</span></div>
         </div>
         <div class="field"><label>Maktab</label>
-          <input class="inp" value="${SET.school}" disabled></div>
+          <input class="inp" value="${SET.school || 'Maktab biriktirilmagan'}" disabled></div>
       </div>
       <div class="card-f">
         <span class="saved" id="savedProfil"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Saqlandi</span>
@@ -15241,9 +15324,14 @@ function bindCommon(){
       saveP.disabled = true;
       const old = saveP.textContent; saveP.textContent = 'Saqlanmoqda...';
       try {
+        // MUHIM (tuzatildi): ilgari email maydoni backendga umuman
+        // yuborilmasdi — foydalanuvchi Email kiritib "Saqlash" bossa ham,
+        // faqat ekranda (SET.email) o'zgarardi, serverga yozilmasdi va
+        // sahifa qayta yuklangach yo'qolardi. Endi email ham PATCH bilan
+        // birga yuboriladi.
         const updated = await apiFetch('/api/auth/me', {
           method: 'PATCH',
-          body: JSON.stringify({ full_name: newName, phone: '+998' + phoneDigits }),
+          body: JSON.stringify({ full_name: newName, phone: '+998' + phoneDigits, email: emailVal || null }),
         });
         localStorage.setItem('qp_user', JSON.stringify(updated));
       } catch (err) {
@@ -15331,6 +15419,30 @@ function bindCommon(){
 
 applyTheme();
 render();
+
+// MUHIM (tuzatildi): SET.email/SET.school yuqorida faqat localStorage'dagi
+// login-vaqtidagi ma'lumotdan boshlanadi (u yerda school_name bo'lmasligi
+// mumkin). Shuning uchun sahifa ochilganda /api/auth/me'dan (haqiqiy,
+// server tomonidan hisoblangan maktab nomi va xodim o'zi kiritgan email)
+// yana bir bor so'raladi va SET/localStorage yangilanadi.
+async function refreshRealProfile(){
+  if (!window.apiFetch || !localStorage.getItem('qp_token')) return;
+  try {
+    const me = await apiFetch('/api/auth/me');
+    if (!me) return;
+    SET.email = me.email || '';
+    SET.school = me.school_name || '';
+    if (_savedUser) {
+      _savedUser.email = me.email;
+      _savedUser.school_name = me.school_name;
+      localStorage.setItem('qp_user', JSON.stringify(_savedUser));
+    }
+    if (activeTab === 'profil') render();
+  } catch (err) {
+    console.warn("Profil ma'lumotini yangilab bo'lmadi:", err.message);
+  }
+}
+refreshRealProfile();
 
 })();
 </script>
