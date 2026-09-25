@@ -7713,8 +7713,18 @@ document.getElementById('regBtn').onclick = async () => {
     if (isDirector) payload.school_id = +orgSel.value;
 
     const data = await apiFetch('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) });
-    localStorage.setItem('qp_token', data.access_token);
-    localStorage.setItem('qp_user', JSON.stringify(data.user));
+    /* MUHIM: bu yerda hech qanday token/user localStorage'ga saqlanmaydi va
+       avtomatik kirish (auto-login) qilinmaydi. Sabab: rolga qarab to'g'ri
+       kabinetga yo'naltirish (maslahatchi -> shu sahifa, direktor ->
+       direktor.html, kelajak_direktor -> kelajak-direktor.html va h.k.)
+       logikasi FAQAT pastdagi haqiqiy LOGIN oqimida bor. Agar shu yerda ham
+       token saqlab, to'g'ridan-to'g'ri "home" ko'rinishini ko'rsatsak, har
+       doim shu sahifaning o'z (maslahatchi) panelini ko'rsatadi — hatto
+       boshqa rol uchun ro'yxatdan o'tilgan bo'lsa ham, va sarlavhadagi
+       statik "Abdulaziz Jurayev" namunaviy ismi ham almashtirilmay qoladi.
+       Shuning uchun ro'yxatdan o'tgach har doim LOGIN FORMASIGA qaytaramiz —
+       ekrandagi "Endi telefon raqamingiz va parolingiz bilan kirishingiz
+       mumkin" degan gapga ham aynan shu mos keladi. */
 
     regFields.forEach(el => el.value = '');
     regSelects.forEach(sel => sel.selectedIndex = 0);
@@ -7724,7 +7734,16 @@ document.getElementById('regBtn').onclick = async () => {
     err.classList.remove('show');
     document.getElementById('regForm').style.display = 'none';
     document.getElementById('regDone').style.display = 'block';
-    document.getElementById('regDone').querySelector('[data-close]').onclick = () => showView('home');
+    document.getElementById('regDone').querySelector('[data-close]').onclick = () => {
+      /* Modalni to'g'ri yopamiz (mavjud close()/resetModals() mexanizmi
+         orqali) va login maydonlarini tozalaymiz — shunda foydalanuvchi
+         orqadagi login formasiga (u hech qachon o'zgarmagan edi) yangi
+         hisobining telefon/parolini kiritishga tayyor holda qaytadi. */
+      close(reg);
+      setTimeout(resetModals, 200);
+      if (window.clearLoginFields) window.clearLoginFields();
+      showView('login');
+    };
   } catch (e) {
     err.textContent = e.isNetworkError
       ? "Serverga ulanib bo'lmadi. Backend ishga tushirilganini tekshiring."
