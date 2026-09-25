@@ -180,6 +180,22 @@ tr:last-child td{border-bottom:none}
         <b id="apiBaseShow" style="font-size:14px;word-break:break-all"></b>
       </div>
 
+      <div class="kpi" style="max-width:480px;margin-bottom:24px">
+        <small>Tizim logotipi</small>
+        <p class="hint" style="margin-bottom:12px">Bu yerga yuklangan rasm login sahifasidagi va barcha panellardagi (maslahatchi, maktab direktori, Kelajak Markazi direktori, ota-ona, o'quvchi) standart belgini almashtiradi — masalan, Kelajak Markazi logotipini shu yerdan qo'ying.</p>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div id="orgLogoPreview" style="width:64px;height:64px;border-radius:14px;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid var(--line)">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B4B2CB" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>
+          </div>
+          <div>
+            <input type="file" id="orgLogoInput" accept="image/jpeg,image/png,image/webp,image/svg+xml" hidden>
+            <button class="btn" id="orgLogoBtn">Logotipni yuklash</button>
+            <button class="btn btn-danger" id="orgLogoRemoveBtn" style="display:none">O'chirish</button>
+            <p class="hint">PNG, JPG yoki SVG, maks. 1.5MB.</p>
+          </div>
+        </div>
+      </div>
+
       <div id="adminManageSection" style="display:none">
         <div class="toolbar">
           <h1 style="margin:0;font-size:16px">Admin panel foydalanuvchilari</h1>
@@ -382,6 +398,48 @@ tr:last-child td{border-bottom:none}
 <script>
 window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-backend-production.up.railway.app';
 document.getElementById('apiBaseShow').textContent = window.API_BASE;
+
+/* ===== Tizim logotipi (haqiqiy, GET/PATCH /api/admin/settings/logo) =====
+   Bu yerga yuklangan rasm login sahifasi va barcha panellardagi standart
+   belgi-emblemalarni almashtiradi (qobiliyat-ai.html, kelajak-direktor.html,
+   direktor.html, oquvchi-profilim.html, parent.html — har biri sahifa
+   ochilganda /api/settings/public orqali shu logotipni o'qib oladi). */
+async function loadOrgLogo(){
+  try {
+    const s = await apiFetch('/api/admin/settings/logo');
+    renderOrgLogoPreview(s.logo);
+  } catch (e) { /* kritik emas, jim o'tkazamiz */ }
+}
+function renderOrgLogoPreview(logo){
+  document.getElementById('orgLogoPreview').innerHTML = logo
+    ? `<img src="${logo}" style="width:100%;height:100%;object-fit:cover">`
+    : `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B4B2CB" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>`;
+  document.getElementById('orgLogoRemoveBtn').style.display = logo ? 'inline-block' : 'none';
+}
+document.getElementById('orgLogoBtn').onclick = () => document.getElementById('orgLogoInput').click();
+document.getElementById('orgLogoInput').addEventListener('change', function(){
+  const file = this.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { alert('Faqat rasm fayli tanlang'); this.value = ''; return; }
+  if (file.size > 1.5 * 1024 * 1024) { alert('Rasm hajmi 1.5 MB dan oshmasin'); this.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = async e => {
+    const dataUrl = e.target.result;
+    try {
+      const s = await apiFetch('/api/admin/settings/logo', { method: 'PATCH', body: JSON.stringify({ logo: dataUrl }) });
+      renderOrgLogoPreview(s.logo);
+    } catch (err) { alert(err.message || 'Logotipni saqlashda xatolik'); }
+  };
+  reader.readAsDataURL(file);
+  this.value = '';
+});
+document.getElementById('orgLogoRemoveBtn').onclick = async () => {
+  try {
+    const s = await apiFetch('/api/admin/settings/logo', { method: 'PATCH', body: JSON.stringify({ logo: null }) });
+    renderOrgLogoPreview(s.logo);
+  } catch (err) { alert(err.message || 'Xatolik yuz berdi'); }
+};
+loadOrgLogo();
 
 const regionSel = document.getElementById('sRegion');
 let REGIONS_DB = [];   // [{id, name, district_count}]

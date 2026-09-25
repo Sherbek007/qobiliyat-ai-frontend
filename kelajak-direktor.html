@@ -904,6 +904,27 @@ select.field-inp{appearance:none;-webkit-appearance:none;background-image:url("d
 <script>
 window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-backend-production.up.railway.app';
 
+/* ============ Tizim logotipi (admin panelda yuklangan) ============
+   Agar admin haqiqiy "Kelajak Markazi" logotipini yuklagan bo'lsa,
+   sahifadagi barcha standart emblema (svg.emblem) va harf-belgili
+   logotiplar (div.emblem / div.emblem-sm) shu rasm bilan almashtiriladi.
+   Autentifikatsiyasiz ishlaydi — login sahifasida ham ko'rinishi kerak. */
+(function applyGlobalLogo(){
+  fetch(window.API_BASE + '/api/settings/public').then(r => r.ok ? r.json() : null).then(d => {
+    if (!d || !d.logo) return;
+    document.querySelectorAll('svg.emblem').forEach(el => {
+      const img = document.createElement('img');
+      img.src = d.logo; img.alt = 'Logotip';
+      img.className = el.getAttribute('class') || 'emblem';
+      img.style.objectFit = 'contain'; img.style.borderRadius = '50%';
+      el.replaceWith(img);
+    });
+    document.querySelectorAll('div.emblem, div.emblem-sm').forEach(el => {
+      el.innerHTML = `<img src="${d.logo}" alt="Logotip" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">`;
+    });
+  }).catch(() => {});
+})();
+
 async function apiFetch(path, options){
   options = options || {};
   const token = localStorage.getItem('qp_kelajak_token');
@@ -989,7 +1010,6 @@ function startApp(){
   if (u.full_name) {
     document.getElementById('hName').textContent = u.full_name;
     document.getElementById('welcomeH1').textContent = 'Xush kelibsiz, ' + u.full_name + '!';
-    document.getElementById('avaIni').textContent = u.full_name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
   }
   fillSettingsProfile(u);
   document.getElementById('kpiBox').innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px 0">Yuklanmoqda…</div>';
@@ -1841,13 +1861,27 @@ document.getElementById('logoFileInput').addEventListener('change', function(){
   this.value = '';
 });
 
+/* Profil rasmi bir nechta joyda ko'rinishi kerak (sarlavhadagi avatar VA
+   Sozlamalar sahifasidagi kartochka) \u2014 shu sabab yagona funksiya orqali
+   ikkalasi ham yangilanadi. MUHIM (tuzatildi): ilgari sarlavhadagi avatar
+   (avaIni) faqat harflar bilan to'ldirilardi va rasm hech qachon u yerda
+   ko'rinmasdi \u2014 hatto rasm muvaffaqiyatli saqlangandan keyin ham, chunki
+   boshqa joyda uni qayta harflarga almashtirib qo'yuvchi kod bor edi.*/
+function renderAvaEl(elId, u){
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const name = (u && u.full_name) || 'Direktor';
+  const initials = name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  el.innerHTML = (u && u.photo)
+    ? `<img src="${u.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`
+    : initials;
+}
 function fillSettingsProfile(u){
   u = u || {};
   const name = u.full_name || 'Direktor';
   document.getElementById('settingsName').textContent = name;
-  document.getElementById('settingsAva').innerHTML = u.photo
-    ? `<img src="${u.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`
-    : name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  renderAvaEl('settingsAva', u);
+  renderAvaEl('avaIni', u);
   document.getElementById('settingsEmail').textContent = u.email || '\u2014';
   document.getElementById('settingsPhone').textContent = u.phone || '\u2014';
   document.getElementById('settingsRole').textContent = districtRoleLabel(u);

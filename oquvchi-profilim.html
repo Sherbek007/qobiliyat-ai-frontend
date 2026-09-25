@@ -1564,6 +1564,27 @@ a{color:inherit;text-decoration:none}
 })();
 window.API_BASE = localStorage.getItem('qp_api_base') || 'https://qobiliyat-ai-backend-production.up.railway.app';
 
+/* ============ Tizim logotipi (admin panelda yuklangan) ============
+   Agar admin haqiqiy "Kelajak Markazi" logotipini yuklagan bo'lsa,
+   sahifadagi barcha standart emblema (svg.emblem) va harf-belgili
+   logotiplar (div.emblem / div.emblem-sm) shu rasm bilan almashtiriladi.
+   Autentifikatsiyasiz ishlaydi — login sahifasida ham ko'rinishi kerak. */
+(function applyGlobalLogo(){
+  fetch(window.API_BASE + '/api/settings/public').then(r => r.ok ? r.json() : null).then(d => {
+    if (!d || !d.logo) return;
+    document.querySelectorAll('svg.emblem').forEach(el => {
+      const img = document.createElement('img');
+      img.src = d.logo; img.alt = 'Logotip';
+      img.className = el.getAttribute('class') || 'emblem';
+      img.style.objectFit = 'contain'; img.style.borderRadius = '50%';
+      el.replaceWith(img);
+    });
+    document.querySelectorAll('div.emblem, div.emblem-sm').forEach(el => {
+      el.innerHTML = `<img src="${d.logo}" alt="Logotip" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">`;
+    });
+  }).catch(() => {});
+})();
+
 (function(){
   const loginView = document.getElementById('loginView');
   const appView = document.getElementById('appView');
