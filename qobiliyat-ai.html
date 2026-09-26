@@ -5105,6 +5105,20 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
       <div class="epane hidden" data-ep="3">
         <p class="v-note" style="margin:0 0 14px">Bu ma'lumotlarni keyinroq ham to'ldirish mumkin — barchasi ixtiyoriy.</p>
 
+        <div class="pbox" style="background:var(--primary-soft-2,#F5F2FF);border:1px dashed var(--primary,#4C2CE2)">
+          <b class="pt"><span class="pic-s i-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a3 3 0 00-2-2.83M16 3.13a3 3 0 010 5.75"/></svg></span>Aka/uka/opa/singlisi tizimda bormi?</b>
+          <p style="font-size:12.5px;color:var(--muted);margin:6px 0 14px">Bu — <b>Excel orqali qo'shilgan</b> o'quvchilar uchun ham ishlatiladi: agar aka/uka/opa/singlisi allaqachon ro'yxatda bo'lsa, shu yerdan tanlang — ota-ona ma'lumotlari pastga avtomatik to'ldiriladi.</p>
+          <div class="m-two">
+            <div class="m-field"><label>Sinfni tanlang</label>
+              <select class="m-inp" id="esibClassSel"><option value="">Yuklanmoqda...</option></select>
+            </div>
+            <div class="m-field"><label>O'quvchini tanlang</label>
+              <select class="m-inp" id="esibStudentSel" disabled><option value="">Avval sinfni tanlang</option></select>
+            </div>
+          </div>
+          <p id="esibResultBox" style="display:none;margin-top:12px;padding:10px 12px;border-radius:9px;background:#fff;font-size:12.5px;color:var(--ink)"></p>
+        </div>
+
         <div class="pbox">
           <b class="pt"><span class="pic-s i-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></span>Ota</b>
           <div class="m-field"><label>F.I.Sh.</label><input class="m-inp" id="fName" maxlength="70" placeholder="Otasining ismi"></div>
@@ -9509,6 +9523,73 @@ document.getElementById('simplePassBtn').onclick = () => {
 const cbMust = document.getElementById('cbMust');
 document.getElementById('mustChangeRow').onclick = e => { e.preventDefault(); cbMust.classList.toggle('on'); };
 
+/* ============ Aka/uka/opa/singlisi orqali topish (tahrirlash oynasida) ============
+   Bu — asosan Excel orqali qo'shilgan o'quvchilar uchun: ular "Yangi
+   o'quvchi qo'shish" oynasidan o'tmagani sababli, qarindoshni tanlash
+   imkoniyatini shu — tahrirlash — oynasida beramiz. */
+async function loadEsibClasses(){
+  const sel = document.getElementById('esibClassSel');
+  if (!sel || !window.apiFetch) return;
+  try {
+    const classes = await apiFetch('/api/classes');
+    sel.innerHTML = '<option value="">Tanlang</option>' +
+      classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  } catch (err) {
+    sel.innerHTML = '<option value="">Yuklab bo\'lmadi</option>';
+  }
+}
+document.getElementById('esibClassSel').addEventListener('change', async function(){
+  const stuSel = document.getElementById('esibStudentSel');
+  const classId = this.value;
+  document.getElementById('esibResultBox').style.display = 'none';
+  if (!classId) { stuSel.disabled = true; stuSel.innerHTML = '<option value="">Avval sinfni tanlang</option>'; return; }
+  stuSel.disabled = true;
+  stuSel.innerHTML = '<option value="">Yuklanmoqda...</option>';
+  try {
+    const s = STUDENTS.find(x => x.id === currentId);
+    const rows = (await apiFetch(`/api/students?class_id=${classId}`)).filter(r => !s || r.id !== s.apiId);
+    if (!rows.length) {
+      stuSel.innerHTML = '<option value="">Bu sinfda boshqa o\'quvchi yo\'q</option>';
+      return;
+    }
+    stuSel.innerHTML = '<option value="">Tanlang</option>' +
+      rows.map(r => `<option value="${r.id}">${r.full_name}</option>`).join('');
+    stuSel.disabled = false;
+  } catch (err) {
+    stuSel.innerHTML = '<option value="">Yuklab bo\'lmadi</option>';
+  }
+});
+document.getElementById('esibStudentSel').addEventListener('change', async function(){
+  const studentId = this.value;
+  const box = document.getElementById('esibResultBox');
+  if (!studentId) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  box.style.color = 'var(--muted)';
+  box.textContent = 'Yuklanmoqda...';
+  try {
+    const sib = await apiFetch(`/api/students/${studentId}`);
+    let filled = [];
+    if (sib.father_name) { document.getElementById('fName').value = sib.father_name; filled.push('Ota F.I.Sh.'); }
+    if (sib.father_phone) { document.getElementById('fPhone').value = sib.father_phone.replace('+998', ''); filled.push('Ota telefon'); }
+    if (sib.father_work) document.getElementById('fWork').value = sib.father_work;
+    if (sib.mother_name) { document.getElementById('mName').value = sib.mother_name; filled.push('Ona F.I.Sh.'); }
+    if (sib.mother_phone) { document.getElementById('mPhone').value = sib.mother_phone.replace('+998', ''); filled.push('Ona telefon'); }
+    if (sib.mother_work) document.getElementById('mWork').value = sib.mother_work;
+
+    if (filled.length) {
+      box.style.color = 'var(--green,#16A34A)';
+      box.textContent = `\u2713 To'ldirildi: ${filled.join(', ')}. "Ota-onaga kirish yaratish" bo'limida shu telefon raqamni kiritsangiz, avtomatik shu farzandning hisobiga bog'lanadi.`;
+    } else {
+      box.style.color = 'var(--amber,#E08A15)';
+      box.textContent = "Bu o'quvchida ota-ona ma'lumoti kiritilmagan — to'ldirish uchun hech narsa topilmadi.";
+    }
+  } catch (err) {
+    box.style.color = 'var(--red,#D6473C)';
+    box.textContent = err.message || "Ma'lumotni yuklab bo'lmadi.";
+  }
+});
+loadEsibClasses();
+
 /* ============ Ota-onaga kirish (login/parol) yaratish ============
    MUHIM: ota va ona uchun ALOHIDA-ALOHIDA ikkita hisob yaratilmaydi —
    ikkovi ham BITTA telefon raqam va BITTA parol orqali, bitta profildan
@@ -9585,6 +9666,10 @@ async function openEdit(id){
   });
   document.getElementById('paRelSel').value = 'ota';
   document.getElementById('paPhone').value = '';
+  document.getElementById('esibClassSel').value = '';
+  document.getElementById('esibStudentSel').disabled = true;
+  document.getElementById('esibStudentSel').innerHTML = '<option value="">Avval sinfni tanlang</option>';
+  document.getElementById('esibResultBox').style.display = 'none';
 
   /* Backendda saqlangan o'quvchi bo'lsa — haqiqiy baholar/yutuqlarni oldindan yuklaymiz */
   if (s.apiId && window.apiFetch) {
@@ -10005,6 +10090,7 @@ document.getElementById('impConfirm').onclick = async () => {
         birth_date: bdToISOStr(r.bd),
         gender: genderMap[(r.gender || '').toLowerCase().replace(/\s/g, '')] || null,
         phone: r.phone ? ('+998' + r.phone.replace(/\D/g, '').slice(-9)) : null,
+        parent_phone: r.parent ? ('+998' + r.parent.replace(/\D/g, '').slice(-9)) : null,
       })),
     };
     const res = await apiFetch('/api/students/bulk-import', { method: 'POST', body: JSON.stringify(payload) });
