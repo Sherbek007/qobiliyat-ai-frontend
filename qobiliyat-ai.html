@@ -5159,16 +5159,6 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
           </button>
           <div id="paAccResult" class="hidden" style="margin-top:10px;padding:10px 12px;background:#fff;border-radius:9px;font-size:13px"></div>
         </div>
-
-        <div class="pbox">
-          <b class="pt"><span class="pic-s i-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 01-8 8H5l-2 2V12a8 8 0 018-8h1a8 8 0 018 8z"/></svg></span>Ota-onaga xabar yuborish</b>
-          <p style="font-size:12.5px;color:var(--muted);margin:6px 0 12px">Xabar shu o'quvchining ota-onasiga uning "Xabarlar" bo'limida ko'rinadi. Faqat kirish yaratilgan bo'lsa ishlaydi.</p>
-          <textarea class="m-inp" id="paMsgInput" style="width:100%;min-height:80px;resize:vertical;font-family:inherit" placeholder="Savol, taklif yoki ma'lumot yozing..."></textarea>
-          <button type="button" class="btn btn-ghost btn-sm" id="paMsgSendBtn" style="margin-top:10px">
-            Xabar yuborish
-          </button>
-          <div id="paMsgResult" class="hidden" style="margin-top:10px;padding:10px 12px;background:var(--primary-soft-2);border-radius:9px;font-size:13px"></div>
-        </div>
       </div>
 
       <!-- KIRISH MA'LUMOTLARI -->
@@ -6941,15 +6931,50 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
         <h1>Xabarlar</h1>
         <p>Tizimdagi bildirishnomalar, AI ogohlantirishlari va yangiliklar</p>
       </div>
-      <button class="btn btn-ghost" id="readAllBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-        Barchasini o'qilgan deb belgilash
-      </button>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-primary" id="composeMsgBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" style="vertical-align:-2px;margin-right:6px"><path d="M12 5v14M5 12h14"/></svg>
+          Ota-onaga yangi xabar
+        </button>
+        <button class="btn btn-ghost" id="readAllBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          Barchasini o'qilgan deb belgilash
+        </button>
+      </div>
     </div>
 
     <div class="tabs" id="tabsBox"></div>
     <div class="card"><div class="list" id="listBox"></div></div>
   </main>
+
+  <!-- Ota-onaga xabar yozish / javob berish oynasi -->
+  <div class="overlay" id="msgComposeModal" style="position:fixed;inset:0;background:rgba(23,21,67,.45);display:none;align-items:center;justify-content:center;z-index:400">
+    <div class="modal" style="background:#fff;border-radius:16px;padding:24px;width:460px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+      <h3 id="msgComposeTitle" style="font-size:16.5px;font-weight:800;margin-bottom:6px">Ota-onaga yangi xabar</h3>
+      <div id="msgComposeStudentPicker">
+        <label style="font-size:12.5px;font-weight:700;display:block;margin:10px 0 6px;color:#5B5A7A">O'quvchini toping</label>
+        <input class="inp" id="msgStudentSearch" placeholder="Ism yoki familiyani yozing..." style="width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:9px">
+        <div id="msgStudentResults" style="max-height:160px;overflow-y:auto;margin-top:6px"></div>
+        <div id="msgStudentChosen" class="hidden" style="margin-top:10px;padding:9px 12px;background:var(--primary-soft-2);border-radius:9px;font-size:13px;display:flex;justify-content:space-between;align-items:center"></div>
+      </div>
+      <label style="font-size:12.5px;font-weight:700;display:block;margin:14px 0 6px;color:#5B5A7A">Xabar</label>
+      <textarea id="msgComposeText" style="width:100%;min-height:100px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font-family:inherit;font-size:14px;resize:vertical" placeholder="Xabaringizni yozing..."></textarea>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+        <input type="file" id="msgImageInput" accept="image/*" class="hidden">
+        <button type="button" class="btn btn-ghost btn-sm" id="msgImageBtn">Rasm biriktirish</button>
+        <div id="msgImagePreviewWrap" class="hidden" style="width:44px;height:44px;border-radius:8px;overflow:hidden;border:1px solid var(--line)">
+          <img id="msgImagePreview" style="width:100%;height:100%;object-fit:cover">
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm hidden" id="msgImageRemoveBtn" style="color:var(--red,#D6473C)">O'chirish</button>
+      </div>
+      <small style="color:var(--muted);display:block;margin-top:6px">Istalgan hajmda yuklang (10 MB gacha) — tizim avtomatik kichraytiradi</small>
+      <p id="msgComposeErr" class="hidden" style="color:var(--red,#D6473C);font-size:12.5px;margin-top:10px"></p>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px">
+        <button class="btn btn-ghost btn-sm" id="msgComposeCancel">Bekor qilish</button>
+        <button class="btn btn-primary btn-sm" id="msgComposeSend">Yuborish</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 
@@ -9645,37 +9670,6 @@ document.getElementById('paRelSel').addEventListener('change', function(){
   if (srcEl && srcEl.value.trim()) document.getElementById('paPhone').value = srcEl.value;
 });
 
-document.getElementById('paMsgSendBtn').onclick = async () => {
-  const s = STUDENTS.find(x => x.id === currentId);
-  if (!s || !s.apiId) { alert("Avval o'quvchini saqlang — bu funksiya faqat backendga ulangan o'quvchilar uchun ishlaydi."); return; }
-
-  const input = document.getElementById('paMsgInput');
-  const text = input.value.trim();
-  const box = document.getElementById('paMsgResult');
-  if (!text) { input.focus(); return; }
-
-  const btn = document.getElementById('paMsgSendBtn');
-  const oldText = btn.textContent;
-  btn.disabled = true; btn.textContent = 'Yuborilmoqda...';
-  box.classList.add('hidden');
-
-  try {
-    const res = await apiFetch(`/api/students/${s.apiId}/message-parent`, {
-      method: 'POST', body: JSON.stringify({ text }),
-    });
-    box.classList.remove('hidden');
-    box.style.color = '';
-    box.innerHTML = `<b>Yuborildi \u2713</b> — ${res.sent_to} ta ota-ona hisobiga yetkazildi.`;
-    input.value = '';
-  } catch (err) {
-    box.classList.remove('hidden');
-    box.style.color = 'var(--red,#D6473C)';
-    box.textContent = err.isNetworkError ? "Serverga ulanib bo'lmadi." : (err.message || 'Xatolik yuz berdi.');
-  } finally {
-    btn.disabled = false; btn.textContent = oldText;
-  }
-};
-
 document.getElementById('paCreateAcc').onclick = async () => {
   const s = STUDENTS.find(x => x.id === currentId);
   if (!s || !s.apiId) { alert("Avval o'quvchini saqlang — bu funksiya faqat backendga ulangan o'quvchilar uchun ishlaydi."); return; }
@@ -9711,8 +9705,6 @@ async function openEdit(id){
   document.getElementById('esibStudentSel').disabled = true;
   document.getElementById('esibStudentSel').innerHTML = '<option value="">Avval sinfni tanlang</option>';
   document.getElementById('esibResultBox').style.display = 'none';
-  document.getElementById('paMsgInput').value = '';
-  document.getElementById('paMsgResult').classList.add('hidden');
 
   /* Backendda saqlangan o'quvchi bo'lsa — haqiqiy baholar/yutuqlarni oldindan yuklaymiz */
   if (s.apiId && window.apiFetch) {
@@ -15181,8 +15173,10 @@ function render(){
       <div class="n-mid">
         <div class="n-top">${n.unread ? '<span class="dot"></span>' : ''}<b>${n.title}</b><small>${n.time}</small></div>
         <div class="n-text">${n.text}</div>
+        ${n.image ? `<img src="${n.image}" style="max-width:220px;max-height:160px;border-radius:9px;margin-top:8px;display:block;object-fit:cover">` : ''}
         <div class="n-tags"><span class="n-tag ${m.tag}">${m.label}</span></div>
         ${n.actions.length ? `<div class="n-act">${n.actions.map(a => `<button data-go="${a[1]}">${a[0]}</button>`).join('')}</div>` : ''}
+        ${n.type === 'xabar' && n.studentId ? `<div class="n-act"><button data-reply="${n.id}">Javob yozish</button></div>` : ''}
       </div>
       <button class="n-close" data-del="${n.id}" title="O'chirish"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>`;
@@ -15212,6 +15206,11 @@ function render(){
     }
     updateBadges();
     /* data-go global navigatsiya orqali o'zi ishlaydi */
+  });
+  document.querySelectorAll('#notifsView #listBox [data-reply]').forEach(b => b.onclick = e => {
+    e.stopPropagation();
+    const n = NOTIFS.find(x => x.id === +b.dataset.reply);
+    if (n) openMsgCompose({ studentId: n.studentId, studentLabel: n.title.replace(/^.*?\u2014\s*/, '') });
   });
 
   updateBadges();
@@ -15250,6 +15249,7 @@ async function loadNotificationsFromAPI(){
       id: r.id, apiId: r.id, type: r.type, title: r.title, text: r.text,
       time: timeAgo(r.created_at), unread: !r.is_read,
       actions: r.link ? [[ACTION_LABEL[r.type] || "Ko'rish", r.link]] : [],
+      studentId: r.student_id || null, image: r.image || null,
     }));
     render();
   } catch (err) {
@@ -15260,6 +15260,147 @@ async function loadNotificationsFromAPI(){
 }
 loadNotificationsFromAPI();
 window.addEventListener('view:shown', e => { if (e.detail === 'notifs') loadNotificationsFromAPI(); });
+
+/* ============ Ota-onaga xabar yozish / javob berish ============ */
+let msgChosenStudentId = null;
+let msgCurrentImage = null;
+const msgComposeModal = document.getElementById('msgComposeModal');
+
+function compressMsgImage(file){
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/')) { reject(new Error('Faqat rasm fayli tanlang.')); return; }
+    if (file.size > 10 * 1024 * 1024) { reject(new Error('Rasm hajmi 10 MB dan oshmasin.')); return; }
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const maxDim = 700;
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width >= height) { height = Math.round(height * maxDim / width); width = maxDim; }
+        else { width = Math.round(width * maxDim / height); height = maxDim; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+      const maxBytes = 300 * 1024;
+      let quality = 0.85;
+      let dataUrl = canvas.toDataURL('image/jpeg', quality);
+      const approxBytes = du => Math.round((du.length - du.indexOf(',') - 1) * 3 / 4);
+      let guard = 0;
+      while (approxBytes(dataUrl) > maxBytes && quality > 0.5 && guard < 8) {
+        quality -= 0.07;
+        dataUrl = canvas.toDataURL('image/jpeg', quality);
+        guard++;
+      }
+      resolve(dataUrl);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Rasmni o'qib bo'lmadi.")); };
+    img.src = url;
+  });
+}
+
+function openMsgCompose(preset){
+  msgChosenStudentId = preset && preset.studentId ? preset.studentId : null;
+  msgCurrentImage = null;
+  document.getElementById('msgComposeTitle').textContent = msgChosenStudentId ? 'Javob yozish' : "Ota-onaga yangi xabar";
+  document.getElementById('msgComposeText').value = '';
+  document.getElementById('msgComposeErr').classList.add('hidden');
+  document.getElementById('msgStudentSearch').value = '';
+  document.getElementById('msgStudentResults').innerHTML = '';
+  document.getElementById('msgImagePreviewWrap').classList.add('hidden');
+  document.getElementById('msgImageRemoveBtn').classList.add('hidden');
+
+  const picker = document.getElementById('msgComposeStudentPicker');
+  const chosen = document.getElementById('msgStudentChosen');
+  if (msgChosenStudentId) {
+    picker.classList.add('hidden');
+    chosen.classList.remove('hidden');
+    chosen.innerHTML = `<span>Kimga: <b>${preset.studentLabel || "o'quvchi"}</b> ota-onasiga</span>`;
+  } else {
+    picker.classList.remove('hidden');
+    chosen.classList.add('hidden');
+  }
+  msgComposeModal.style.display = 'flex';
+}
+document.getElementById('composeMsgBtn').onclick = () => openMsgCompose(null);
+document.getElementById('msgComposeCancel').onclick = () => { msgComposeModal.style.display = 'none'; };
+msgComposeModal.onclick = e => { if (e.target === msgComposeModal) msgComposeModal.style.display = 'none'; };
+
+let msgSearchTimer = null;
+document.getElementById('msgStudentSearch').addEventListener('input', function(){
+  clearTimeout(msgSearchTimer);
+  const q = this.value.trim();
+  const box = document.getElementById('msgStudentResults');
+  if (q.length < 2) { box.innerHTML = ''; return; }
+  msgSearchTimer = setTimeout(async () => {
+    if (!window.apiFetch) return;
+    try {
+      const rows = await apiFetch(`/api/students?search=${encodeURIComponent(q)}`);
+      box.innerHTML = rows.length ? rows.slice(0, 8).map(s => `
+        <div data-pick="${s.id}" data-name="${s.full_name}" style="padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--bg,#F7F6FB)'" onmouseout="this.style.background=''">${s.full_name}</div>
+      `).join('') : `<div style="padding:8px 10px;color:var(--muted);font-size:12.5px">Topilmadi</div>`;
+      box.querySelectorAll('[data-pick]').forEach(el => el.onclick = () => {
+        msgChosenStudentId = +el.dataset.pick;
+        document.getElementById('msgComposeStudentPicker').classList.add('hidden');
+        const chosen = document.getElementById('msgStudentChosen');
+        chosen.classList.remove('hidden');
+        chosen.innerHTML = `<span>Kimga: <b>${el.dataset.name}</b> ota-onasiga</span><button type="button" style="color:var(--primary);font-size:12.5px" id="msgChangeStudentBtn">O'zgartirish</button>`;
+        document.getElementById('msgChangeStudentBtn').onclick = () => {
+          msgChosenStudentId = null;
+          document.getElementById('msgComposeStudentPicker').classList.remove('hidden');
+          chosen.classList.add('hidden');
+        };
+      });
+    } catch (err) { box.innerHTML = `<div style="padding:8px;color:var(--red)">Qidirishda xatolik</div>`; }
+  }, 300);
+});
+
+document.getElementById('msgImageBtn').onclick = () => document.getElementById('msgImageInput').click();
+document.getElementById('msgImageInput').addEventListener('change', async function(){
+  const file = this.files[0];
+  this.value = '';
+  if (!file) return;
+  try {
+    msgCurrentImage = await compressMsgImage(file);
+    document.getElementById('msgImagePreview').src = msgCurrentImage;
+    document.getElementById('msgImagePreviewWrap').classList.remove('hidden');
+    document.getElementById('msgImageRemoveBtn').classList.remove('hidden');
+  } catch (err) {
+    alert(err.message || "Rasmni o'qib bo'lmadi.");
+  }
+});
+document.getElementById('msgImageRemoveBtn').onclick = () => {
+  msgCurrentImage = null;
+  document.getElementById('msgImagePreviewWrap').classList.add('hidden');
+  document.getElementById('msgImageRemoveBtn').classList.add('hidden');
+};
+
+document.getElementById('msgComposeSend').onclick = async () => {
+  const text = document.getElementById('msgComposeText').value.trim();
+  const errEl = document.getElementById('msgComposeErr');
+  errEl.classList.add('hidden');
+  if (!msgChosenStudentId) { errEl.textContent = "Avval o'quvchini tanlang."; errEl.classList.remove('hidden'); return; }
+  if (!text) { errEl.textContent = 'Xabar matnini kiriting.'; errEl.classList.remove('hidden'); return; }
+
+  const btn = document.getElementById('msgComposeSend');
+  const old = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Yuborilmoqda...';
+  try {
+    await apiFetch(`/api/students/${msgChosenStudentId}/message-parent`, {
+      method: 'POST', body: JSON.stringify({ text, image: msgCurrentImage }),
+    });
+    msgComposeModal.style.display = 'none';
+    alert('Xabar yuborildi \u2713');
+  } catch (err) {
+    errEl.textContent = err.isNetworkError ? "Serverga ulanib bo'lmadi." : (err.message || 'Xatolik yuz berdi.');
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false; btn.textContent = old;
+  }
+};
 
 })();
 </script>
