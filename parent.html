@@ -1009,6 +1009,18 @@ async function loadNotifications(childId, forHomeOnly){
     document.getElementById('notifListBox').innerHTML = notes.length ? notes.map(n => `
       <div class="notif-row ${n.is_read ? '' : 'unread'}">${notifIcon(n.type)}<div class="txt4"><div class="head-row"><b>${n.title}</b><small>${n.created_at}</small></div><p style="white-space:normal;color:#4B4A66;font-size:12.6px;margin-top:3px">${n.text}</p></div></div>`).join('')
       : `<p class="empty">Hali xabar yo'q</p>`;
+
+    /* Xabarlar sahifasi ochilganda — shu farzandga tegishli o'qilmagan
+       xabarlarni o'qilgan deb belgilaymiz, shunda qo'ng'iroqchadagi son
+       to'g'ri kamayadi (avval bu chaqiruv umuman yo'q edi). */
+    if (unread > 0) {
+      try {
+        await apiFetch(`/api/parent/children/${childId}/notifications/read-all`, { method: 'POST' });
+        document.getElementById('bellBadge').style.display = 'none';
+        document.getElementById('bellBadge').textContent = '0';
+        document.querySelectorAll('#notifListBox .notif-row.unread').forEach(el => el.classList.remove('unread'));
+      } catch (e) { /* belgilash muvaffaqiyatsiz bo'lsa ham ro'yxat ko'rinishda qoladi */ }
+    }
   } catch (e) {
     const msg = errMsg(e);
     if (forHomeOnly) document.getElementById('homeNewsBox').innerHTML = `<p class="empty err">${msg}</p>`;
