@@ -5159,6 +5159,16 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
           </button>
           <div id="paAccResult" class="hidden" style="margin-top:10px;padding:10px 12px;background:#fff;border-radius:9px;font-size:13px"></div>
         </div>
+
+        <div class="pbox">
+          <b class="pt"><span class="pic-s i-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 01-8 8H5l-2 2V12a8 8 0 018-8h1a8 8 0 018 8z"/></svg></span>Ota-onaga xabar yuborish</b>
+          <p style="font-size:12.5px;color:var(--muted);margin:6px 0 12px">Xabar shu o'quvchining ota-onasiga uning "Xabarlar" bo'limida ko'rinadi. Faqat kirish yaratilgan bo'lsa ishlaydi.</p>
+          <textarea class="m-inp" id="paMsgInput" style="width:100%;min-height:80px;resize:vertical;font-family:inherit" placeholder="Savol, taklif yoki ma'lumot yozing..."></textarea>
+          <button type="button" class="btn btn-ghost btn-sm" id="paMsgSendBtn" style="margin-top:10px">
+            Xabar yuborish
+          </button>
+          <div id="paMsgResult" class="hidden" style="margin-top:10px;padding:10px 12px;background:var(--primary-soft-2);border-radius:9px;font-size:13px"></div>
+        </div>
       </div>
 
       <!-- KIRISH MA'LUMOTLARI -->
@@ -9635,6 +9645,37 @@ document.getElementById('paRelSel').addEventListener('change', function(){
   if (srcEl && srcEl.value.trim()) document.getElementById('paPhone').value = srcEl.value;
 });
 
+document.getElementById('paMsgSendBtn').onclick = async () => {
+  const s = STUDENTS.find(x => x.id === currentId);
+  if (!s || !s.apiId) { alert("Avval o'quvchini saqlang — bu funksiya faqat backendga ulangan o'quvchilar uchun ishlaydi."); return; }
+
+  const input = document.getElementById('paMsgInput');
+  const text = input.value.trim();
+  const box = document.getElementById('paMsgResult');
+  if (!text) { input.focus(); return; }
+
+  const btn = document.getElementById('paMsgSendBtn');
+  const oldText = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Yuborilmoqda...';
+  box.classList.add('hidden');
+
+  try {
+    const res = await apiFetch(`/api/students/${s.apiId}/message-parent`, {
+      method: 'POST', body: JSON.stringify({ text }),
+    });
+    box.classList.remove('hidden');
+    box.style.color = '';
+    box.innerHTML = `<b>Yuborildi \u2713</b> — ${res.sent_to} ta ota-ona hisobiga yetkazildi.`;
+    input.value = '';
+  } catch (err) {
+    box.classList.remove('hidden');
+    box.style.color = 'var(--red,#D6473C)';
+    box.textContent = err.isNetworkError ? "Serverga ulanib bo'lmadi." : (err.message || 'Xatolik yuz berdi.');
+  } finally {
+    btn.disabled = false; btn.textContent = oldText;
+  }
+};
+
 document.getElementById('paCreateAcc').onclick = async () => {
   const s = STUDENTS.find(x => x.id === currentId);
   if (!s || !s.apiId) { alert("Avval o'quvchini saqlang — bu funksiya faqat backendga ulangan o'quvchilar uchun ishlaydi."); return; }
@@ -9670,6 +9711,8 @@ async function openEdit(id){
   document.getElementById('esibStudentSel').disabled = true;
   document.getElementById('esibStudentSel').innerHTML = '<option value="">Avval sinfni tanlang</option>';
   document.getElementById('esibResultBox').style.display = 'none';
+  document.getElementById('paMsgInput').value = '';
+  document.getElementById('paMsgResult').classList.add('hidden');
 
   /* Backendda saqlangan o'quvchi bo'lsa — haqiqiy baholar/yutuqlarni oldindan yuklaymiz */
   if (s.apiId && window.apiFetch) {
