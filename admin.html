@@ -191,7 +191,7 @@ tr:last-child td{border-bottom:none}
             <input type="file" id="orgLogoInput" accept="image/jpeg,image/png,image/webp,image/svg+xml" hidden>
             <button class="btn" id="orgLogoBtn">Logotipni yuklash</button>
             <button class="btn btn-danger" id="orgLogoRemoveBtn" style="display:none">O'chirish</button>
-            <p class="hint">PNG, JPG yoki SVG, maks. 1.5MB.</p>
+            <p class="hint">PNG, JPG yoki SVG — istalgan hajmda yuklang (10 MB gacha), tizim avtomatik 640x640 px'gacha kichraytiradi.</p>
           </div>
         </div>
       </div>
@@ -324,12 +324,14 @@ tr:last-child td{border-bottom:none}
         </div>
         <input type="file" id="oppLogoInput" accept="image/*" style="display:none">
       </div>
+      <p class="hint" style="margin-top:6px">Istalgan hajmda yuklang (10 MB gacha) — tizim avtomatik 640x640 px'gacha kichraytiradi.</p>
     </div>
     <div class="field">
       <label>Rasmlar <small style="color:var(--muted);font-weight:400">(ixtiyoriy, maks. 2 ta)</small></label>
       <div id="oppImagesBox" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px"></div>
       <button type="button" class="btn" id="oppImagesBtn">+ Rasm qo'shish</button>
       <input type="file" id="oppImagesInput" accept="image/*" style="display:none">
+      <p class="hint" style="margin-top:6px">Istalgan hajmda yuklang (10 MB gacha) — tizim avtomatik 640x640 px'gacha kichraytiradi.</p>
     </div>
     <div class="field">
       <label style="display:flex;align-items:center;gap:8px;font-weight:500">
@@ -417,21 +419,15 @@ function renderOrgLogoPreview(logo){
   document.getElementById('orgLogoRemoveBtn').style.display = logo ? 'inline-block' : 'none';
 }
 document.getElementById('orgLogoBtn').onclick = () => document.getElementById('orgLogoInput').click();
-document.getElementById('orgLogoInput').addEventListener('change', function(){
+document.getElementById('orgLogoInput').addEventListener('change', async function(){
   const file = this.files[0];
-  if (!file) return;
-  if (!file.type.startsWith('image/')) { alert('Faqat rasm fayli tanlang'); this.value = ''; return; }
-  if (file.size > 1.5 * 1024 * 1024) { alert('Rasm hajmi 1.5 MB dan oshmasin'); this.value = ''; return; }
-  const reader = new FileReader();
-  reader.onload = async e => {
-    const dataUrl = e.target.result;
-    try {
-      const s = await apiFetch('/api/admin/settings/logo', { method: 'PATCH', body: JSON.stringify({ logo: dataUrl }) });
-      renderOrgLogoPreview(s.logo);
-    } catch (err) { alert(err.message || 'Logotipni saqlashda xatolik'); }
-  };
-  reader.readAsDataURL(file);
   this.value = '';
+  if (!file) return;
+  try {
+    const dataUrl = await readImageFile(file, 1.5);
+    const s = await apiFetch('/api/admin/settings/logo', { method: 'PATCH', body: JSON.stringify({ logo: dataUrl }) });
+    renderOrgLogoPreview(s.logo);
+  } catch (err) { alert(err.message || 'Logotipni saqlashda xatolik'); }
 });
 document.getElementById('orgLogoRemoveBtn').onclick = async () => {
   try {
@@ -1126,14 +1122,46 @@ document.getElementById('oppRegion').addEventListener('change', async function()
 let currentOppLogo = null;
 let currentOppImages = [];
 
+/* Rasmni brauzerning o'zida avtomatik kichraytirib-siqib beradi —
+   foydalanuvchi qanday katta rasm tanlamasin, bazaga har doim kichik
+   (odatda 50-200 KB) holda tushadi. maxMb — eski chaqiruvlar bilan mos
+   bo'lishi uchun saqlangan yuqori chegara (haqiqiy natija odatda bundan
+   ancha kichik bo'ladi). */
 function readImageFile(file, maxMb){
   return new Promise((resolve, reject) => {
     if (!file.type.startsWith('image/')) { reject(new Error('Faqat rasm fayli tanlang.')); return; }
-    if (file.size > maxMb * 1024 * 1024) { reject(new Error(`Rasm hajmi ${maxMb} MB dan oshmasin.`)); return; }
-    const reader = new FileReader();
-    reader.onload = e => resolve(e.target.result);
-    reader.onerror = () => reject(new Error("Rasmni o'qib bo'lmadi."));
-    reader.readAsDataURL(file);
+    if (file.size > 10 * 1024 * 1024) { reject(new Error("Rasm hajmi 10 MB dan oshmasin.")); return; }
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const maxDim = 640;
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width >= height) { height = Math.round(height * maxDim / width); width = maxDim; }
+        else { width = Math.round(width * maxDim / height); height = maxDim; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      const keepPng = file.type === 'image/png';
+      if (!keepPng) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, width, height); }
+      ctx.drawImage(img, 0, 0, width, height);
+      const mimeOut = keepPng ? 'image/png' : 'image/jpeg';
+      const maxBytes = Math.min((maxMb || 1.5) * 1024 * 1024, 250 * 1024);
+      let quality = 0.85;
+      let dataUrl = canvas.toDataURL(mimeOut, quality);
+      const approxBytes = du => Math.round((du.length - du.indexOf(',') - 1) * 3 / 4);
+      let guard = 0;
+      while (!keepPng && approxBytes(dataUrl) > maxBytes && quality > 0.35 && guard < 8) {
+        quality -= 0.1;
+        dataUrl = canvas.toDataURL(mimeOut, quality);
+        guard++;
+      }
+      resolve(dataUrl);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Rasmni o'qib bo'lmadi.")); };
+    img.src = url;
   });
 }
 
