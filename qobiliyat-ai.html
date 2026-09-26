@@ -4562,6 +4562,24 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
               Barcha maydonlar ixtiyoriy. Ota yoki ona ma'lumoti bo'lmasligi mumkin.
             </p>
 
+            <!-- AKA/UKA/OPA/SINGIL TOPISH -->
+            <div class="parent-box" style="background:var(--primary-soft-2,#F5F2FF);border:1px dashed var(--primary,#4C2CE2)">
+              <h3>
+                <span class="ic i-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a3 3 0 00-2-2.83M16 3.13a3 3 0 010 5.75"/></svg></span>
+                Aka/uka/opa/singlisi tizimda bormi?
+              </h3>
+              <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Agar bu o'quvchining aka/uka/opa/singlisi allaqachon ro'yxatdan o'tgan bo'lsa, shu yerdan tanlang — ota-ona ma'lumotlari pastga avtomatik to'ldiriladi va bitta hisobga bog'lanadi.</p>
+              <div class="two">
+                <div class="field" style="margin-bottom:0"><label>Sinfni tanlang</label>
+                  <select class="inp" id="sibClassSel"><option value="">Yuklanmoqda...</option></select>
+                </div>
+                <div class="field" style="margin-bottom:0"><label>O'quvchini tanlang</label>
+                  <select class="inp" id="sibStudentSel" disabled><option value="">Avval sinfni tanlang</option></select>
+                </div>
+              </div>
+              <p id="sibResultBox" style="display:none;margin-top:12px;padding:10px 12px;border-radius:9px;background:#fff;font-size:12.5px;color:var(--ink)"></p>
+            </div>
+
             <!-- OTA -->
             <div class="parent-box">
               <h3>
@@ -8863,12 +8881,80 @@ function fullAddress(){
 }
 
 /* ============ Bekor qilish — hammasini tozalash ============ */
+/* ============ Aka/uka/opa/singlisi orqali ota-ona ma'lumotini topish ============ */
+let SIB_CLASSES = null;
+async function loadSiblingFinderClasses(){
+  const sel = document.getElementById('sibClassSel');
+  if (!sel || !window.apiFetch) return;
+  try {
+    SIB_CLASSES = await apiFetch('/api/classes');
+    sel.innerHTML = '<option value="">Tanlang</option>' +
+      SIB_CLASSES.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  } catch (err) {
+    sel.innerHTML = '<option value="">Yuklab bo\'lmadi</option>';
+  }
+}
+document.getElementById('sibClassSel').addEventListener('change', async function(){
+  const stuSel = document.getElementById('sibStudentSel');
+  const classId = this.value;
+  document.getElementById('sibResultBox').style.display = 'none';
+  if (!classId) { stuSel.disabled = true; stuSel.innerHTML = '<option value="">Avval sinfni tanlang</option>'; return; }
+  stuSel.disabled = true;
+  stuSel.innerHTML = '<option value="">Yuklanmoqda...</option>';
+  try {
+    const rows = await apiFetch(`/api/students?class_id=${classId}`);
+    if (!rows.length) {
+      stuSel.innerHTML = '<option value="">Bu sinfda o\'quvchi yo\'q</option>';
+      return;
+    }
+    stuSel.innerHTML = '<option value="">Tanlang</option>' +
+      rows.map(s => `<option value="${s.id}">${s.full_name}</option>`).join('');
+    stuSel.disabled = false;
+  } catch (err) {
+    stuSel.innerHTML = '<option value="">Yuklab bo\'lmadi</option>';
+  }
+});
+document.getElementById('sibStudentSel').addEventListener('change', async function(){
+  const studentId = this.value;
+  const box = document.getElementById('sibResultBox');
+  if (!studentId) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  box.style.color = 'var(--muted)';
+  box.textContent = 'Yuklanmoqda...';
+  try {
+    const sib = await apiFetch(`/api/students/${studentId}`);
+    let filled = [];
+    if (sib.father_name) { document.getElementById('aFatherName').value = sib.father_name; filled.push('Ota F.I.Sh.'); }
+    if (sib.father_phone) { document.getElementById('aFatherPhone').value = sib.father_phone.replace('+998', ''); filled.push('Ota telefon'); }
+    if (sib.father_work) { document.getElementById('aFatherWork').value = sib.father_work; }
+    if (sib.mother_name) { document.getElementById('aMotherName').value = sib.mother_name; filled.push('Ona F.I.Sh.'); }
+    if (sib.mother_phone) { document.getElementById('aMotherPhone').value = sib.mother_phone.replace('+998', ''); filled.push('Ona telefon'); }
+    if (sib.mother_work) { document.getElementById('aMotherWork').value = sib.mother_work; }
+
+    if (filled.length) {
+      box.style.color = 'var(--green,#16A34A)';
+      box.textContent = `\u2713 To'ldirildi: ${filled.join(', ')}. Ota-ona hisobini yaratganda avtomatik shu farzandning hisobiga bog'lanadi.`;
+    } else {
+      box.style.color = 'var(--amber,#E08A15)';
+      box.textContent = "Bu o'quvchida ota-ona ma'lumoti kiritilmagan — to'ldirish uchun hech narsa topilmadi.";
+    }
+  } catch (err) {
+    box.style.color = 'var(--red,#D6473C)';
+    box.textContent = err.message || "Ma'lumotni yuklab bo'lmadi.";
+  }
+});
+loadSiblingFinderClasses();
+
 function resetWizard(){
   document.querySelectorAll('#studentsView .panel input').forEach(el => {
     if (el.type === 'radio') el.checked = el === document.querySelector('#studentsView input[name="gender"]');
     else if (el.type !== 'file') el.value = '';
     else el.value = '';
   });
+  document.getElementById('sibClassSel').value = '';
+  document.getElementById('sibStudentSel').disabled = true;
+  document.getElementById('sibStudentSel').innerHTML = '<option value="">Avval sinfni tanlang</option>';
+  document.getElementById('sibResultBox').style.display = 'none';
   document.querySelectorAll('#studentsView .panel select').forEach(el => el.selectedIndex = 0);
   document.querySelectorAll('#studentsView .inp.err').forEach(el => el.classList.remove('err'));
 

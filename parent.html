@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kelajak Maktab — Ota-ona paneli</title>
+<title>Kelajak Markazi — Ota-ona paneli</title>
 <style>
 :root{
   --primary:#4C2CE2; --primary-dark:#1B1440;
@@ -79,6 +79,15 @@ a{color:inherit;text-decoration:none}
 .card-head .link{font-size:12.5px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:4px;cursor:pointer}
 .empty{color:var(--muted);text-align:center;padding:26px;font-size:13px}
 .empty.err{color:var(--red)}
+.hidden{display:none !important}
+.overlay{position:fixed;inset:0;background:rgba(23,21,67,.45);display:none;align-items:center;justify-content:center;z-index:300}
+.overlay.open{display:flex}
+.overlay .modal{background:#fff;border-radius:var(--r-lg);padding:24px;width:440px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.overlay .modal h3{font-size:16.5px;font-weight:800;margin-bottom:6px}
+.overlay .modal p.sub{color:var(--muted);font-size:13px;margin-bottom:14px}
+.overlay .modal textarea{width:100%;min-height:110px;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);background:#fcfcfe;font-family:inherit;font-size:14px;resize:vertical}
+.overlay .modal textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.overlay .modal .foot{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
 
 table{width:100%;border-collapse:collapse}
 th{text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;padding:0 10px 10px;border-bottom:1px solid var(--line-2)}
@@ -214,7 +223,7 @@ tr:last-child td{border-bottom:none}
   <div class="header">
     <div class="logo">
       <div class="emblem-sm">🌱</div>
-      <div class="txt"><b>KELAJAK MAKTAB</b><small>Yangi avlod — yangi imkoniyatlar</small></div>
+      <div class="txt"><b>KELAJAK MARKAZI</b><small>Yangi avlod — yangi imkoniyatlar</small></div>
     </div>
     <div class="header-spacer"></div>
     <div class="child-switch" id="childSwitchBox" style="display:none">
@@ -393,16 +402,52 @@ tr:last-child td{border-bottom:none}
       <!-- ============ SOZLAMALAR ============ -->
       <div id="view-settings" style="display:none">
         <div class="top-row"><div><h1>Sozlamalar</h1><p>Hisobingiz ma'lumotlari</p></div></div>
-        <div class="card" style="max-width:480px">
+        <div class="card" style="max-width:480px;margin-bottom:16px">
           <div class="card-head"><b>Shaxsiy ma'lumotlar</b></div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+            <span id="setAvaBox" style="width:64px;height:64px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;flex-shrink:0;overflow:hidden">—</span>
+            <div>
+              <div style="display:flex;gap:8px">
+                <button class="btn" id="setAvaUpload" style="padding:7px 12px;font-size:12.5px">Rasm yuklash</button>
+                <button class="btn" id="setAvaRemove" style="padding:7px 12px;font-size:12.5px;color:var(--red);display:none">O'chirish</button>
+              </div>
+              <input type="file" id="setAvaInput" accept="image/*" style="display:none">
+              <small style="color:var(--muted);display:block;margin-top:6px">Istalgan hajmda yuklang (10 MB gacha) — tizim avtomatik 320x320 px'gacha kichraytiradi</small>
+            </div>
+          </div>
           <div class="info-cell" style="margin-bottom:10px"><span class="lbl4">To'liq ism</span><span class="val4" id="setParentName">—</span></div>
           <div class="info-cell" style="margin-bottom:10px"><span class="lbl4">Telefon raqam</span><span class="val4" id="setParentPhone">—</span></div>
-          <div class="info-cell"><span class="lbl4">Rol</span><span class="val4">Ota-ona</span></div>
-          <button class="btn" style="margin-top:16px;width:100%" id="setChangePassBtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Parolni o'zgartirish</button>
+          <div class="info-cell"><span class="lbl4">Rol</span><span class="val4" id="setParentRole">Ota-ona</span></div>
+        </div>
+
+        <div class="card" style="max-width:480px">
+          <div class="card-head"><b>Parolni o'zgartirish</b></div>
+          <label style="font-size:12.5px;font-weight:700;display:block;margin-bottom:6px;color:#5B5A7A">Joriy parol</label>
+          <input type="password" class="field-inp" id="setOldPass" style="margin-bottom:12px">
+          <label style="font-size:12.5px;font-weight:700;display:block;margin-bottom:6px;color:#5B5A7A">Yangi parol</label>
+          <input type="password" class="field-inp" id="setNewPass" style="margin-bottom:4px">
+          <small style="color:var(--muted)">6-12 belgi, kamida bitta harf va bitta raqam</small>
+          <label style="font-size:12.5px;font-weight:700;display:block;margin:12px 0 6px;color:#5B5A7A">Yangi parolni tasdiqlang</label>
+          <input type="password" class="field-inp" id="setNewPass2" style="margin-bottom:14px">
+          <p id="setPassErr" class="empty err hidden" style="text-align:left;padding:0 0 10px"></p>
+          <button class="btn btn-primary" style="width:100%" id="setChangePassBtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Parolni yangilash</button>
         </div>
       </div>
     </div>
   </div>
+  </div>
+</div>
+
+<div class="overlay" id="contactModal">
+  <div class="modal">
+    <h3>Maslahatchiga murojaat</h3>
+    <p class="sub" id="contactModalSub">Xabaringiz farzandingizning sinf maslahatchisiga yuboriladi.</p>
+    <textarea id="contactMsgInput" placeholder="Savol, taklif yoki ma'lumotdagi xato haqida yozing..."></textarea>
+    <p class="empty err hidden" id="contactMsgErr" style="text-align:left;padding:8px 0 0"></p>
+    <div class="foot">
+      <button class="btn" id="contactCancelBtn">Bekor qilish</button>
+      <button class="btn btn-primary" id="contactSendBtn">Yuborish</button>
+    </div>
   </div>
 </div>
 
@@ -508,14 +553,158 @@ function switchView(view){
 document.querySelectorAll('.nav-item[data-view]').forEach(b => b.onclick = () => switchView(b.dataset.view));
 document.querySelectorAll('[data-view-link]').forEach(b => b.onclick = () => switchView(b.dataset.viewLink));
 
-document.getElementById('contactBtn').onclick = () => showToast("Xabaringiz maktab ma'muriyatiga yuborildi (namuna).");
-document.getElementById('setChangePassBtn').onclick = () => showToast("Parolni o'zgartirish tez orada qo'shiladi.");
-document.getElementById('advTipBtn').onclick = () => showToast('Maslahatchiga so\u2018rov yuborildi (namuna).');
+/* ============ Maslahatchiga murojaat ============ */
+const contactModal = document.getElementById('contactModal');
+function openContactModal(){
+  const c = currentChild();
+  if (!c) return;
+  document.getElementById('contactModalSub').textContent = `Xabaringiz "${c.full_name}" (${c.cls || '\u2014'}) sinf maslahatchisi${c.advisor_name ? ' — ' + c.advisor_name : ''}ga yuboriladi.`;
+  document.getElementById('contactMsgInput').value = '';
+  document.getElementById('contactMsgErr').classList.add('hidden');
+  contactModal.classList.add('open');
+  document.getElementById('contactMsgInput').focus();
+}
+document.getElementById('contactBtn').onclick = openContactModal;
+document.getElementById('advTipBtn').onclick = openContactModal;
+document.getElementById('contactCancelBtn').onclick = () => contactModal.classList.remove('open');
+contactModal.onclick = e => { if (e.target === contactModal) contactModal.classList.remove('open'); };
+document.getElementById('contactSendBtn').onclick = async () => {
+  const c = currentChild();
+  const text = document.getElementById('contactMsgInput').value.trim();
+  const errEl = document.getElementById('contactMsgErr');
+  if (!text) { errEl.textContent = "Xabar matnini kiriting."; errEl.classList.remove('hidden'); return; }
+  if (!c) return;
+  const btn = document.getElementById('contactSendBtn');
+  const old = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Yuborilmoqda...';
+  try {
+    await apiFetch(`/api/parent/children/${c.id}/contact-advisor`, { method: 'POST', body: JSON.stringify({ text }) });
+    contactModal.classList.remove('open');
+    showToast("Xabaringiz maslahatchiga yuborildi \u2713");
+  } catch (err) {
+    errEl.textContent = err.isNetworkError ? "Serverga ulanib bo'lmadi." : (err.message || 'Xatolik yuz berdi.');
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false; btn.textContent = old;
+  }
+};
+
+/* ============ Profil rasmi ============ */
+function compressAvatarImage(file){
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/')) { reject(new Error('Faqat rasm fayli tanlang.')); return; }
+    if (file.size > 10 * 1024 * 1024) { reject(new Error('Rasm hajmi 10 MB dan oshmasin.')); return; }
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const maxDim = 320;
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width >= height) { height = Math.round(height * maxDim / width); width = maxDim; }
+        else { width = Math.round(width * maxDim / height); height = maxDim; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+      const maxBytes = 150 * 1024;
+      let quality = 0.85;
+      let dataUrl = canvas.toDataURL('image/jpeg', quality);
+      const approxBytes = du => Math.round((du.length - du.indexOf(',') - 1) * 3 / 4);
+      let guard = 0;
+      while (approxBytes(dataUrl) > maxBytes && quality > 0.35 && guard < 8) {
+        quality -= 0.1;
+        dataUrl = canvas.toDataURL('image/jpeg', quality);
+        guard++;
+      }
+      resolve(dataUrl);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Rasmni o'qib bo'lmadi.")); };
+    img.src = url;
+  });
+}
+document.getElementById('setAvaUpload').onclick = () => document.getElementById('setAvaInput').click();
+document.getElementById('setAvaInput').addEventListener('change', async function(){
+  const file = this.files[0];
+  this.value = '';
+  if (!file) return;
+  try {
+    const dataUrl = await compressAvatarImage(file);
+    const updated = await apiFetch('/api/auth/me/photo', { method: 'PATCH', body: JSON.stringify({ photo: dataUrl }) });
+    localStorage.setItem('qp_parent_user', JSON.stringify(updated));
+    renderSetAvaBox();
+    document.getElementById('avaIni').innerHTML = `<img src="${dataUrl}">`;
+    showToast('Rasm yangilandi \u2713');
+  } catch (err) {
+    showToast(err.isNetworkError ? "Serverga ulanib bo'lmadi." : (err.message || 'Rasmni saqlashda xatolik.'));
+  }
+});
+document.getElementById('setAvaRemove').onclick = async () => {
+  try {
+    const updated = await apiFetch('/api/auth/me/photo', { method: 'PATCH', body: JSON.stringify({ photo: null }) });
+    localStorage.setItem('qp_parent_user', JSON.stringify(updated));
+    renderSetAvaBox();
+    document.getElementById('avaIni').innerHTML = ini(updated.full_name);
+    showToast("Rasm o'chirildi");
+  } catch (err) {
+    showToast(err.message || 'Xatolik yuz berdi');
+  }
+};
+
+/* ============ Parolni o'zgartirish ============ */
+document.getElementById('setChangePassBtn').onclick = async () => {
+  const oldP = document.getElementById('setOldPass').value;
+  const newP = document.getElementById('setNewPass').value;
+  const newP2 = document.getElementById('setNewPass2').value;
+  const errEl = document.getElementById('setPassErr');
+  errEl.classList.add('hidden');
+
+  if (!oldP || !newP || !newP2) { errEl.textContent = "Barcha maydonlarni to'ldiring."; errEl.classList.remove('hidden'); return; }
+  if (newP.length < 6 || newP.length > 12) { errEl.textContent = 'Yangi parol 6 dan 12 belgigacha bo\u2018lishi kerak.'; errEl.classList.remove('hidden'); return; }
+  if (!/[A-Za-z]/.test(newP) || !/[0-9]/.test(newP)) { errEl.textContent = "Yangi parolda kamida bitta harf va bitta raqam bo'lishi kerak."; errEl.classList.remove('hidden'); return; }
+  if (newP !== newP2) { errEl.textContent = 'Yangi parol va tasdiqlash mos kelmadi.'; errEl.classList.remove('hidden'); return; }
+
+  const btn = document.getElementById('setChangePassBtn');
+  const old = btn.innerHTML;
+  btn.disabled = true; btn.textContent = 'Yangilanmoqda...';
+  try {
+    await apiFetch('/api/auth/change-password', { method: 'POST', body: JSON.stringify({ old_password: oldP, new_password: newP }) });
+    document.getElementById('setOldPass').value = '';
+    document.getElementById('setNewPass').value = '';
+    document.getElementById('setNewPass2').value = '';
+    showToast('Parol yangilandi \u2713');
+  } catch (err) {
+    errEl.textContent = err.isNetworkError ? "Serverga ulanib bo'lmadi." : (err.message || 'Xatolik yuz berdi.');
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false; btn.innerHTML = old;
+  }
+};
 
 /* ============ Bosh ilova ============ */
 let CHILDREN = [];
 let currentChildId = null;
 let natChildId = null;
+
+function renderSetAvaBox(){
+  const u = JSON.parse(localStorage.getItem('qp_parent_user') || 'null');
+  const box = document.getElementById('setAvaBox');
+  if (!box || !u) return;
+  box.innerHTML = u.photo ? `<img src="${u.photo}" style="width:100%;height:100%;object-fit:cover">` : ini(u.full_name);
+  document.getElementById('setAvaRemove').style.display = u.photo ? '' : 'none';
+}
+
+const RELATION_LABELS = { ota: "Otasi", ona: "Onasi", vasiy: "Vasiysi" };
+function updateParentRoleLabel(){
+  const c = currentChild();
+  const label = (c && RELATION_LABELS[c.relation]) || 'Ota-ona';
+  const roleEl = document.getElementById('setParentRole');
+  if (roleEl) roleEl.textContent = label;
+  const headerRoleEl = document.querySelector('#profileBtn small');
+  if (headerRoleEl) headerRoleEl.textContent = label;
+}
 
 function startApp(){
   appScreen.classList.add('show');
@@ -525,7 +714,8 @@ function startApp(){
     document.getElementById('avaIni').innerHTML = u.photo ? `<img src="${u.photo}">` : ini(u.full_name);
     document.getElementById('welcomeH1').textContent = `Xush kelibsiz, ${u.full_name}!`;
     document.getElementById('setParentName').textContent = u.full_name;
-    document.getElementById('setParentPhone').textContent = '+' + u.phone;
+    document.getElementById('setParentPhone').textContent = u.phone.startsWith('+') ? u.phone : '+' + u.phone;
+    renderSetAvaBox();
   }
   loadChildren();
 }
@@ -563,6 +753,7 @@ async function loadChildren(){
     document.getElementById('childSwitchPanel').querySelectorAll('[data-child-id]').forEach(btn => btn.onclick = () => {
       currentChildId = +btn.dataset.childId;
       document.getElementById('childSwitchPanel').classList.remove('open');
+      updateParentRoleLabel();
       const visibleView = ['home','farzandim','natijalar','xabarlar','settings'].find(v => document.getElementById('view-' + v).style.display !== 'none');
       switchView(visibleView || 'home');
     });
@@ -572,6 +763,7 @@ async function loadChildren(){
   document.getElementById('childListTitle').textContent = `Mening farzandlarim (${CHILDREN.length})`;
   renderChildList();
   renderHome();
+  updateParentRoleLabel();
 }
 
 function renderChildList(){
@@ -587,6 +779,7 @@ function renderChildList(){
     currentChildId = +el.dataset.childId;
     renderChildList();
     renderFarzandim(currentChild());
+    updateParentRoleLabel();
   });
 }
 
