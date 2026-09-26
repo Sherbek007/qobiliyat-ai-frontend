@@ -5116,10 +5116,6 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
             <div class="m-field"><label>Ish joyi</label><input class="m-inp" id="fWork" maxlength="80"></div>
             <div class="m-field"><label>Lavozimi</label><input class="m-inp" id="fPos" maxlength="60"></div>
           </div>
-          <button type="button" class="btn btn-ghost btn-sm" id="fCreateAcc" style="margin-top:10px">
-            Ota-onaga kirish (login/parol) yaratish
-          </button>
-          <div id="fAccResult" class="hidden" style="margin-top:10px;padding:10px 12px;background:var(--primary-soft-2);border-radius:9px;font-size:13px"></div>
         </div>
 
         <div class="pbox">
@@ -5133,10 +5129,21 @@ body.dark .pill.sel,body.dark .pill.on{background:#4C2CE2!important;color:#fff!i
             <div class="m-field"><label>Ish joyi</label><input class="m-inp" id="mWork" maxlength="80"></div>
             <div class="m-field"><label>Lavozimi</label><input class="m-inp" id="mPos" maxlength="60"></div>
           </div>
-          <button type="button" class="btn btn-ghost btn-sm" id="mCreateAcc" style="margin-top:10px">
-            Ota-onaga kirish (login/parol) yaratish
+        </div>
+
+        <div class="pbox" style="background:var(--primary-soft-2,#F5F2FF);border:1px dashed var(--primary,#4C2CE2)">
+          <b class="pt"><span class="pic-s i-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></span>Ota-onaga kirish (login/parol) yaratish</b>
+          <p style="font-size:12.5px;color:var(--muted);margin:6px 0 14px">Ota ham, ona ham — <b>bitta telefon raqam va bitta parol</b> orqali, bitta profildan farzandini kuzatadi. Alohida-alohida ikkita hisob yaratilmaydi.</p>
+          <div class="m-two">
+            <div class="m-field"><label>Kimning raqami ishlatiladi?</label>
+              <select class="m-inp" id="paRelSel"><option value="ota">Otasi</option><option value="ona">Onasi</option></select>
+            </div>
+            <div class="m-field"><label>Telefon</label><input class="m-inp ph" id="paPhone" maxlength="12" placeholder="90 123 45 67"></div>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" id="paCreateAcc" style="margin-top:6px">
+            Kirish yaratish
           </button>
-          <div id="mAccResult" class="hidden" style="margin-top:10px;padding:10px 12px;background:var(--primary-soft-2);border-radius:9px;font-size:13px"></div>
+          <div id="paAccResult" class="hidden" style="margin-top:10px;padding:10px 12px;background:#fff;border-radius:9px;font-size:13px"></div>
         </div>
       </div>
 
@@ -9502,12 +9509,18 @@ document.getElementById('simplePassBtn').onclick = () => {
 const cbMust = document.getElementById('cbMust');
 document.getElementById('mustChangeRow').onclick = e => { e.preventDefault(); cbMust.classList.toggle('on'); };
 
-/* ============ Ota-onaga kirish (login/parol) yaratish ============ */
-async function tryCreateParentAccount(prefix, roleLabel, forceReset){
+/* ============ Ota-onaga kirish (login/parol) yaratish ============
+   MUHIM: ota va ona uchun ALOHIDA-ALOHIDA ikkita hisob yaratilmaydi —
+   ikkovi ham BITTA telefon raqam va BITTA parol orqali, bitta profildan
+   farzandini kuzatadi. Bu yerda faqat KIMNING raqami ishlatilishi
+   (otasiniki/onasiniki — faqat ko'rsatish/relation uchun) tanlanadi. */
+async function tryCreateParentAccount(forceReset){
     const s = STUDENTS.find(x => x.id === currentId);
-    const nameEl = document.getElementById(prefix + 'Name');
-    const phoneEl = document.getElementById(prefix + 'Phone');
-    const name = nameEl.value.trim();
+    const rel = document.getElementById('paRelSel').value;
+    const nameEl = document.getElementById(rel === 'ota' ? 'fName' : 'mName');
+    const phoneEl = document.getElementById('paPhone');
+    const roleLabel = rel === 'ota' ? 'Ota' : 'Ona';
+    const name = nameEl.value.trim() || roleLabel;
     let digits = phoneEl.value.replace(/\D/g, '');
     if (digits.startsWith('998') && digits.length === 12) digits = digits.slice(3);
 
@@ -9515,63 +9528,63 @@ async function tryCreateParentAccount(prefix, roleLabel, forceReset){
       method: 'POST',
       body: JSON.stringify({
         full_name: name, phone: '+998' + digits,
-        relationship: prefix === 'f' ? 'ota' : 'ona',
+        relationship: rel,
         reset_password: !!forceReset,
       }),
     });
 
-    const box = document.getElementById(prefix + 'AccResult');
+    const box = document.getElementById('paAccResult');
     box.classList.remove('hidden');
 
     if (res.is_new_account || forceReset) {
-      box.innerHTML = `<b>${forceReset ? 'Parol qayta tiklandi!' : 'Kirish yaratildi!'}</b><br>Telefon: <span class="mono">${res.phone}</span><br>Parol: <span class="mono">${res.temporary_password}</span><br><small style="color:var(--muted)">Buni ${roleLabel.toLowerCase()}ga shaxsan yetkazing — bu parolni keyin qayta ko'rib bo'lmaydi, faqat qayta tiklash mumkin.</small>`;
+      box.innerHTML = `<b>${forceReset ? 'Parol qayta tiklandi!' : 'Kirish yaratildi!'}</b><br>Telefon: <span class="mono">${res.phone}</span><br>Parol: <span class="mono">${res.temporary_password}</span><br><small style="color:var(--muted)">Buni ota-onaga shaxsan yetkazing — bu parolni keyin qayta ko'rib bo'lmaydi, faqat qayta tiklash mumkin. Ikkalasi ham shu bitta login/parol bilan kirishi mumkin.</small>`;
     } else {
-      box.innerHTML = `<b>Bu ota-ona allaqachon tizimda bor</b> — farzand shu hisobga bog'landi.<br>
-        <button type="button" class="btn btn-ghost btn-sm" id="${prefix}ResetBtn" style="margin-top:8px">Parolni unutdim — qayta tiklash</button>`;
-      document.getElementById(prefix + 'ResetBtn').onclick = () => {
-        if (confirm(`Diqqat: bu ${roleLabel.toLowerCase()}ning ESKI paroli ishlamay qoladi, faqat YANGI parol ishlaydi. Davom etasizmi?`)) {
-          tryCreateParentAccount(prefix, roleLabel, true);
+      box.innerHTML = `<b>Bu raqam bilan hisob allaqachon tizimda bor</b> — farzand shu hisobga bog'landi.<br>
+        <button type="button" class="btn btn-ghost btn-sm" id="paResetBtn" style="margin-top:8px">Parolni unutdim — qayta tiklash</button>`;
+      document.getElementById('paResetBtn').onclick = () => {
+        if (confirm('Diqqat: bu hisobning ESKI paroli ishlamay qoladi, faqat YANGI parol ishlaydi. Davom etasizmi?')) {
+          tryCreateParentAccount(true);
         }
       };
     }
 }
 
-function bindParentAccBtn(prefix, roleLabel){
-  document.getElementById(prefix + 'CreateAcc').onclick = async () => {
-    const s = STUDENTS.find(x => x.id === currentId);
-    if (!s || !s.apiId) { alert("Avval o'quvchini saqlang — bu funksiya faqat backendga ulangan o'quvchilar uchun ishlaydi."); return; }
+document.getElementById('paRelSel').addEventListener('change', function(){
+  const srcEl = document.getElementById(this.value === 'ota' ? 'fPhone' : 'mPhone');
+  if (srcEl && srcEl.value.trim()) document.getElementById('paPhone').value = srcEl.value;
+});
 
-    const nameEl = document.getElementById(prefix + 'Name');
-    const phoneEl = document.getElementById(prefix + 'Phone');
-    const name = nameEl.value.trim();
-    let digits = phoneEl.value.replace(/\D/g, '');
-    if (digits.startsWith('998') && digits.length === 12) digits = digits.slice(3);
-    if (!name) { alert(`${roleLabel} ismini kiriting.`); nameEl.focus(); return; }
-    if (digits.length !== 9) { alert("Telefon raqam 9 xonali bo'lishi kerak (masalan 901234567)."); phoneEl.focus(); return; }
+document.getElementById('paCreateAcc').onclick = async () => {
+  const s = STUDENTS.find(x => x.id === currentId);
+  if (!s || !s.apiId) { alert("Avval o'quvchini saqlang — bu funksiya faqat backendga ulangan o'quvchilar uchun ishlaydi."); return; }
 
-    const btn = document.getElementById(prefix + 'CreateAcc');
-    const oldText = btn.textContent;
-    btn.disabled = true; btn.textContent = 'Yaratilmoqda...';
+  const phoneEl = document.getElementById('paPhone');
+  let digits = phoneEl.value.replace(/\D/g, '');
+  if (digits.startsWith('998') && digits.length === 12) digits = digits.slice(3);
+  if (digits.length !== 9) { alert("Telefon raqam 9 xonali bo'lishi kerak (masalan 901234567)."); phoneEl.focus(); return; }
 
-    try {
-      await tryCreateParentAccount(prefix, roleLabel, false);
-    } catch (err) {
-      alert(err.isNetworkError ? "Serverga ulanib bo'lmadi." : (err.message || 'Xatolik yuz berdi.'));
-    } finally {
-      btn.disabled = false; btn.textContent = oldText;
-    }
-  };
-}
-bindParentAccBtn('f', 'Ota');
-bindParentAccBtn('m', 'Ona');
+  const btn = document.getElementById('paCreateAcc');
+  const oldText = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Yaratilmoqda...';
+
+  try {
+    await tryCreateParentAccount(false);
+  } catch (err) {
+    alert(err.isNetworkError ? "Serverga ulanib bo'lmadi." : (err.message || 'Xatolik yuz berdi.'));
+  } finally {
+    btn.disabled = false; btn.textContent = oldText;
+  }
+};
 
 async function openEdit(id){
   currentId = id;
   const s = STUDENTS.find(x => x.id === id);
-  ['fAccResult', 'mAccResult'].forEach(elId => {
+  ['paAccResult'].forEach(elId => {
     const el = document.getElementById(elId);
     el.classList.add('hidden'); el.innerHTML = '';
   });
+  document.getElementById('paRelSel').value = 'ota';
+  document.getElementById('paPhone').value = '';
 
   /* Backendda saqlangan o'quvchi bo'lsa — haqiqiy baholar/yutuqlarni oldindan yuklaymiz */
   if (s.apiId && window.apiFetch) {
@@ -14992,6 +15005,7 @@ let NOTIFS_LOAD_FAILED = false;
 let activeTab = 'all';
 const TABS = [
   { id:'all',   label:'Barchasi' },
+  { id:'xabar', label:'Ota-onalardan' },
   { id:'ai',    label:'AI' },
   { id:'test',  label:'Testlar' },
   { id:'yutuq', label:'Yutuqlar' },
