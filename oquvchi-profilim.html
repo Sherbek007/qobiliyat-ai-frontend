@@ -2616,6 +2616,22 @@ a{color:inherit;text-decoration:none}
         </div>
       </div>
 
+      <div style="margin-top:18px;padding:16px;border-radius:12px;background:var(--primary-soft-2,#F5F2FF);border:1px dashed var(--primary,#4C2CE2)">
+        <h4 style="font-size:14px;font-weight:800;margin-bottom:6px">Maslahatchimga xabar yozish</h4>
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Savol, taklif yoki muammo bo'lsa, to'g'ridan-to'g'ri sinf maslahatchingizga yozing.</p>
+        <textarea id="advisorMsgInput" style="width:100%;min-height:70px;padding:10px 12px;border:1px solid var(--line,#E7E5F5);border-radius:9px;font-family:inherit;font-size:13.5px;resize:vertical" placeholder="Xabaringizni yozing..."></textarea>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+          <input type="file" id="advisorMsgImageInput" accept="image/*" class="hidden">
+          <button type="button" class="btn-ghost" id="advisorMsgImageBtn" style="padding:6px 12px;font-size:12.5px">Rasm biriktirish</button>
+          <div id="advisorMsgImagePreviewWrap" class="hidden" style="width:36px;height:36px;border-radius:7px;overflow:hidden;border:1px solid var(--line)">
+            <img id="advisorMsgImagePreview" style="width:100%;height:100%;object-fit:cover">
+          </div>
+          <button type="button" class="btn-ghost hidden" id="advisorMsgImageRemoveBtn" style="padding:6px 10px;font-size:12.5px;color:#D6473C">O'chirish</button>
+        </div>
+        <button class="btn" id="advisorMsgSendBtn" style="margin-top:10px">Yuborish</button>
+        <div id="advisorMsgResult" class="hidden" style="margin-top:10px;padding:9px 12px;background:#fff;border-radius:9px;font-size:12.5px"></div>
+      </div>
+
       <p style="font-size:12.5px;color:var(--muted);margin-top:16px">Qo'shimcha savolingiz bo'lsa, maslahatchingiz bilan bevosita bog'lanishingiz mumkin.</p>
     </div>
   </div>
@@ -3448,6 +3464,93 @@ a{color:inherit;text-decoration:none}
   document.getElementById('askAdvisorBtn').addEventListener('click', function(){
     openHelp();
   });
+
+  /* ============ Maslahatchiga xabar yozish ============ */
+  let advisorMsgImage = null;
+  function compressAdvisorMsgImage(file){
+    return new Promise((resolve, reject) => {
+      if (!file.type.startsWith('image/')) { reject(new Error('Faqat rasm fayli tanlang.')); return; }
+      if (file.size > 10 * 1024 * 1024) { reject(new Error('Rasm hajmi 10 MB dan oshmasin.')); return; }
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const maxDim = 700;
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width >= height) { height = Math.round(height * maxDim / width); width = maxDim; }
+          else { width = Math.round(width * maxDim / height); height = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        const maxBytes = 300 * 1024;
+        let quality = 0.85;
+        let dataUrl = canvas.toDataURL('image/jpeg', quality);
+        const approxBytes = du => Math.round((du.length - du.indexOf(',') - 1) * 3 / 4);
+        let guard = 0;
+        while (approxBytes(dataUrl) > maxBytes && quality > 0.5 && guard < 8) {
+          quality -= 0.07;
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+          guard++;
+        }
+        resolve(dataUrl);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Rasmni o'qib bo'lmadi.")); };
+      img.src = url;
+    });
+  }
+  document.getElementById('advisorMsgImageBtn').onclick = () => document.getElementById('advisorMsgImageInput').click();
+  document.getElementById('advisorMsgImageInput').addEventListener('change', async function(){
+    const file = this.files[0];
+    this.value = '';
+    if (!file) return;
+    try {
+      advisorMsgImage = await compressAdvisorMsgImage(file);
+      document.getElementById('advisorMsgImagePreview').src = advisorMsgImage;
+      document.getElementById('advisorMsgImagePreviewWrap').classList.remove('hidden');
+      document.getElementById('advisorMsgImageRemoveBtn').classList.remove('hidden');
+    } catch (err) {
+      alert(err.message || "Rasmni o'qib bo'lmadi.");
+    }
+  });
+  document.getElementById('advisorMsgImageRemoveBtn').onclick = () => {
+    advisorMsgImage = null;
+    document.getElementById('advisorMsgImagePreviewWrap').classList.add('hidden');
+    document.getElementById('advisorMsgImageRemoveBtn').classList.add('hidden');
+  };
+  document.getElementById('advisorMsgSendBtn').onclick = async () => {
+    const input = document.getElementById('advisorMsgInput');
+    const text = input.value.trim();
+    const box = document.getElementById('advisorMsgResult');
+    box.classList.add('hidden');
+    if (!text) { input.focus(); return; }
+    if (!window.apiFetch) { alert('Backendga ulanmagan.'); return; }
+
+    const btn = document.getElementById('advisorMsgSendBtn');
+    const old = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Yuborilmoqda...';
+    try {
+      await apiFetch('/api/student/me/contact-advisor', {
+        method: 'POST', body: JSON.stringify({ text, image: advisorMsgImage }),
+      });
+      box.classList.remove('hidden');
+      box.style.color = '';
+      box.innerHTML = `<b>Yuborildi \u2713</b> — maslahatchingiz tez orada javob beradi.`;
+      input.value = '';
+      advisorMsgImage = null;
+      document.getElementById('advisorMsgImagePreviewWrap').classList.add('hidden');
+      document.getElementById('advisorMsgImageRemoveBtn').classList.add('hidden');
+    } catch (err) {
+      box.classList.remove('hidden');
+      box.style.color = '#D6473C';
+      box.textContent = err.isNetworkError ? "Serverga ulanib bo'lmadi." : (err.message || 'Xatolik yuz berdi.');
+    } finally {
+      btn.disabled = false; btn.textContent = old;
+    }
+  };
 
   function doLogout(){
     localStorage.removeItem('qp_student_token');

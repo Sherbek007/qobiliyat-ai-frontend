@@ -15176,7 +15176,7 @@ function render(){
         ${n.image ? `<img src="${n.image}" style="max-width:220px;max-height:160px;border-radius:9px;margin-top:8px;display:block;object-fit:cover">` : ''}
         <div class="n-tags"><span class="n-tag ${m.tag}">${m.label}</span></div>
         ${n.actions.length ? `<div class="n-act">${n.actions.map(a => `<button data-go="${a[1]}">${a[0]}</button>`).join('')}</div>` : ''}
-        ${n.type === 'xabar' && n.studentId ? `<div class="n-act"><button data-reply="${n.id}">Javob yozish</button></div>` : ''}
+        ${n.type === 'xabar' && (n.senderUserId || n.senderStudentId) ? `<div class="n-act"><button data-reply="${n.id}">Javob yozish</button></div>` : ''}
       </div>
       <button class="n-close" data-del="${n.id}" title="O'chirish"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>`;
@@ -15210,7 +15210,10 @@ function render(){
   document.querySelectorAll('#notifsView #listBox [data-reply]').forEach(b => b.onclick = e => {
     e.stopPropagation();
     const n = NOTIFS.find(x => x.id === +b.dataset.reply);
-    if (n) openMsgCompose({ studentId: n.studentId, studentLabel: n.title.replace(/^.*?\u2014\s*/, '') });
+    if (n) openMsgCompose({
+      toUserId: n.senderUserId, toStudentId: n.senderUserId ? null : n.senderStudentId,
+      targetLabel: n.senderName || n.title.replace(/^.*?\u2014\s*/, ''),
+    });
   });
 
   updateBadges();
@@ -15250,6 +15253,8 @@ async function loadNotificationsFromAPI(){
       time: timeAgo(r.created_at), unread: !r.is_read,
       actions: r.link ? [[ACTION_LABEL[r.type] || "Ko'rish", r.link]] : [],
       studentId: r.student_id || null, image: r.image || null,
+      senderUserId: r.sender_id || null, senderStudentId: r.sender_student_id || null,
+      senderName: r.sender_name || null,
     }));
     render();
   } catch (err) {
@@ -15302,10 +15307,19 @@ function compressMsgImage(file){
   });
 }
 
+let msgReplyToUserId = null;
+let msgReplyToStudentId = null;
+
 function openMsgCompose(preset){
-  msgChosenStudentId = preset && preset.studentId ? preset.studentId : null;
+  /* Javobda (preset bor) — xabarni yozgan ANIQ hisobga (real ID orqali,
+     ism bo'yicha emas) javob beriladi. Yangi xabarda (preset yo'q) —
+     o'quvchi qidirib topib, unga bog'langan ota-onaga yuboriladi. */
+  msgReplyToUserId = preset ? (preset.toUserId || null) : null;
+  msgReplyToStudentId = preset ? (preset.toStudentId || null) : null;
+  msgChosenStudentId = null;  // faqat "yangi xabar" oqimida ishlatiladi
   msgCurrentImage = null;
-  document.getElementById('msgComposeTitle').textContent = msgChosenStudentId ? 'Javob yozish' : "Ota-onaga yangi xabar";
+  const isReply = !!(msgReplyToUserId || msgReplyToStudentId);
+  document.getElementById('msgComposeTitle').textContent = isReply ? 'Javob yozish' : "Ota-onaga yangi xabar";
   document.getElementById('msgComposeText').value = '';
   document.getElementById('msgComposeErr').classList.add('hidden');
   document.getElementById('msgStudentSearch').value = '';
@@ -15315,10 +15329,10 @@ function openMsgCompose(preset){
 
   const picker = document.getElementById('msgComposeStudentPicker');
   const chosen = document.getElementById('msgStudentChosen');
-  if (msgChosenStudentId) {
+  if (isReply) {
     picker.classList.add('hidden');
     chosen.classList.remove('hidden');
-    chosen.innerHTML = `<span>Kimga: <b>${preset.studentLabel || "o'quvchi"}</b> ota-onasiga</span>`;
+    chosen.innerHTML = `<span>Kimga: <b>${preset.targetLabel || "shu shaxs"}</b></span>`;
   } else {
     picker.classList.remove('hidden');
     chosen.classList.add('hidden');
@@ -15329,6 +15343,13 @@ document.getElementById('composeMsgBtn').onclick = () => openMsgCompose(null);
 document.getElementById('msgComposeCancel').onclick = () => { msgComposeModal.style.display = 'none'; };
 msgComposeModal.onclick = e => { if (e.target === msgComposeModal) msgComposeModal.style.display = 'none'; };
 
+let msgClassesCache = null;
+async function getMsgClasses(){
+  if (msgClassesCache) return msgClassesCache;
+  try { msgClassesCache = await apiFetch('/api/classes'); } catch (err) { msgClassesCache = []; }
+  return msgClassesCache;
+}
+
 let msgSearchTimer = null;
 document.getElementById('msgStudentSearch').addEventListener('input', function(){
   clearTimeout(msgSearchTimer);
@@ -15338,16 +15359,20 @@ document.getElementById('msgStudentSearch').addEventListener('input', function()
   msgSearchTimer = setTimeout(async () => {
     if (!window.apiFetch) return;
     try {
-      const rows = await apiFetch(`/api/students?search=${encodeURIComponent(q)}`);
-      box.innerHTML = rows.length ? rows.slice(0, 8).map(s => `
-        <div data-pick="${s.id}" data-name="${s.full_name}" style="padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--bg,#F7F6FB)'" onmouseout="this.style.background=''">${s.full_name}</div>
-      `).join('') : `<div style="padding:8px 10px;color:var(--muted);font-size:12.5px">Topilmadi</div>`;
+      const [rows, classes] = await Promise.all([
+        apiFetch(`/api/students?search=${encodeURIComponent(q)}`),
+        getMsgClasses(),
+      ]);
+      box.innerHTML = rows.length ? rows.slice(0, 8).map(s => {
+        const clsName = (classes.find(c => c.id === s.class_id) || {}).name || `sinf #${s.class_id || '\u2014'}`;
+        return `<div data-pick="${s.id}" data-name="${s.full_name}" data-cls="${clsName}" style="padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;display:flex;justify-content:space-between" onmouseover="this.style.background='var(--bg,#F7F6FB)'" onmouseout="this.style.background=''"><span>${s.full_name}</span><span style="color:var(--muted)">${clsName}</span></div>`;
+      }).join('') : `<div style="padding:8px 10px;color:var(--muted);font-size:12.5px">Topilmadi</div>`;
       box.querySelectorAll('[data-pick]').forEach(el => el.onclick = () => {
         msgChosenStudentId = +el.dataset.pick;
         document.getElementById('msgComposeStudentPicker').classList.add('hidden');
         const chosen = document.getElementById('msgStudentChosen');
         chosen.classList.remove('hidden');
-        chosen.innerHTML = `<span>Kimga: <b>${el.dataset.name}</b> ota-onasiga</span><button type="button" style="color:var(--primary);font-size:12.5px" id="msgChangeStudentBtn">O'zgartirish</button>`;
+        chosen.innerHTML = `<span>Kimga: <b>${el.dataset.name}</b> (${el.dataset.cls}) ota-onasiga</span><button type="button" style="color:var(--primary);font-size:12.5px" id="msgChangeStudentBtn">O'zgartirish</button>`;
         document.getElementById('msgChangeStudentBtn').onclick = () => {
           msgChosenStudentId = null;
           document.getElementById('msgComposeStudentPicker').classList.remove('hidden');
@@ -15382,16 +15407,30 @@ document.getElementById('msgComposeSend').onclick = async () => {
   const text = document.getElementById('msgComposeText').value.trim();
   const errEl = document.getElementById('msgComposeErr');
   errEl.classList.add('hidden');
-  if (!msgChosenStudentId) { errEl.textContent = "Avval o'quvchini tanlang."; errEl.classList.remove('hidden'); return; }
+  const isReply = !!(msgReplyToUserId || msgReplyToStudentId);
+  if (!isReply && !msgChosenStudentId) { errEl.textContent = "Avval o'quvchini tanlang."; errEl.classList.remove('hidden'); return; }
   if (!text) { errEl.textContent = 'Xabar matnini kiriting.'; errEl.classList.remove('hidden'); return; }
 
   const btn = document.getElementById('msgComposeSend');
   const old = btn.textContent;
   btn.disabled = true; btn.textContent = 'Yuborilmoqda...';
   try {
-    await apiFetch(`/api/students/${msgChosenStudentId}/message-parent`, {
-      method: 'POST', body: JSON.stringify({ text, image: msgCurrentImage }),
-    });
+    if (isReply) {
+      /* Javob — ANIQ hisobga (real ID), ism orqali qidirmasdan */
+      await apiFetch('/api/students/reply-to-sender', {
+        method: 'POST',
+        body: JSON.stringify({
+          to_user_id: msgReplyToUserId || null,
+          to_student_id: msgReplyToStudentId || null,
+          text, image: msgCurrentImage,
+        }),
+      });
+    } else {
+      /* Yangi xabar — tanlangan o'quvchining ota-onasiga */
+      await apiFetch(`/api/students/${msgChosenStudentId}/message-parent`, {
+        method: 'POST', body: JSON.stringify({ text, image: msgCurrentImage }),
+      });
+    }
     msgComposeModal.style.display = 'none';
     alert('Xabar yuborildi \u2713');
   } catch (err) {
